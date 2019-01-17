@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=6.5.0">
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文得目的是用极其简易的知识来介绍人工智能是怎么一回事，保证连初中生都可以看得懂的。">
+<meta name="keywords" content="人工智能,深度学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一篇初中生都看得懂的人工智能文章">
+<meta property="og:url" content="https://iweixubin.github.io/posts/let-junior-high-school-students-understand-what-is-ai/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文得目的是用极其简易的知识来介绍人工智能是怎么一回事，保证连初中生都可以看得懂的。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/neural_networks.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/neural_networks.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/math_matrix_01.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/math_matrix_02.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/mnist_neural_networks.jpg">
+<meta property="og:updated_time" content="2018-12-05T05:07:25.435Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一篇初中生都看得懂的人工智能文章">
+<meta name="twitter:description" content="本文得目的是用极其简易的知识来介绍人工智能是怎么一回事，保证连初中生都可以看得懂的。">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/neural_networks.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://iweixubin.github.io/posts/let-junior-high-school-students-understand-what-is-ai/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>一篇初中生都看得懂的人工智能文章 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/let-junior-high-school-students-understand-what-is-ai/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="韦旭彬">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一篇初中生都看得懂的人工智能文章
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-11 00:00:01" itemprop="dateCreated datePublished" datetime="2018-11-11T00:00:01+08:00">2018-11-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-12-05 13:07:25" itemprop="dateModified" datetime="2018-12-05T13:07:25+08:00">2018-12-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/百草纲目/" itemprop="url" rel="index"><span itemprop="name">百草纲目</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文得目的是用极其简易的知识来介绍人工智能是怎么一回事，保证连初中生都可以看得懂的。</p>
+<a id="more"></a>
+<h2 id="让博士生-小学生"><a href="#让博士生-小学生" class="headerlink" title="让博士生 = 小学生"></a>让博士生 = 小学生</h2><p>在2016年3月阿法狗战胜李世石之后，我和小学的几个好基友聚会的时候，我说：人工智能时代，貌似没有我们什么事——因为搞这个都是高学历的(相关的招聘要求都是硕士起步)。  </p>
+<p>接着在2017年5月阿法狗战胜柯洁，我决定去了解，学学人工智能。  </p>
+<p>我为什么会觉得自己能学，因为我做了一个这样的假设：<br>读小学时，我们就会用 <code>2πr</code> 来计算圆的周长，而 <code>2πr</code> 这条公式是怎么来的，要等我们学了高等数学中的微积分才能推导出来。 然而在应用层面上，无论小学生还是博士生在计算圆的面积的时都是用 <code>2πr</code> 这公式。而既然谷歌开源了它的人工智能工具Tensorflow，那么把封装当作信条的程序员，绝对会屏蔽一些极其复杂的东西，让大部分人都可以运用。</p>
+<h2 id="人工智能是怎么来的"><a href="#人工智能是怎么来的" class="headerlink" title="人工智能是怎么来的"></a>人工智能是怎么来的</h2><p>人工智能是生物学家、数学家、计算机科学家合作的成功：</p>
+<ol>
+<li>生物学家研究人的大脑  </li>
+<li>数学家按生物学家的研究结果提出模型  </li>
+<li>计算机科学家实现数学家提出的模型  </li>
+</ol>
+<h2 id="初中时候的知识"><a href="#初中时候的知识" class="headerlink" title="初中时候的知识"></a>初中时候的知识</h2><p>在读初中的时候，我们都解过下面的数学题：<br>已知方程 <code>y=kx+b</code>，当 <code>x=6</code> 时，<code>y=15</code>；当 <code>x=8</code> 时，<code>y=19</code>；求<code>k</code>，<code>b</code>的值(本质是求方程的具体样子)<br><code>15=6k+b</code><br><code>19=8k+b</code><br>用 <code>消元法</code> 解得：<code>k=2</code>；<code>b=3</code><br>所以方程是：<code>y=2x+3</code> (我们得到方程的具体样子，然后提供新 <code>x=5</code> 时，就得到 <code>y=13</code> )</p>
+<p>把上面的描述改变成下面的话，请念三遍，你就明白什么是人工智能了！</p>
+<blockquote>
+<p>定义一函数  <code>y=kx+b</code><br>当输入 <code>x=6</code> 时，提供对应的答案 <code>y=15</code><br>求这函数 <code>y=kx+b</code> 具体是怎么样的</p>
+</blockquote>
+<p>特别说明，无论你定义的函数多复杂，提供的值多奇葩，都不用你求解方程，不用你解方程，不用你解方程~<br>你只要像老师一样，布置作业就好了，哇咔咔~</p>
+<h2 id="数学家的建模"><a href="#数学家的建模" class="headerlink" title="数学家的建模"></a>数学家的建模</h2><p>数学家将每个 神经单元 建模成 一个函数</p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/neural_networks.png" alt="神经网络"></p>
+<p>而每个神经单元对应是函数是怎么样的呢？就如我们不知道神经单元里面是怎么运作的，所以不知道函数具体是怎么样的。  </p>
+<p>一开始我们将输入值 <code>x</code> 传给一个神经单元得到一个 <code>y</code>，然后这个 <code>y</code> 又会被当成新的输入值x传给下一个神经单元…<br>并且每个神经单元是和多个神经单元连接的，大概示意图如下  </p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/neural_networks.gif" alt="神经网络"></p>
+<p>那么数学家是怎么对上图建模的呢——矩阵</p>
+<p>一个函数：<code>y=kx+b</code><br>那么一组函数就可以表示成如下图所示：<br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/math_matrix_01.png" alt="矩阵"></p>
+<p>然后由于我们的大脑的网络神经是一个连接一个，也就是多层的，所以就如下图所示：  </p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/math_matrix_02.png" alt="矩阵"></p>
+<p>然后 <code>w11</code> 到 <code>w45</code> 都有比较适当(注意，是适当)的值，那么就是一个不错的人工智能了。<br>就如上面提到的，对于方程，我们是不用去解，是由人工智能去解的，人工智能怎么解的呢？——训练</p>
+<h2 id="机器训练"><a href="#机器训练" class="headerlink" title="机器训练"></a>机器训练</h2><p>在初中的时候，我们求解 <code>y=kx+b</code> 是用 <code>消元法</code>，然而人工智能不是用 <code>消元法</code> 来解矩阵(方程集合)，理由如下：<br>假设我们在一张 <code>28像素</code> <em> <code>28像素</code> 上面写一个数字，要人工智能判断我们写的数字是多少？<br>那么我们需要提供 `28</em>28=784<code>个</code>x` 作为输入值给人工智能，而且一般来说还会有一堆方程组成的矩阵。</p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/mnist_neural_networks.jpg" alt="mnist单层神经网络"></p>
+<p><code>消元法</code> 这条路不适合。于是人工智能是使用以下的方式来求解的，我们来看看人工智能用机器训练法是怎么求题目：<br>已知方程 <code>y=kx+b</code>，当 <code>x=6</code> 时，<code>y=15</code>，求<code>k</code>，<code>b</code>的值。</p>
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>假设方程</th>
+<th>假设方程值(预测值)</th>
+<th>真实值</th>
+<th>评估</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6</td>
+<td>_y=1x+1</td>
+<td>_y=7</td>
+<td>y=15</td>
+<td><code>预测值</code>与<code>真实值</code> 相差甚远</td>
+</tr>
+<tr>
+<td>6</td>
+<td>_y=2x+2</td>
+<td>_y=14</td>
+<td>y=15</td>
+<td><code>预测值</code>与<code>真实值</code> 很接近了</td>
+</tr>
+<tr>
+<td>6</td>
+<td>_y=3x+3</td>
+<td>_y=21</td>
+<td>y=15</td>
+<td><code>预测值</code>与<code>真实值</code> 超过了</td>
+</tr>
+<tr>
+<td>6</td>
+<td>_y=2.1x+2.1</td>
+<td>_y=14.7</td>
+<td>y=15</td>
+<td><code>预测值</code>与<code>真实值</code> 超接近了</td>
+</tr>
+</tbody>
+</table>
+<p>于是人工智能解得：<code>k=2.1</code>，<code>b=2.1</code>，也就是方程是: <code>y=2.1x+2.1</code>；<br>另外人工智能还得到一个经验(对应人工智能的专业术语：激活函数)，要将值逢小数进一！！！</p>
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>假设方程和值</th>
+<th>经验(逢小数进一)</th>
+<th>理想方程和值</th>
+<th>是否匹配</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5</td>
+<td>2.1x+2.1=12.6</td>
+<td>12.6 → 13</td>
+<td>2x+3=13</td>
+<td>√</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.1x+2.1=14.7</td>
+<td>14.7 → 15</td>
+<td>2x+3=15</td>
+<td>√</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.1x+2.1=16.8</td>
+<td>16.8 → 17</td>
+<td>2x+3=17</td>
+<td>√</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.1x+2.1=18.9</td>
+<td>18.9 → 19</td>
+<td>2x+3=19</td>
+<td>√</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.1x+2.1=21</td>
+<td>21 → 21</td>
+<td>2x+3=21</td>
+<td>√</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.1x+2.1=23.1</td>
+<td>23.1 → 24</td>
+<td>2x+3=23</td>
+<td>×</td>
+</tr>
+</tbody>
+</table>
+<p>如果你觉得上面有点儿戏，那么请看下面材料：<br>假设AB两地相距10米，小白以每秒1米从A先B运动，小黑以每秒1米从B先A运动，问他们几秒后相遇？<br>这个问题我们从小学开始就会做了10/(1+1)=5秒，<br>得到的公式是：<code>t=s/(v1+v2)</code>，<br>然后我们就认为公式 <code>t=s/(v1+v2)</code> 可以解决任何相遇问题，真的是这样么？</p>
+<p>假设AB两地相距300000 0km，小白以每秒300000km从A先B运动，小黑以每秒300000km从B先A运动，问他们几秒后相遇？<br>这个时候用 <code>t=s/(v1+v2)</code>=300000 0km/(300000km+300000km)=300000 0km/600000km=5秒<br>然而真实的情况是，宇宙最快的速度只能是300000km，<br>所以：300000km+300000km还是等于300000km，<br>因此：300000 0km/(300000km+300000km)=10秒。</p>
+<p>我们人类现在用计算低速运动相遇时间是用 <code>t=s/(v1+v2)</code>，计算高速运动相遇时间是用另外一条公式，但我们还没有找到一条用来计算低速和高速相遇时间都可以的完美的公式。</p>
+<h2 id="人工智能如此简单"><a href="#人工智能如此简单" class="headerlink" title="人工智能如此简单"></a>人工智能如此简单</h2><ol>
+<li><p>第一步：创造人工智能(假设图片识别)</p>
+<ul>
+<li>怎么创造？定义人工智能的大脑  </li>
+<li>怎么定义？用神经网络  </li>
+<li>怎么描述神经网络？用矩阵</li>
+</ul>
+</li>
+<li><p>第二步：训练人工智能</p>
+<ul>
+<li>怎么训练？提供(图片)材料让人工智能训练</li>
+<li>目的？让矩阵有适当的值，和适当的经验</li>
+</ul>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>没有高学历的确没有机会去创造人工智能，即使李宏毅教授在他的《1天搞懂深度学习》第25页说道：定义多少层，每层有多少个神经单元才合适？——凭经验和直觉；(看《1天搞懂深度学习》我断断续续看了一个多月，加起来的时间也超过一天。)，但人工智能还在发展中，专门研究人工智能的人之间的相互交流都是用英语和数学来表示的。另外一方面，人工智能训练需要大量的数据，在人工智能识别数字的入门例子中，就准备了60000张1到9的数字…</p>
+<p>让我们将注意力放在生物学家对大脑的研究上，了解我们的大脑是怎么运作的，还有，每个人都会为人父母，也就是说，你将会创造出史上最强的“智能”，那么接下来，你将会怎么训练呢？？？？</p>
+<p>待续…</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>觉得文章对您有帮助，来一波打赏 (๑•̀ㅂ•́)و✧</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="韦旭彬 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.png" alt="韦旭彬 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>韦旭彬</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://iweixubin.github.io/posts/let-junior-high-school-students-understand-what-is-ai/" title="一篇初中生都看得懂的人工智能文章">https://iweixubin.github.io/posts/let-junior-high-school-students-understand-what-is-ai/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/人工智能/" rel="tag"># 人工智能</a>
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/smart-bb-training-plan-all-thinkers-in-one/" rel="next" title="聪明宝宝培养计划：01——百家齐鸣">
+                <i class="fa fa-chevron-left"></i> 聪明宝宝培养计划：01——百家齐鸣
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/smart-bb-training-plan-our-sect/" rel="prev" title="聪明宝宝培养计划：02——师承何派">
+                聪明宝宝培养计划：02——师承何派 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="韦旭彬" />
+            
+              <p class="site-author-name" itemprop="name">韦旭彬</p>
+              <p class="site-description motion-element" itemprop="description">苏格拉底粉</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/iweixubin" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:35925259@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#让博士生-小学生"><span class="nav-number">1.</span> <span class="nav-text">让博士生 = 小学生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#人工智能是怎么来的"><span class="nav-number">2.</span> <span class="nav-text">人工智能是怎么来的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初中时候的知识"><span class="nav-number">3.</span> <span class="nav-text">初中时候的知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数学家的建模"><span class="nav-number">4.</span> <span class="nav-text">数学家的建模</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#机器训练"><span class="nav-number">5.</span> <span class="nav-text">机器训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#人工智能如此简单"><span class="nav-number">6.</span> <span class="nav-text">人工智能如此简单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright"> &copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">韦旭彬</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.5.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
