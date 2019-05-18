@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="经历了 Go 的 workspace，然后又有 Vendor，Go 终于有了更加好的包依赖解决方案 Modules 机制。">
+<meta name="keywords" content="go vendor,go modules">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go 包管理的进化史 —— Modules">
+<meta property="og:url" content="https://iweixubin.github.io/posts/go-dependency-management-tool-evolution-modules/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="经历了 Go 的 workspace，然后又有 Vendor，Go 终于有了更加好的包依赖解决方案 Modules 机制。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-18T14:23:44.981Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go 包管理的进化史 —— Modules">
+<meta name="twitter:description" content="经历了 Go 的 workspace，然后又有 Vendor，Go 终于有了更加好的包依赖解决方案 Modules 机制。">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/go-dependency-management-tool-evolution-modules/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Go 包管理的进化史 —— Modules | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/go-dependency-management-tool-evolution-modules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="韦旭彬">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go 包管理的进化史 —— Modules
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-19 00:00:02" itemprop="dateCreated datePublished" datetime="2019-01-19T00:00:02+08:00">2019-01-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-18 22:23:44" itemprop="dateModified" datetime="2019-05-18T22:23:44+08:00">2019-05-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>经历了 Go 的 workspace，然后又有 Vendor，Go 终于有了更加好的包依赖解决方案 Modules 机制。</p>
+<a id="more"></a>
+<h2 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h2><p><a href="https://github.com/golang/go/wiki/Modules" target="_blank" rel="noopener">go modules 官方文档</a></p>
+<p>即使从 go1.5 引入了 vendor 机制和配合官方的 dep 工具，也依然不是一个便捷的解放方案。<br>不过现在 go modules 随着 golang1.11 的发布而和我们见面了，这是官方提倡的新的包管理，乃至项目管理机制。</p>
+<p>因此项目结构可以像下面一样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$GOPATH</span><br><span class="line">├── bin</span><br><span class="line">├── pkg</span><br><span class="line">├── src</span><br><span class="line">└── ProjectA  // 项目不再放在 src 目录中</span><br><span class="line"></span><br><span class="line">ProjectB      // 甚至可以不用放在 $GOPATH 中，</span><br><span class="line">ProjectZ</span><br></pre></td></tr></table></figure>
+<p>从项目结构来看，就是 Go 的 workspace 不再像以前规定得那么死。</p>
+<p>在 go1.11 中，Modules 还只是一个实验性功能，<br>所以 go 提供了一个环境变量 “GO111MODULE”，默认值为 auto，<br>如果当前目录里有 go.mod 文件，就使用 go modules，否则使用旧的 $GOPATH 和 vendor 机制，<br>从 go1.12 开始，应该会强制使用 go modules 不再使用 $GOPATH 和 vendor 机制。</p>
+<p>试试看吧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...\ProjectZ&gt; go mod init test</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$GOPATH</span><br><span class="line">├── bin</span><br><span class="line">├── pkg</span><br><span class="line">└── src</span><br><span class="line"></span><br><span class="line">ProjectZ</span><br><span class="line">└──  go.mod   // 自动生成的文件，里面只有一行 module test</span><br></pre></td></tr></table></figure>
+<p>接下来，我们手动创建一个 main.go 文件，内容是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	r.GET(<span class="string">"/ping"</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		c.JSON(<span class="number">200</span>, gin.H&#123;</span><br><span class="line">			<span class="string">"message"</span>: <span class="string">"pong"</span>,</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">	r.Run() <span class="comment">// listen and serve on 0.0.0.0:8080</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行看看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...\ProjectZ&gt; go run main.go</span><br></pre></td></tr></table></figure>
+<p>这个时候会下载相应的依赖包，如果你遇到恶心的墙网络问题，那么可以添加环境变量：</p>
+<ul>
+<li>变量名(n)：GOPROXY  变量值(v)：<a href="https://goproxy.io" target="_blank" rel="noopener">https://goproxy.io</a></li>
+</ul>
+<p>详情，可以浏览 <a href="https://goproxy.io" target="_blank" rel="noopener">https://goproxy.io</a></p>
+<blockquote>
+<p>First, you will need to enable the Go Modules feature and configure Go to use the proxy.</p>
+</blockquote>
+<p>因为我们的文件夹中有 <code>go.mod</code>，所以可以不用添加环境变量： GO111MODULE = on</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$GOPATH</span><br><span class="line">├── bin</span><br><span class="line">├── pkg</span><br><span class="line">│   └── cache</span><br><span class="line">│   └── mod</span><br><span class="line">│       └── github.com</span><br><span class="line">│           └── gin-gonic</span><br><span class="line">│               └── gin@v1.3.0  // gin 带了版本，也不像以前先要手动用 go get 获取一次</span><br><span class="line">└── src</span><br><span class="line"></span><br><span class="line">ProjectZ</span><br><span class="line">├── go.mod    // 依赖信息，需要添加到 svn，git 等版本控制系统。</span><br><span class="line">├── go.sum    // 校验信息，需要添加到 svn，git 等版本控制系统。</span><br><span class="line">└── main.go   //</span><br></pre></td></tr></table></figure>
+<p>看看 <code>go.mod</code> 文件的内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">module test</span><br><span class="line"></span><br><span class="line">require (</span><br><span class="line">	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect</span><br><span class="line">	github.com/gin-gonic/gin v1.3.0</span><br><span class="line">	github.com/golang/protobuf v1.2.0 // indirect</span><br><span class="line">	github.com/manucorporat/sse v0.0.0-20160126180136-ee05b128a739 // indirect</span><br><span class="line">	github.com/mattn/go-isatty v0.0.4 // indirect</span><br><span class="line">	github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 // indirect</span><br><span class="line">	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect</span><br><span class="line">	gopkg.in/yaml.v2 v2.2.2 // indirect(间接的，gin 包依赖其他包)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>看看 <code>go.sum</code> 文件的内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=</span><br><span class="line">github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=</span><br><span class="line">github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 h1:AzN37oI0cOS+cougNAV9szl6CVoj2RYwzS3DpUQNtlY=</span><br><span class="line">github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7/go.mod h1:VJ0WA2NBN22VlZ2dKZQPAPnyWw5XTlK1KymzLKsr59s=</span><br><span class="line">github.com/gin-gonic/gin v1.3.0 h1:kCmZyPklC0gVdL728E6Aj20uYBJV93nj/TkwBTKhFbs=</span><br><span class="line">github.com/gin-gonic/gin v1.3.0/go.mod h1:7cKuhb5qV2ggCFctp2fJQ+ErvciLZrIeoOSOm6mUr7Y=</span><br><span class="line">github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM=</span><br><span class="line">github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>以前我们可以在控制台任何目录下用 <code>go get</code>，那么会下载到 <code>src</code> 目录中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; go get github.com/gin-gonic/gin</span><br></pre></td></tr></table></figure>
+<p>假设我们要切换到 <a href="mailto:gin@1.1.4" target="_blank" rel="noopener">gin@1.1.4</a> 版本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;go get github.com/gin-gonic/gin@1.1.4</span><br><span class="line">go: cannot use path@version syntax in GOPATH mode</span><br></pre></td></tr></table></figure></p>
+<p>必须切换到有 <code>go.mod</code> 文件的目录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...\ProjectZ&gt; go get github.com/gin-gonic/gin@1.1.4</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$GOPATH</span><br><span class="line">├── bin</span><br><span class="line">├── pkg</span><br><span class="line">│   └── cache</span><br><span class="line">│   └── mod</span><br><span class="line">│       └── github.com</span><br><span class="line">│           └── gin-gonic</span><br><span class="line">│               └── gin@v1.1.4  // 版本</span><br><span class="line">│               └── gin@v1.3.0  // 版本</span><br><span class="line">└── src</span><br><span class="line"></span><br><span class="line">ProjectZ</span><br><span class="line">├── go.mod  </span><br><span class="line">├── go.sum</span><br><span class="line">└── main.go</span><br></pre></td></tr></table></figure>
+<p>同时留意 <code>go.mod</code> 和 <code>go.sum</code> 文件内容的变化。</p>
+<p>除了用 <code>go get</code> 来切换版本，还可以通过编辑  <code>go.mod</code> 的文件内容，然后</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...\ProjectZ&gt; go mod tidy</span><br></pre></td></tr></table></figure>
+<p>也会下载相应的版本和该版本需要的依赖包。  </p>
+<p>下面是可能用到的功能：</p>
+<ul>
+<li><code>go list -m all</code> —— 查看将在生成中用于所有直接和间接依赖关系的最终版本</li>
+<li><code>go list -u -m all</code> —— 查看所有直接和间接依赖项的可用次要和修补程序升级</li>
+<li><code>go get -u</code> or <code>go get -u=patch</code> —— 更新所有直接和间接依赖关系, 以进行最新的次要或修补程序升级 (忽略预发布)</li>
+<li><code>go build ./...</code> or <code>go test ./...</code> —— </li>
+<li><code>go mod download</code> —— 下载依赖的module到本地cache</li>
+<li><code>go mod edit</code> —— 编辑go.mod文件</li>
+<li><code>go mod graph</code> —— 打印模块依赖图</li>
+<li><code>go mod init</code> —— 再当前文件夹下初始化一个新的module, 创建go.mod文件</li>
+<li><code>go mod tidy</code> —— 增加丢失的module，去掉未用的module</li>
+<li><code>go mod vendor</code> —— 将依赖复制到vendor下</li>
+<li><code>go mod verify</code> —— 校验依赖</li>
+<li><code>go mod why</code> —— 解释为什么需要依赖</li>
+</ul>
+<p>最后你会发现怎么 <code>pkg</code> 文件夹中没有生成 xxx.a 包的文件呢？<br>可以用 <code>go env</code> 查看，有一个叫 <code>GOCACHE</code> 的变量</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>可以看出 <code>$GOPATH</code> 从以前存放引用包和项目的地方，变成只存放包，项目单独出来了，<br>而依然有 <code>vendor</code> 是有时候我们需要将引用包一起放到 svn 上。</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="Modules"><a href="#Modules" class="headerlink" title="Modules"></a>Modules</h3><p>module (模块)是将一组相关的 Go packages(包)，当作一个单元进行版本控制。</p>
+<p>module (模块)精准地记录着必要的依赖关系，并且可用于构建项目。</p>
+<p>通常，一个版本控制存储库只在在存储库根目录中定义的一个模块。<br>(单个存储库中支持多个模块, 但通常会比每个存储库的单个模块需要更多的工作)</p>
+<p>总结一下 repositories(存储库), modules(模块), 和 packages(包) 之间的关系：</p>
+<ul>
+<li>一个 <code>repository(存储库)</code> 包含 一个或以上 的 Go 模块</li>
+<li>每个 <code>module(模块)</code> 包含 一个或以上 的 Go 包</li>
+<li>每个 <code>package(包)</code> 包含 一个或以上 的 Go 源码文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">repo            // 存储库——项目文件夹</span><br><span class="line">├── go.mod      // 模块</span><br><span class="line">├── bar         // 包</span><br><span class="line">│   └── bar.go  // Go 源码文件</span><br><span class="line">└── foo</span><br><span class="line">    └── foo.go</span><br></pre></td></tr></table></figure>
+<p>模块必须进行语义版本控制，规则是 <code>v(major[主版本号]).(minor[次版本号]).(patch[补丁版本号])</code>,<br>如 v0.1.0, v1.2.3, or v1.5.0-rc.1，开头的 <code>v</code> 是必须的。<br>如果是使用 Git，则标记发布的提交及其版本。公共和私有模块存储库和代理正在变得可用。</p>
+<h3 id="go-mod"><a href="#go-mod" class="headerlink" title="go.mod"></a>go.mod</h3><p>A module is defined by a tree of Go source files with a go.mod file in the tree’s root directory.<br>Module source code may be located outside of GOPATH.<br>Module 源码可以位于 <code>GOPATH</code> 目录之外。</p>
+<p>通常，每个存储库会有一个 go.mod 位于 存储库 的根目录，但 go.mod 可以位于其它位置。</p>
+<p>以下是一个 go.mod 文件定义 github.com/my/thing 模块的示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">module github.com/my/thing</span><br><span class="line"></span><br><span class="line">require (</span><br><span class="line">    github.com/some/dependency v1.2.3</span><br><span class="line">    github.com/another/dependency/v4 v4.0.0</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>有四个指令：<code>module(模块)</code>， <code>require(依赖)</code>， <code>replace(代替)</code>， <code>exclude(排除)</code>。  </p>
+<p>模块通过模块指令在其 <code>go. mod</code> 中声明其标识, 该指令提供<em>模块路径</em>。<br>模块中所有包的导入(import)路径将模块路径共享为通用前缀。<br>模块路径和从 <code>go. mod</code> 到包目录的相对路径共同确定了包的导入(import)路径。  </p>
+<p>例如，如果你创建一个叫 <code>github.com/my/repo</code> 的模块，<br>它包含了两个包，它们的导入(import)路径分别是 <code>github.com/my/repo/foo</code> 和  <code>github.com/my/repo/bar</code>，<br>那么通常在 <code>go.mod</code> 文件中的第一行声明你的模块路径，如 <code>module github.com/my/repo</code>，相应在硬盘上的文件结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">repo/            </span><br><span class="line">├── go.mod      // 在 go.mod 文件的第一行声明：module github.com/my/repo </span><br><span class="line">├── bar         // 其他使用者要导入本包的路径是：github.com/my/repo/bar</span><br><span class="line">│   └── bar.go</span><br><span class="line">└── foo         // 其他使用者要导入本包的路径是：github.com/my/repo/foo</span><br><span class="line">    └── foo.go</span><br></pre></td></tr></table></figure>
+<p>在 Go 源码中，包的导入是使用模块路径的完整路径。<br>例如，如果一个模块在它的go.mod声明了 <code>module example.com/my/module</code>，那么使用者则：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &quot;example.com/my/module/mypkg&quot;</span><br></pre></td></tr></table></figure>
+<p>导入的包 <code>mypkg</code> 来自模块 <code>example.com/my/module</code>。</p>
+<p><code>exclude(排除)</code> 和 <code>replace(代替)</code> 指令仅作用于当前主模块中。<br>如果 <code>exclude(排除)</code> 和 <code>replace(代替)</code> 在其他模块中，那么构建(build)主模块时，会忽略它们。<br>因此, <code>exclude(排除)</code> 和 <code>replace(代替)</code> 语句允许主模块完全控制自己的生成, 而不完全受依赖关系的控制。<br>具体详情，请看 <a href="https://github.com/golang/go/wiki/Modules#when-should-i-use-the-replace-directive" target="_blank" rel="noopener">官方例子</a></p>
+<h3 id="版本选择"><a href="#版本选择" class="headerlink" title="版本选择"></a>版本选择</h3><p>如果你在你的源码中添加了一行新的 <code>import</code>，那么在 <code>go.mod</code> 的 <code>require</code> 指令处中不会立刻覆盖。<br>大部分 go 命令行，如 <code>go build</code> 和 <code>go test</code> 会自动查找准确的模块，<br>并添加它的最高版本作为直接依赖项添加到你的模块 <code>go.mod</code> 文件中 <code>require</code> 指令处。</p>
+<p>如果你的模块依赖 模块A 和 模块B，<br>其中 模块A 有 <code>require D v1.0.0</code>，而 模块B 有 <code>require D v1.1.1</code>，<br>那么根据<em>最小版本选择</em> 算法，在构建(build)你的模块的时候会选择  <code>D v1.1.1</code>。</p>
+<h2 id="如何准备发布"><a href="#如何准备发布" class="headerlink" title="如何准备发布"></a>如何准备发布</h2><p>运行 go mod tidy 删减无关的依赖 和 确保你的 go.mod 刷新所有可能用于构建 tags/OS/架构组合。</p>
+<p>运行 go test all 测试模块, 以验证当前选定的包版本是否兼容。</p>
+<p>确保你的 go.mod 和 go.sum 一起提交到版本管理系统中(svn，git)</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>本来想尝试翻译官方文档，但发现自己战五渣英语水平好吃力，所以选择只翻译重点的。<br>关于怎么将之前的版本依赖迁移到 Module 机制上 和 FAQ，请看 <a href="https://github.com/golang/go/wiki/Modules" target="_blank" rel="noopener">go modules 官方文档</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，来一波打赏可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>韦旭彬</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/go-dependency-management-tool-evolution-modules/" title="Go 包管理的进化史 —— Modules">https://iweixubin.github.io/posts/go-dependency-management-tool-evolution-modules/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/go-vendor/" rel="tag"># go vendor</a>
+          
+            <a href="/tags/go-modules/" rel="tag"># go modules</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+              
+            
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+              
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/go-dependency-management-tool-evolution/" rel="next" title="Go 包管理的进化史">
+                  <i class="fa fa-chevron-left"></i> Go 包管理的进化史
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/go-reference-types/" rel="prev" title="GO 引用类型">
+                  GO 引用类型 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
+            
+              <p class="site-author-name" itemprop="name">韦旭彬</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#快速入门"><span class="nav-number">1.</span> <span class="nav-text">快速入门</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">1.1.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">2.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Modules"><span class="nav-number">2.1.</span> <span class="nav-text">Modules</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go-mod"><span class="nav-number">2.2.</span> <span class="nav-text">go.mod</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#版本选择"><span class="nav-number">2.3.</span> <span class="nav-text">版本选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何准备发布"><span class="nav-number">3.</span> <span class="nav-text">如何准备发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">4.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">韦旭彬</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

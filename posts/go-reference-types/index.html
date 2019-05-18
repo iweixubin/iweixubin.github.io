@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文借用 C#语言 的值类型和引用类型概念来理解 GO语言 定义成员方法和函数传参需要注意的地方。">
+<meta name="keywords" content="go,值类型,引用类型,指针">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GO 引用类型">
+<meta property="og:url" content="https://iweixubin.github.io/posts/go-reference-types/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文借用 C#语言 的值类型和引用类型概念来理解 GO语言 定义成员方法和函数传参需要注意的地方。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-18T14:23:44.910Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GO 引用类型">
+<meta name="twitter:description" content="本文借用 C#语言 的值类型和引用类型概念来理解 GO语言 定义成员方法和函数传参需要注意的地方。">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/go-reference-types/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>GO 引用类型 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/go-reference-types/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="韦旭彬">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GO 引用类型
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-02-15 00:00:01" itemprop="dateCreated datePublished" datetime="2019-02-15T00:00:01+08:00">2019-02-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-18 22:23:44" itemprop="dateModified" datetime="2019-05-18T22:23:44+08:00">2019-05-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文借用 C#语言 的<code>值类型</code>和<code>引用类型</code>概念来理解 GO语言 定义成员方法和函数传参需要注意的地方。</p>
+<a id="more"></a>
+<h2 id="值类型-与-引用类型"><a href="#值类型-与-引用类型" class="headerlink" title="值类型 与 引用类型"></a>值类型 与 引用类型</h2><p>在编程的时候，需要知道构造声明出来变量的类型是<code>值类型</code>还是<code>引用类型</code>，<br>因为只有这样，你才会清楚地知道构造出来的数据什么时候会被回收，以及在函数(方法)传递过程是<code>按值传递</code>还是<code>按引用传递</code>。</p>
+<p>请看下面的 C# 代码和注释：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">ConsoleApp</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 特工</span></span><br><span class="line">    <span class="keyword">struct</span> Agent  <span class="comment">// struct 是值类型</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> Id &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 雇佣兵</span></span><br><span class="line">    <span class="keyword">class</span> <span class="title">Mercenary</span> <span class="comment">// class 是引用类型</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> Id &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="comment">// 实例化一个 struct，它将创建在 栈 上，超出变量作用域，出栈。</span></span><br><span class="line">            Agent agent = <span class="keyword">new</span> Agent() &#123; Id = <span class="number">7</span> &#125;;</span><br><span class="line">            DoTask(agent);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 实例化一个 class，它将创建在 堆 上，由 GC 负责回收</span></span><br><span class="line">            Mercenary mercenary = <span class="keyword">new</span> Mercenary() &#123; Id = <span class="number">7</span> &#125;;</span><br><span class="line">            DoMission(mercenary);</span><br><span class="line"></span><br><span class="line">            Console.WriteLine(<span class="string">$"Agent.Id = <span class="subst">&#123;agent.Id&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine();</span><br><span class="line">            Console.WriteLine(<span class="string">$"Mercenary.Id = <span class="subst">&#123;mercenary.Id&#125;</span>"</span>);</span><br><span class="line"></span><br><span class="line">            Console.Read();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 值类型 传递给方法 是传递 值，也就相当于 复制</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DoTask</span>(<span class="params">Agent agent</span>) <span class="comment">// 希望路过的 C# 程序猿还要去了解 ref 关键字</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="comment">// 因为是复制了一个新的 agent，</span></span><br><span class="line">            agent.Id = <span class="number">0</span>; <span class="comment">// 所以方法内修改并不会影响到外面</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 引用类型 传递给方法 是传递 引用，</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DoMission</span>(<span class="params">Mercenary mercenary</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="comment">// 因为是引用是指向同一个对象，</span></span><br><span class="line">            mercenary.Id = <span class="number">0</span>; <span class="comment">// 所以方法内修改会影响到外面原来的变量</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Agent.Id = 7</span><br><span class="line"></span><br><span class="line">Mercenary.Id = 0</span><br></pre></td></tr></table></figure></p>
+<p>GO 语言只有 struct，也就是传递变量都是<code>按值传递</code>，<br>那么每传递一次就会复制一份值，相当<strong>浪费内存</strong>以及产生<strong>分配内存</strong>和<strong>回收内存</strong>等消耗性能的操作，为了能像<code>按引用传递</code>那样，可以用指针。<br>示例代码如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 特工</span></span><br><span class="line"><span class="keyword">type</span> Agent <span class="keyword">struct</span> &#123;</span><br><span class="line">	ID <span class="keyword">int32</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	agent := Agent&#123;ID: <span class="number">7</span>&#125;</span><br><span class="line"></span><br><span class="line">	doTask(agent) <span class="comment">// 按值传递，相当于复制了一个特工</span></span><br><span class="line">	fmt.Printf(<span class="string">"%v \n"</span>, agent.ID)</span><br><span class="line"></span><br><span class="line">	doMission(&amp;agent) <span class="comment">// 按引用传递</span></span><br><span class="line">	fmt.Printf(<span class="string">"%v \n"</span>, agent.ID)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doTask</span><span class="params">(agent Agent)</span></span> &#123;</span><br><span class="line">	agent.ID = <span class="number">0</span> <span class="comment">// 复制了，所以改变内部不会影响外部的</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doMission</span><span class="params">(agent *Agent)</span></span> &#123;</span><br><span class="line">	agent.ID = <span class="number">0</span> <span class="comment">// 指针指向同一个变量</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">7</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 特工</span></span><br><span class="line"><span class="keyword">type</span> Agent <span class="keyword">struct</span> &#123;</span><br><span class="line">	ID <span class="keyword">int32</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 影分身</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(agent Agent)</span> <span class="title">ShadowClone</span><span class="params">()</span> <span class="params">(clone Agent)</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> agent <span class="comment">// 即使直接把传进来的返回，也相当于复制了</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(agent *Agent)</span> <span class="title">AgentFun</span><span class="params">()</span></span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	agent := Agent&#123;ID: <span class="number">7</span>&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, &amp;agent)</span><br><span class="line"></span><br><span class="line">	sClone := agent.ShadowClone()</span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, &amp;sClone) <span class="comment">//指针地址不一样，说明是不同的对象</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0xc00004e080</span><br><span class="line">0xc00004e0a0</span><br></pre></td></tr></table></figure></p>
+<p>因此 GO语言 一般传递 struct 变量都是用指针的形式传递，<br>但在 GO语言 中有些特殊的类型，不需要用指针的形式传递，如：slice，map，channel。</p>
+<p>请看一下示例代码：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 特工</span></span><br><span class="line"><span class="keyword">type</span> Agent <span class="keyword">struct</span> &#123;</span><br><span class="line">	ID <span class="keyword">int32</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// "零"值是 0</span></span><br><span class="line">	<span class="keyword">var</span> i <span class="keyword">int</span> </span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, i)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// "零"值是 false</span></span><br><span class="line">	<span class="keyword">var</span> b <span class="keyword">bool</span> </span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, b)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// "零"值是 各成员都是 "零"值</span></span><br><span class="line">	<span class="keyword">var</span> agent Agent </span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, agent)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// "零"值是 各成员都是 "零"值</span></span><br><span class="line">	<span class="keyword">var</span> arrays [<span class="number">2</span>]<span class="keyword">int</span> </span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, arrays)</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"\n -- 华丽分割线 -- \n"</span>) </span><br><span class="line">    </span><br><span class="line">    <span class="comment">// "零"值是 nil</span></span><br><span class="line">	<span class="keyword">var</span> slice []<span class="keyword">int</span> </span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, slice)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// "零"值是 nil</span></span><br><span class="line">	<span class="keyword">var</span> dic <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span> </span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, dic)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// "零"值是 nil</span></span><br><span class="line">	<span class="keyword">var</span> ch <span class="keyword">chan</span> <span class="keyword">int</span> </span><br><span class="line">	fmt.Printf(<span class="string">"%p \n"</span>, ch)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">%!p(int=0)  // 输出 !p 说明不是指针</span><br><span class="line">%!p(bool=false)</span><br><span class="line">%!p(main.Agent=&#123;0&#125;)</span><br><span class="line">%!p([2]int=[0 0])</span><br><span class="line"></span><br><span class="line"> -- 华丽分割线 --</span><br><span class="line"></span><br><span class="line">0x0  // 是一个指针，只是没有值而已，</span><br><span class="line">0x0</span><br><span class="line">0x0</span><br></pre></td></tr></table></figure>
+<p>从官方函数 <code>fmt.Printf</code> 中可以看出 slice，map，channel 在 Go 语言设计者眼中是特殊对待的。  </p>
+<p>以下提供一段代码体验 slice，map，channel 的特殊性：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 指针</span></span><br><span class="line">	<span class="keyword">var</span> p <span class="keyword">uintptr</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span></span><br><span class="line">	<span class="keyword">var</span> s []<span class="keyword">int</span></span><br><span class="line">	<span class="keyword">var</span> c <span class="keyword">chan</span> <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">"---'零'值的情况下---"</span>) </span><br><span class="line">	fmt.Println(<span class="string">"Sizeof(p): "</span>, unsafe.Sizeof(p)) <span class="comment">// Sizeof(p):  8</span></span><br><span class="line">	fmt.Println(<span class="string">"Sizeof(m): "</span>, unsafe.Sizeof(m)) <span class="comment">// Sizeof(m):  8</span></span><br><span class="line">	fmt.Println(<span class="string">"Sizeof(s): "</span>, unsafe.Sizeof(s)) <span class="comment">// Sizeof(s):  24</span></span><br><span class="line">	fmt.Println(<span class="string">"Sizeof(c): "</span>, unsafe.Sizeof(c)) <span class="comment">// Sizeof(c):  8</span></span><br><span class="line"></span><br><span class="line">	m = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>)</span><br><span class="line">	m[<span class="number">1</span>] = <span class="string">"a"</span></span><br><span class="line">	m[<span class="number">2</span>] = <span class="string">"b"</span></span><br><span class="line">	m[<span class="number">3</span>] = <span class="string">"c"</span></span><br><span class="line">	m[<span class="number">4</span>] = <span class="string">"e"</span></span><br><span class="line">	m[<span class="number">5</span>] = <span class="string">"f"</span></span><br><span class="line"></span><br><span class="line">	s = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line">	s = <span class="built_in">append</span>(s, <span class="number">1</span>)</span><br><span class="line">	s = <span class="built_in">append</span>(s, <span class="number">2</span>)</span><br><span class="line">	s = <span class="built_in">append</span>(s, <span class="number">3</span>)</span><br><span class="line">	s = <span class="built_in">append</span>(s, <span class="number">4</span>)</span><br><span class="line">	s = <span class="built_in">append</span>(s, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">	c = <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">10</span>)</span><br><span class="line">	c &lt;- <span class="number">1</span></span><br><span class="line">	c &lt;- <span class="number">2</span></span><br><span class="line">	c &lt;- <span class="number">3</span></span><br><span class="line">	c &lt;- <span class="number">4</span></span><br><span class="line">	c &lt;- <span class="number">5</span></span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">"---赋值的情况下---"</span>)</span><br><span class="line">	fmt.Println(<span class="string">"Sizeof(p): "</span>, unsafe.Sizeof(p)) <span class="comment">// Sizeof(p):  8</span></span><br><span class="line">	fmt.Println(<span class="string">"Sizeof(m): "</span>, unsafe.Sizeof(m)) <span class="comment">// Sizeof(m):  8</span></span><br><span class="line">	fmt.Println(<span class="string">"Sizeof(s): "</span>, unsafe.Sizeof(s)) <span class="comment">// Sizeof(s):  24</span></span><br><span class="line">	fmt.Println(<span class="string">"Sizeof(c): "</span>, unsafe.Sizeof(c)) <span class="comment">// Sizeof(c):  8</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先分析一下 slice 的大小为什么是 24<br>Go 源码：<a href="https://github.com/golang/go/blob/master/src/runtime/slice.go" target="_blank" rel="noopener">https://github.com/golang/go/blob/master/src/runtime/slice.go</a>  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">	array unsafe.Pointer  <span class="comment">// 64位系统，指针 8 个 byte</span></span><br><span class="line">	<span class="built_in">len</span>   <span class="keyword">int</span>             <span class="comment">// 64位系统，int是 8 个 byte</span></span><br><span class="line">	<span class="built_in">cap</span>   <span class="keyword">int</span>             <span class="comment">// 64位系统，int是 8 个 byte</span></span><br><span class="line">&#125;                         <span class="comment">// 所以 slice 的大小是 8*3=24</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">makeslice</span><span class="params">(et *_type, <span class="built_in">len</span>, <span class="built_in">cap</span> <span class="keyword">int</span>)</span> <span class="title">unsafe</span>.<span class="title">Pointer</span></span> &#123;</span><br><span class="line">    <span class="comment">// ... unsafe.Pointer 指向？</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着分析 map 的大小为什么是 8<br>Go 源码：<a href="https://github.com/golang/go/blob/master/src/runtime/map.go" target="_blank" rel="noopener">https://github.com/golang/go/blob/master/src/runtime/map.go</a>  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// makemap implements Go map creation for make(map[k]v, hint).</span></span><br><span class="line"><span class="comment">// If the compiler has determined that the map or the first bucket</span></span><br><span class="line"><span class="comment">// can be created on the stack, h and/or bucket may be non-nil.</span></span><br><span class="line"><span class="comment">// If h != nil, the map can be created directly in h.</span></span><br><span class="line"><span class="comment">// If h.buckets != nil, bucket pointed to can be used as the first bucket.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">makemap</span><span class="params">(t *maptype, hint <span class="keyword">int</span>, h *hmap)</span> *<span class="title">hmap</span></span> &#123;</span><br><span class="line">    <span class="comment">// ... 可以看到返回的是一个指针地址</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A header for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// Note: the format of the hmap is also encoded in cmd/compile/internal/gc/reflect.go.</span></span><br><span class="line">	<span class="comment">// Make sure this stays in sync with the compiler's definition.</span></span><br><span class="line">	count     <span class="keyword">int</span> <span class="comment">// # live cells == size of map.  Must be first (used by len() builtin)</span></span><br><span class="line">	flags     <span class="keyword">uint8</span></span><br><span class="line">	B         <span class="keyword">uint8</span>  <span class="comment">// log_2 of # of buckets (can hold up to loadFactor * 2^B items)</span></span><br><span class="line">	noverflow <span class="keyword">uint16</span> <span class="comment">// approximate number of overflow buckets; see incrnoverflow for details</span></span><br><span class="line">	hash0     <span class="keyword">uint32</span> <span class="comment">// hash seed</span></span><br><span class="line"></span><br><span class="line">	buckets    unsafe.Pointer <span class="comment">// array of 2^B Buckets. may be nil if count==0.</span></span><br><span class="line">	oldbuckets unsafe.Pointer <span class="comment">// previous bucket array of half the size, non-nil only when growing</span></span><br><span class="line">	nevacuate  <span class="keyword">uintptr</span>        <span class="comment">// progress counter for evacuation (buckets less than this have been evacuated)</span></span><br><span class="line"></span><br><span class="line">	extra *mapextra <span class="comment">// optional fields</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>chan 和 map 类似：<br>Go 源码：<a href="https://github.com/golang/go/blob/master/src/runtime/chan.go" target="_blank" rel="noopener">https://github.com/golang/go/blob/master/src/runtime/chan.go</a></p>
+<h2 id="Go-没有引用传递概念"><a href="#Go-没有引用传递概念" class="headerlink" title="Go 没有引用传递概念"></a>Go 没有引用传递概念</h2><p>Go 有引用类型的概念，《Go 语言圣经》 12.2节是将 Go 的类型分为：</p>
+<ul>
+<li>基础类型<ul>
+<li>int </li>
+<li>bool</li>
+<li>… </li>
+</ul>
+</li>
+<li>聚合类型<ul>
+<li>数组</li>
+<li>struct </li>
+</ul>
+</li>
+<li>引用类型<ul>
+<li>map </li>
+<li>slices</li>
+<li>pointers</li>
+<li>channels</li>
+<li>functions</li>
+</ul>
+</li>
+</ul>
+<p>Go虽然有引用类型的概念，且没有<code>按引用传递</code>的概念，<br>正如文章一开始就说了，<code>按引用传递</code>是 C# 语言的概念，其实 GO 语言一切都是<code>按值传递</code>的。<br>因为传递指针本质上还是复制了一个指针地址，一个指针的大小就相当于int64的长度，消耗得起。<br>而方法内知道变量的所在内存地址，就可以操作该变量了，而不用完完全全复制一个新的变量来操作。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>那么在定义 Go 函数的时候，什么时候用变量值形式，什么时候用指针形式呢？<br><strong>基础类型：</strong> string、bool、int 等一般用变量值形式，当然出于某种目的可以指针形式，比如累计计数，或者 string 太大。<br><strong>聚合类型：</strong> struct 一般传递指针(用指针形式传递)，当然出于某种目的可以变量值形式，比如要克隆复制。<br><strong>引用类型：</strong> slice、map、chan 本身就是传递指针的值，所以不需要用指针形式传递。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，来一波打赏可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>韦旭彬</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/go-reference-types/" title="GO 引用类型">https://iweixubin.github.io/posts/go-reference-types/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/go/" rel="tag"># go</a>
+          
+            <a href="/tags/值类型/" rel="tag"># 值类型</a>
+          
+            <a href="/tags/引用类型/" rel="tag"># 引用类型</a>
+          
+            <a href="/tags/指针/" rel="tag"># 指针</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/go-dependency-management-tool-evolution-modules/" rel="next" title="Go 包管理的进化史 —— Modules">
+                  <i class="fa fa-chevron-left"></i> Go 包管理的进化史 —— Modules
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/vscode_go_ide/" rel="prev" title="vscode 配置 Go 开发环境">
+                  vscode 配置 Go 开发环境 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
+            
+              <p class="site-author-name" itemprop="name">韦旭彬</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#值类型-与-引用类型"><span class="nav-number">1.</span> <span class="nav-text">值类型 与 引用类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-没有引用传递概念"><span class="nav-number">2.</span> <span class="nav-text">Go 没有引用传递概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">韦旭彬</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

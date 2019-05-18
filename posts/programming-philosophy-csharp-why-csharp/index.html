@@ -15,10 +15,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="zh-CN">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 
 
@@ -32,8 +32,6 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -46,6 +44,21 @@
 
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
 
 
 
@@ -53,38 +66,15 @@
 
 
 
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=6.5.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=6.5.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=6.5.0">
-
-
-
-
-
-
-
-
-
-
-<script type="text/javascript" id="hexo.configurations">
+<script id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
     scheme: 'Gemini',
-    version: '6.5.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -109,32 +99,33 @@
   <meta name="description" content="国内开设C#课程的学校或培训机构是越来越少，使用C#作为开发的语言企业也是越来越少。企业要招C#的开发人员越来越难，会C#的要开发人员要找工作也是越来越难，然后我还是选择C#作为本系列的主要语言，我给出的理由是…">
 <meta name="keywords" content="编程哲学,编程思想,编程入门,.Net,C#">
 <meta property="og:type" content="article">
-<meta property="og:title" content="编程哲学之C#篇：03——为什么选择C#">
+<meta property="og:title" content="编程哲学之C#篇：003——为什么选择C#">
 <meta property="og:url" content="https://iweixubin.github.io/posts/programming-philosophy-csharp-why-csharp/index.html">
 <meta property="og:site_name" content="思与行">
 <meta property="og:description" content="国内开设C#课程的学校或培训机构是越来越少，使用C#作为开发的语言企业也是越来越少。企业要招C#的开发人员越来越难，会C#的要开发人员要找工作也是越来越难，然后我还是选择C#作为本系列的主要语言，我给出的理由是…">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-11-03T22:18:38.882Z">
+<meta property="og:updated_time" content="2019-05-18T13:40:28.843Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="编程哲学之C#篇：03——为什么选择C#">
+<meta name="twitter:title" content="编程哲学之C#篇：003——为什么选择C#">
 <meta name="twitter:description" content="国内开设C#课程的学校或培训机构是越来越少，使用C#作为开发的语言企业也是越来越少。企业要招C#的开发人员越来越难，会C#的要开发人员要找工作也是越来越难，然后我还是选择C#作为本系列的主要语言，我给出的理由是…">
 
 
 
 
 
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/programming-philosophy-csharp-why-csharp/">
 
-  <link rel="canonical" href="https://iweixubin.github.io/posts/programming-philosophy-csharp-why-csharp/"/>
 
 
-
-<script type="text/javascript" id="page.configurations">
+<script id="page.configurations">
   CONFIG.page = {
     sidebar: "",
   };
 </script>
 
-  <title>编程哲学之C#篇：03——为什么选择C# | 思与行</title>
+  <title>编程哲学之C#篇：003——为什么选择C# | 思与行</title>
   
 
 
@@ -147,30 +138,29 @@
 
 
 
+
   <noscript>
-  <style type="text/css">
-    .use-motion .motion-element,
-    .use-motion .brand,
-    .use-motion .menu-item,
-    .sidebar-inner,
-    .use-motion .post-block,
-    .use-motion .pagination,
-    .use-motion .comments,
-    .use-motion .post-header,
-    .use-motion .post-body,
-    .use-motion .collection-title { opacity: initial; }
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
 
-    .use-motion .logo,
-    .use-motion .site-title,
-    .use-motion .site-subtitle {
-      opacity: initial;
-      top: initial;
-    }
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
-    .use-motion {
-      .logo-line-before i { left: initial; }
-      .logo-line-after i { right: initial; }
-    }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
@@ -188,7 +178,7 @@
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+  <div class="site-meta">
     
 
     <div class="custom-logo-site-title">
@@ -198,6 +188,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+    
     
   </div>
 
@@ -221,32 +212,68 @@
         
           
           <li class="menu-item menu-item-home">
-    <a href="/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-tags">
-    <a href="/tags/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-categories">
-    <a href="/categories/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-archives">
-    <a href="/archives/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
   </li>
 
       
@@ -314,7 +341,8 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">编程哲学之C#篇：03——为什么选择C#
+          <h1 class="post-title" itemprop="name headline">编程哲学之C#篇：003——为什么选择C#
+
               
             
           </h1>
@@ -356,13 +384,13 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-04 06:18:38" itemprop="dateModified" datetime="2018-11-04T06:18:38+08:00">2018-11-04</time>
+                <time title="修改时间：2019-05-18 21:40:28" itemprop="dateModified" datetime="2019-05-18T21:40:28+08:00">2019-05-18</time>
               
             
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -382,6 +410,7 @@
           
 
           
+            
             
           
 
@@ -409,18 +438,18 @@
       
         <p>国内开设C#课程的学校或培训机构是越来越少，使用C#作为开发的语言企业也是越来越少。企业要招C#的开发人员越来越难，会C#的要开发人员要找工作也是越来越难，然后我还是选择C#作为本系列的主要语言，我给出的理由是…</p>
 <a id="more"></a>
-<h2 id="定位与目标"><a href="#定位与目标" class="headerlink" title="定位与目标"></a>定位与目标</h2><p>我在《编程哲学之C#篇：01——创世纪》就说了：“本系列核心内容是介绍各种哲学观和思维方式，随便把某种编程语言学了。”。而这里的某种语言，我选择了C#，理由是从语言的角度来说，C#非常优秀，从一开始是借鉴Java到现在被Java或其他语言借鉴。而且在我的认知中，每种语言都有自己的哲学观和思维，所以这种语言越完善，那么它所包含的思想也就越完善。所以从学习角度考虑，我推荐C#。</p>
-<p>同时我又把本系列的目标读者设为<strong>想<code>自学</code>编程的初学者</strong>，基于这个原因，我选择了C#。因为C#有一个优势，宇宙最强IDE(Integrated Development Environment[集成开发环境])——VisualStudio，一个强大的IDE有强大的各种提示，就如同你在写代码的时候，旁边有一个老师一直盯着你，告诉你接下来要怎么写，哪里写错了。想当年我自学编程的时候，教程中是推荐用UltraEdit，教程作者给出的理由是你自己知道接下来应该知道写，还有哪里写错了，才是最牛逼的啊，就算到了现在，依然有人抱着用记事本写代码才是真的牛的观念。然而对于一个初学者，用一个不强大的IDE，当代码出错的时候，你自己找不到原因，又没有人可以问，然后把你卡住了，这个时候就可能把你的编程兴趣扼杀在摇篮中，所以有强大的IDE很重要。</p>
-<p>如果智能提示不够强大得会发生的情况呢：前公司有一个同事测试在学Python用于自动化测试，照着书上的例子敲了一大堆代码，一运行，报错，搞半天，找不到问题，叫我帮忙看看，我一看， 一个参数传错了。而我也经历过写Javascript出现一个错误，找半天，最后发现是一个变量的字母大小写搞错了。所以即使Python和Javascript是这这几年热门的编程语言，其中Python还是很多国外学校作为学编程第一门语言，但对于<code>自学者</code>来说，由于Python和Javascript的智能提示不够好，所以<code>自学</code>的话，我依然推荐C#作为你<code>自学</code>编程第一门语言。</p>
-<h3 id="为什么选择-Net-而不是-Net-Core"><a href="#为什么选择-Net-而不是-Net-Core" class="headerlink" title="为什么选择.Net 而不是.Net Core"></a>为什么选择.Net 而不是.Net Core</h3><p>虽然.Net Core才是未来，但因为本系列的所有例子都只使用控制台应用程序，两者差异不大，而.Net的官方文档更加齐全，可以降低自学时的查询资料时间成本，所以选择.Net，读者可以自行用.Net Core实现本系列出现的例子。</p>
-<h2 id="尚能饭否"><a href="#尚能饭否" class="headerlink" title="尚能饭否"></a>尚能饭否</h2><p>C#很优秀，但很尴尬的是，特别的在中国，越来越少企业在用，原因在于Java出得早，并且一早就实现跨平台，造就很多。在很多编程语言书的前言中，都会把该语言描述的“此曲只应天上有，人间能得几回闻”的样子，但我觉得我不能坑人，我必须思考你要吃饭的问题，<br>因此:</p>
+<h2 id="定位与目标"><a href="#定位与目标" class="headerlink" title="定位与目标"></a>定位与目标</h2><p>我在《编程哲学之C#篇：01——创世纪》就说了：“本系列核心内容是介绍各种哲学观和思维方式，随便把某种编程语言学了。”而这里的某种语言，我选择了 C#，理由是从语言的角度来说，C# 非常优秀，从一开始是借鉴 Java 到现在被 Java 或其他语言借鉴。而且在我的认知中，每种语言都有自己的哲学观和思维，所以这种语言越完善，那么它所包含的思想也就越完善。因此从学习角度考虑，我推荐 C#。</p>
+<p>同时我又把本系列的目标读者设为<strong>想<code>自学</code>编程的初学者</strong>，基于这个原因，我选择了C#。因为C#有一个优势，宇宙最强 IDE(Integrated Development Environment[集成开发环境])——VisualStudio，一个强大的 IDE 有各种智能提示，就如同你在写代码的时候，旁边有一个老师一直盯着你，告诉你接下来要怎么写，哪里写错了。想当年我自学编程的时候，教程中是推荐用 UltraEdit，教程作者给出的理由是你自己知道接下来应该知道写，还有哪里写错了，才是最牛逼的啊，就算到了现在，依然有人抱着用记事本写代码才是真的牛的观念。然而对于一个初学者，用一个不强大的 IDE，当代码出错的时候，你自己找不到原因，又没有人可以问，然后把你卡住了，这个时候就可能把你的编程兴趣扼杀在摇篮中，所以有强大的 IDE很重要。</p>
+<h3 id="为什么选择-Net-而不是-Net-Core"><a href="#为什么选择-Net-而不是-Net-Core" class="headerlink" title="为什么选择 .Net 而不是 .Net Core"></a>为什么选择 .Net 而不是 .Net Core</h3><p>显然 .Net Core 才是未来，但因为本系列的所有例子都只使用控制台应用程序，两者差异不大，而 .Net 的官方文档更加齐全，网上例子也多。可以降低自学时的查询资料时间成本，所以选择 .Net，读者可以自行用 .Net Core 实现本系列出现的例子。  </p>
+<p>.Net 和 .Net Core 会在 2020 年合并成 .Net(本质是 .Net Core)，很快就不用纠结了。</p>
+<h2 id="尚能饭否"><a href="#尚能饭否" class="headerlink" title="尚能饭否"></a>尚能饭否</h2><p>C# 很优秀，但很尴尬的是，特别的在中国，越来越少企业在用，原因在于 Java 出得早，并且一早就实现跨平台，造就很多企业在技术选型时选了 Java。在很多编程语言书的前言中，都会把该语言描述的“此曲只应天上有，人间能得几回闻”的样子，但我觉得我不能坑人，我必须思考你要吃饭的问题，<br>因此:</p>
 <ul>
-<li>如果你打算短时间内学成，并且学后奔着国内一线互联网企业去的，即不想先学C#，再学Java，那么你就直接去学Java吧。</li>
-<li>如果你打算从事手游开发，那么C#就是非常不错的选择了，因为很多手游都是用Unity(C#)游戏开发引擎来开发的。</li>
+<li>如果你打算短时间内学成，并且学后奔着国内一线互联网企业去的，即不想先学 C#，再学 Java，那么你就直接去学 Java 吧。</li>
+<li>如果你打算从事手游开发，那么 C# 就是非常不错的选择了，因为很多手游都是用 Unity(C#) 游戏开发引擎来开发的。</li>
 </ul>
 <h2 id="最后的安利"><a href="#最后的安利" class="headerlink" title="最后的安利"></a>最后的安利</h2><h3 id="本系列的安利"><a href="#本系列的安利" class="headerlink" title="本系列的安利"></a>本系列的安利</h3><p>我面试过一部分人，他们能很快地说出知识点是什么，但一问道为什么要这样，他们就卡住了。我也看过很多书，书中只告诉你什么是什么，但很少会告诉你为什么要这样。所以我一直在构思一本与众不同的书，更加偏重于思考，而不是各种语法。</p>
-<h3 id="C-的安利"><a href="#C-的安利" class="headerlink" title="C#的安利"></a>C#的安利</h3><p>C#是一门很优秀的语言，各种编程概念都很现代和完整，所以学了C#，你的编程思想会走在其他语言前面。</p>
-<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>本章介绍了我选择C#的原因。<br>下一章将介绍怎么安装宇宙最强大的IDE——VisualStudio<br>问题：如果你有熟悉的编程语言，那么你知道该语言的核心思想和特性是什么吗？</p>
+<h3 id="C-的安利"><a href="#C-的安利" class="headerlink" title="C#的安利"></a>C#的安利</h3><p>C# 是一门很优秀的语言，各种编程概念都很现代和完整，所以学了C#，你的编程思想会走在其他语言前面。</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>本章介绍了我选择 C# 的原因。<br>下一章将介绍怎么安装宇宙最强大的 IDE——VisualStudio<br>问题：如果你有熟悉的编程语言，那么你知道该语言的核心思想和特性是什么吗？</p>
 
       
     </div>
@@ -434,28 +463,35 @@
     
 
     
+      
+    
+    
       <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>觉得文章对您有帮助，来一波打赏 (๑•̀ㅂ•́)و✧</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，来一波打赏可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
   </button>
-  <div id="QR" style="display: none;">
+  <div id="qr" style="display: none;">
 
     
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="/images/wechatpay.png" alt="韦旭彬 微信支付"/>
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
         <p>微信支付</p>
       </div>
     
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="/images/alipay.png" alt="韦旭彬 支付宝"/>
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
         <p>支付宝</p>
       </div>
-    
-
     
 
   </div>
@@ -466,17 +502,30 @@
 
     
       <div>
-        <ul class="post-copyright">
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
   <li class="post-copyright-author">
     <strong>本文作者： </strong>韦旭彬</li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://iweixubin.github.io/posts/programming-philosophy-csharp-why-csharp/" title="编程哲学之C#篇：03——为什么选择C#">https://iweixubin.github.io/posts/programming-philosophy-csharp-why-csharp/</a>
+    
+    <a href="https://iweixubin.github.io/posts/programming-philosophy-csharp-why-csharp/" title="编程哲学之C#篇：003——为什么选择C#">https://iweixubin.github.io/posts/programming-philosophy-csharp-why-csharp/</a>
   </li>
   <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
 </ul>
-
       </div>
     
 
@@ -502,25 +551,95 @@
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/posts/programming-philosophy-csharp-learning/" rel="next" title="编程哲学之C#篇：02——学习思维">
-                <i class="fa fa-chevron-left"></i> 编程哲学之C#篇：02——学习思维
-              </a>
-            
-          </div>
+        
+        
 
-          <span class="post-nav-divider"></span>
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+              
+            
+              
+            
+              
+            
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+          
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/posts/websocket-draft-refuses-handshake/" rel="prev" title="微信小程序Android真机WebSocket连接失败">
-                微信小程序Android真机WebSocket连接失败 <i class="fa fa-chevron-right"></i>
-              </a>
-            
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/programming-philosophy-csharp-learning/" rel="next" title="编程哲学之C#篇：002——学习思维">
+                  <i class="fa fa-chevron-left"></i> 编程哲学之C#篇：002——学习思维
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/programming-philosophy-csharp-install-visual-studio/" rel="prev" title="编程哲学之C#篇：004——安装 Visual Studio">
+                  编程哲学之C#篇：004——安装 Visual Studio <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
           </div>
-        </div>
+         
+       
+
+
       
 
       
@@ -556,7 +675,6 @@
   </div>
 
   <aside id="sidebar" class="sidebar">
-    
     <div class="sidebar-inner">
 
       
@@ -572,16 +690,14 @@
         </ul>
       
 
-      <section class="site-overview-wrap sidebar-panel">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image"
-                src="/images/avatar.png"
-                alt="韦旭彬" />
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
             
               <p class="site-author-name" itemprop="name">韦旭彬</p>
-              <p class="site-description motion-element" itemprop="description">苏格拉底粉</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
           </div>
 
           
@@ -591,7 +707,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -601,7 +717,11 @@
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
                     
                     
                       
@@ -612,7 +732,17 @@
                     
                       
                     
-                    <span class="site-state-item-count">4</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -622,7 +752,11 @@
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
                     
                     
                       
@@ -667,7 +801,53 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -678,28 +858,45 @@
           
 
           
+
+          
             <div class="links-of-author motion-element">
               
                 <span class="links-of-author-item">
-                  <a href="https://github.com/iweixubin" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
                   
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
                 </span>
               
                 <span class="links-of-author-item">
-                  <a href="mailto:35925259@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
                   
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
                 </span>
               
             </div>
           
 
           
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
-              </a>
-            </div>
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
           
 
           
@@ -711,23 +908,24 @@
           
 
         </div>
-      </section>
+      </div>
 
       
       <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
           <div class="post-toc">
 
             
-              
+            
+            
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#定位与目标"><span class="nav-number">1.</span> <span class="nav-text">定位与目标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么选择-Net-而不是-Net-Core"><span class="nav-number">1.1.</span> <span class="nav-text">为什么选择.Net 而不是.Net Core</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#尚能饭否"><span class="nav-number">2.</span> <span class="nav-text">尚能饭否</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后的安利"><span class="nav-number">3.</span> <span class="nav-text">最后的安利</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#本系列的安利"><span class="nav-number">3.1.</span> <span class="nav-text">本系列的安利</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-的安利"><span class="nav-number">3.2.</span> <span class="nav-text">C#的安利</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">4.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#定位与目标"><span class="nav-number">1.</span> <span class="nav-text">定位与目标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么选择-Net-而不是-Net-Core"><span class="nav-number">1.1.</span> <span class="nav-text">为什么选择 .Net 而不是 .Net Core</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#尚能饭否"><span class="nav-number">2.</span> <span class="nav-text">尚能饭否</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后的安利"><span class="nav-number">3.</span> <span class="nav-text">最后的安利</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#本系列的安利"><span class="nav-number">3.1.</span> <span class="nav-text">本系列的安利</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-的安利"><span class="nav-number">3.2.</span> <span class="nav-text">C#的安利</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">4.</span> <span class="nav-text">结束语</span></a></li></ol></div>
             
 
           </div>
-        </section>
+        </div>
       <!--/noindex-->
       
 
@@ -735,6 +933,7 @@
 
     </div>
   </aside>
+  
 
 
         
@@ -743,7 +942,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright"> &copy; 2018 – <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -753,8 +952,6 @@
 
   
 </div>
-
-
 
 
 
@@ -785,7 +982,7 @@
     
 
     
-	
+
     
 
     
@@ -793,7 +990,7 @@
 
   
 
-<script type="text/javascript">
+<script>
   if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
     window.Promise = null;
   }
@@ -825,27 +1022,21 @@
 
 
   
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+  <script src="/js/utils.js?v=7.1.0"></script>
 
-  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+  <script src="/js/motion.js?v=7.1.0"></script>
 
 
 
@@ -853,44 +1044,37 @@
   
 
 
-  <script type="text/javascript" src="/js/src/affix.js?v=6.5.0"></script>
+  <script src="/js/affix.js?v=7.1.0"></script>
 
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.5.0"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
 
 
 
 
   
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
 
 
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
 
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
 
 
   
@@ -901,9 +1085,31 @@
 
   
 
+
+  
+
+
+  
+
+
+
+
   
 
   
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
   
 
   

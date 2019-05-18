@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content=".Net 平台的 Api网关 工具(中间件)有 Ocelot，连微软，腾讯都在使用，赶紧来围观一下吧。">
+<meta name="keywords" content="微服务,Consul,Ocelot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Api网关 Ocelot 快速入门">
+<meta property="og:url" content="https://iweixubin.github.io/posts/ocelot-quick-start/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content=".Net 平台的 Api网关 工具(中间件)有 Ocelot，连微软，腾讯都在使用，赶紧来围观一下吧。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://ocelot.readthedocs.io/en/latest/_images/OcelotBasic.jpg">
+<meta property="og:updated_time" content="2019-04-21T14:52:45.064Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Api网关 Ocelot 快速入门">
+<meta name="twitter:description" content=".Net 平台的 Api网关 工具(中间件)有 Ocelot，连微软，腾讯都在使用，赶紧来围观一下吧。">
+<meta name="twitter:image" content="https://ocelot.readthedocs.io/en/latest/_images/OcelotBasic.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/ocelot-quick-start/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Api网关 Ocelot 快速入门 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/ocelot-quick-start/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="韦旭彬">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Api网关 Ocelot 快速入门
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-02-19 00:00:01" itemprop="dateCreated datePublished" datetime="2019-02-19T00:00:01+08:00">2019-02-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-04-21 22:52:45" itemprop="dateModified" datetime="2019-04-21T22:52:45+08:00">2019-04-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/微服务/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>.Net 平台的 Api网关 工具(中间件)有 Ocelot，连微软，腾讯都在使用，赶紧来围观一下吧。</p>
+<a id="more"></a>
+<h2 id="为什么需要网关"><a href="#为什么需要网关" class="headerlink" title="为什么需要网关"></a>为什么需要网关</h2><p>当我们将一个庞大的系统切分成若干个微服务后，需要一个网关工具(中间件)来做统一的入口。  </p>
+<p>以微软的官方示例项目 eShopOnContainers 来讲，微软将一个电商网站切分成：<br>Basket、Catalog、Identity、Location、Marketing、Ordering、Payment， 7个微服务。<br>那么部署的时候至少要部署成 7个可访问地址，<br>前端工程师开发 Android，IOS，H5 调用Api的时候，当然希望有一个统一的入口。  </p>
+<p>通常网关工具还会有其它功能，比如：限流、熔断、负载均衡等，<br>但作为快速入门，我们先着眼网关最基本也是最核心的<strong>路由</strong>功能。</p>
+<h2 id="Ocelot-快速入门"><a href="#Ocelot-快速入门" class="headerlink" title="Ocelot 快速入门"></a>Ocelot 快速入门</h2><p>本篇的目标就是练习 Ocelot 官方的这张图：<br><img src="https://ocelot.readthedocs.io/en/latest/_images/OcelotBasic.jpg" alt="OcelotBasic"></p>
+<p>也就是当我们，<br>请求 <code>http://sample.com/catalog/values</code> 网关会将我们的请求转发(路由)到部署 <code>Catalog</code>  项目的 HttpService;<br>请求 <code>http://sample.com/Order/values</code>   网关会将我们的请求转发(路由)到部署 <code>Ordering</code> 项目的 HttpService;  </p>
+<p>首先创建解决方案 eShop，<br>然后在 eShop 下添加 3个项目：Catalog、Ordering、OcelotGateWay。<br>项目都是 Asp.Net Core WebApi，不需要身份验证，也不需要 Https。<br>解决方案结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">eShop</span><br><span class="line">├── Catalog          // 产品的 WebApi</span><br><span class="line">├── OcelotGateWay    // 网关</span><br><span class="line">└── Ordering         // 订单的 WebApi</span><br></pre></td></tr></table></figure>
+<p>因为网关需要知道下游的服务地址，<br>所以分别右击项目 → <code>属性</code> → <code>调试</code> → <code>Web 服务器设置</code> → <code>应用 URL(P):</code><br>修改启动时的访问地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">eShop</span><br><span class="line">├── Catalog          // 产品的 WebApi   访问地址为 http://localhost:7001</span><br><span class="line">├── OcelotGateWay    // 网关            访问地址为 http://localhost:7000</span><br><span class="line">└── Ordering         // 订单的 WebApi   访问地址为 http://localhost:7002</span><br></pre></td></tr></table></figure>
+<p>右击 <code>解决方案&#39;eShop&#39;</code> → <code>属性</code> → <code>通用属性</code> → <code>启动项目</code> → <code>多个启动项目(M):</code><br>调整 启动顺序 和 操作：<br>| 项目          | 操作 |<br>| ————- | —- |<br>| Catalog       | 启动 |<br>| Ordering      | 启动 |<br>| OcelotGateWay | 启动 |</p>
+<p>点击 <code>启动</code> 或 按 F5，那么 3个项目都会启动起来，并且输入内容为：<br>[“value1”,”value2”]  </p>
+<p>项目准备好了，让我们添加点代码来实现网关功能吧~  </p>
+<p>使用 <code>NuGet</code> 给 <code>OcelotGateWay</code> 项目，添加 <code>Ocelot</code>，<br>并在该项目下创建一个 <code>ocelot.json</code> 文件，<br><code>ocelot.json</code> 文件的内容如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"ReRoutes"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"DownstreamPathTemplate"</span>: <span class="string">"/api/&#123;everything&#125;"</span>,</span><br><span class="line">      <span class="attr">"DownstreamScheme"</span>: <span class="string">"http"</span>,</span><br><span class="line">      <span class="attr">"DownstreamHostAndPorts"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"Host"</span>: <span class="string">"localhost"</span>,</span><br><span class="line">          <span class="attr">"Port"</span>: <span class="number">7001</span></span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"UpstreamPathTemplate"</span>: <span class="string">"/catalog/&#123;everything&#125;"</span>,</span><br><span class="line">      <span class="attr">"UpstreamHttpMethod"</span>: [ <span class="string">"Get"</span>, <span class="string">"Post"</span> ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"DownstreamPathTemplate"</span>: <span class="string">"/api/&#123;everything&#125;"</span>,</span><br><span class="line">      <span class="attr">"DownstreamScheme"</span>: <span class="string">"http"</span>,</span><br><span class="line">      <span class="attr">"DownstreamHostAndPorts"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"Host"</span>: <span class="string">"localhost"</span>,</span><br><span class="line">          <span class="attr">"Port"</span>: <span class="number">7002</span></span><br><span class="line">        &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">"UpstreamPathTemplate"</span>: <span class="string">"/order/&#123;everything&#125;"</span>,</span><br><span class="line">      <span class="attr">"UpstreamHttpMethod"</span>: [ <span class="string">"Get"</span>, <span class="string">"Post"</span> ]</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">"GlobalConfiguration"</span>: &#123;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">右击 `ocelot.json` 文件 → `属性` → `复制到输出目录` → 选择 `如果比较新则复制`</span><br><span class="line"></span><br><span class="line">读者先自行猜测一下配置文件的作用把，  </span><br><span class="line">友情提示：</span><br><span class="line">  * ReRoutes   ： 路由</span><br><span class="line">  * Downstream ： 下游服务配置</span><br><span class="line">  * Upstream   ： 上游服务配置</span><br><span class="line"></span><br><span class="line">接着将 `OcelotGateWay` 项目的 `Program.cs` 文件修改成如下：</span><br><span class="line"></span><br><span class="line">``` cs</span><br><span class="line">using System;</span><br><span class="line">using System.Collections.Generic;</span><br><span class="line">using System.IO;</span><br><span class="line">using System.Linq;</span><br><span class="line">using System.Threading.Tasks;</span><br><span class="line">using Microsoft.AspNetCore.Builder;</span><br><span class="line">using Microsoft.AspNetCore.Hosting;</span><br><span class="line">using Microsoft.Extensions.Configuration;</span><br><span class="line">using Microsoft.Extensions.Logging;</span><br><span class="line">using Microsoft.Extensions.DependencyInjection;</span><br><span class="line"></span><br><span class="line">using Ocelot.DependencyInjection;</span><br><span class="line">using Ocelot.Middleware;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">namespace OcelotGateWay</span><br><span class="line">&#123;</span><br><span class="line">    public class Program</span><br><span class="line">    &#123;</span><br><span class="line">        public static void Main(string[] args)</span><br><span class="line">        &#123;</span><br><span class="line">            new WebHostBuilder()</span><br><span class="line">            .UseKestrel()</span><br><span class="line">            .UseContentRoot(Directory.GetCurrentDirectory())</span><br><span class="line">            .ConfigureAppConfiguration((hostingContext, config) =&gt;</span><br><span class="line">            &#123;</span><br><span class="line">                config</span><br><span class="line">                    .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)</span><br><span class="line">                    .AddJsonFile("appsettings.json", true, true)</span><br><span class="line">                    .AddJsonFile("ocelot.json") // 加载 Ocelot 配置</span><br><span class="line">                    .AddEnvironmentVariables();</span><br><span class="line">            &#125;)</span><br><span class="line">            .ConfigureServices(s =&gt; &#123;</span><br><span class="line">                s.AddOcelot();</span><br><span class="line">            &#125;)</span><br><span class="line">            .ConfigureLogging((hostingContext, logging) =&gt;</span><br><span class="line">            &#123;</span><br><span class="line">                //add your logging</span><br><span class="line">            &#125;)</span><br><span class="line">            .Configure(app =&gt;</span><br><span class="line">            &#123;</span><br><span class="line">                app.UseOcelot().Wait();</span><br><span class="line">            &#125;)</span><br><span class="line">            .Build()</span><br><span class="line">            .Run();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //public static IWebHostBuilder CreateWebHostBuilder(string[] args) =&gt;</span><br><span class="line">        //    WebHost.CreateDefaultBuilder(args)</span><br><span class="line">        //        .UseStartup&lt;Startup&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上就已经实现了网关的路由功能了，下面的代码是为了方便检测结果。  </p>
+<p>接着将 <code>Catalog</code> 项目的 <code>ValuesController.cs</code> 文件修改成如下：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Http;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Http.Extensions;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Catalog.Controllers</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Route(<span class="meta-string">"api/[controller]"</span>)</span>]</span><br><span class="line">    [<span class="meta">ApiController</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ValuesController</span> : <span class="title">ControllerBase</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// GET api/values</span></span><br><span class="line">        [<span class="meta">HttpGet</span>]</span><br><span class="line">        <span class="keyword">public</span> ActionResult&lt;IEnumerable&lt;<span class="keyword">string</span>&gt;&gt; Get()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">string</span>[] &#123;</span><br><span class="line">                <span class="string">"value from Catalog"</span>,</span><br><span class="line">                HttpContext.Request.GetEncodedUrl(),</span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着将 <code>Ordering</code> 项目的 <code>ValuesController.cs</code> 文件修改成如下：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Http;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Http.Extensions;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Ordering.Controllers</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Route(<span class="meta-string">"api/[controller]"</span>)</span>]</span><br><span class="line">    [<span class="meta">ApiController</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ValuesController</span> : <span class="title">ControllerBase</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// GET api/values</span></span><br><span class="line">        [<span class="meta">HttpGet</span>]</span><br><span class="line">        <span class="keyword">public</span> ActionResult&lt;IEnumerable&lt;<span class="keyword">string</span>&gt;&gt; Get()</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">string</span>[] &#123;</span><br><span class="line">                <span class="string">"value from Ordering"</span>,</span><br><span class="line">                HttpContext.Request.GetEncodedUrl()</span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>点击 <code>启动</code> 或 按 F5，让 3个项目都会启动起来。  </p>
+<p>请求 <code>http://localhost:7000/catalog/values</code> 会得到：<br>[“value from Catalog”,”<a href="http://localhost:7001/api/values&quot;]" target="_blank" rel="noopener">http://localhost:7001/api/values&quot;]</a>  </p>
+<p>请求 <code>http://localhost:7000/order/values</code> 会得到：<br>[“value from Ordering”,”<a href="http://localhost:7002/api/values&quot;]" target="_blank" rel="noopener">http://localhost:7002/api/values&quot;]</a>  </p>
+<p>自此，怎么用 Ocelot 实现简单的网关功能演示完毕~  </p>
+<h2 id="新的挑战"><a href="#新的挑战" class="headerlink" title="新的挑战"></a>新的挑战</h2><p>Ocelot 的使用配置文件的方式还不够灵活，<br>思考一下：<br>单身狗节大促销，到时候网站访问量会暴增。<br>于是希望将 <code>Catalog</code> 部署成 m个节点，<code>Ordering</code> 部署成 n个节点，实现负载均衡。<br>并且在随时 添加节点 和 移除节点 的时候，不希望修改  <code>ocelot.json</code> 文件，<br>要怎么做呢？  </p>
+<p>请看下一篇 <code>Consul</code> 的介绍。</p>
+<p>最后附上：<a href="https://ocelot.readthedocs.io/en/latest/" target="_blank" rel="noopener">Ocelot 官方文档</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，来一波打赏可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>韦旭彬</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/ocelot-quick-start/" title="Api网关 Ocelot 快速入门">https://iweixubin.github.io/posts/ocelot-quick-start/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/微服务/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/Consul/" rel="tag"># Consul</a>
+          
+            <a href="/tags/Ocelot/" rel="tag"># Ocelot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+                
+                
+                
+              
+            
+            
+              
+                
+              
+              
+            
+              
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/consul-quick-start/" rel="next" title="服务发现 Consul 快速入门">
+                  <i class="fa fa-chevron-left"></i> 服务发现 Consul 快速入门
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
+            
+              <p class="site-author-name" itemprop="name">韦旭彬</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么需要网关"><span class="nav-number">1.</span> <span class="nav-text">为什么需要网关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ocelot-快速入门"><span class="nav-number">2.</span> <span class="nav-text">Ocelot 快速入门</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新的挑战"><span class="nav-number">3.</span> <span class="nav-text">新的挑战</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">韦旭彬</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

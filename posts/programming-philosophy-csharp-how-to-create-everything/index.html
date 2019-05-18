@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="上帝拥有创建万物的能力，本文介绍创造万物的道，让你也拥有上帝般创造万物的能力！">
+<meta name="keywords" content="编程哲学,编程思想,编程入门,.Net,C#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编程哲学之C#篇：007——如何创造万物">
+<meta property="og:url" content="https://iweixubin.github.io/posts/programming-philosophy-csharp-how-to-create-everything/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="上帝拥有创建万物的能力，本文介绍创造万物的道，让你也拥有上帝般创造万物的能力！">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond_graphite.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/graphite.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/the_eight_diagrams.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/the_eight_diagrams_64.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond_graphite.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/graphite.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/the_matrix_awake.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/the_matrix_neo.gif">
+<meta property="og:updated_time" content="2019-05-18T13:40:28.918Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编程哲学之C#篇：007——如何创造万物">
+<meta name="twitter:description" content="上帝拥有创建万物的能力，本文介绍创造万物的道，让你也拥有上帝般创造万物的能力！">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond_graphite.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/programming-philosophy-csharp-how-to-create-everything/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>编程哲学之C#篇：007——如何创造万物 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/programming-philosophy-csharp-how-to-create-everything/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="韦旭彬">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">编程哲学之C#篇：007——如何创造万物
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-07 00:00:01" itemprop="dateCreated datePublished" datetime="2018-12-07T00:00:01+08:00">2018-12-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-18 21:40:28" itemprop="dateModified" datetime="2019-05-18T21:40:28+08:00">2019-05-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程哲学之C-篇/" itemprop="url" rel="index"><span itemprop="name">编程哲学之C#篇</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上帝拥有创建万物的能力，本文介绍创造万物的道，让你也拥有上帝般创造万物的能力！  </p>
+<a id="more"></a>
+<h2 id="道"><a href="#道" class="headerlink" title="道"></a>道</h2><p>中国哲学家，道家学派创始人——老子，在《道德经》写到：</p>
+<blockquote>
+<p>道生一，一生二，二生三，三生万物</p>
+</blockquote>
+<p>那么，是什么 <code>道</code> 可以创造万物？  </p>
+<p>古希腊的哲学家们曾做过这样的推理：<br>如果将水、沙子、肉无限切分，最后得到的将是相同的不可分的颗粒。<br>这些以不同的方式连接在一起的不可分的颗粒，希腊人称之为“原子”。  </p>
+<p>那么我们用同样的思维来推理，<br>如果将电脑世界中文字、图片、音乐、电影、游戏、无限切分，<br>最后能否得到的将是相同的不可分的东西？如果能？那么这个东西又是什么？  </p>
+<p>回忆一下初中的化学知识：<br>石墨、金刚石，它们都是由 C(碳) 原子构成的，但由于它们的 C(碳) 原子<strong>排列方式不同</strong>，从而造成了它们是不同的东西。</p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond_graphite.png" alt="金刚石 石墨"><br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond.gif" alt="金刚石"><br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/graphite.gif" alt="石墨"></p>
+<p>看来创造万物的 <code>道</code> 是：<code>最小不可分割的颗粒</code> + <code>排列方式</code>  </p>
+<p>现实世界中的难题：</p>
+<ul>
+<li>物理学家们依然在寻找 <code>最小不可分割的颗粒</code> 的最终形态。</li>
+<li>即使想要将 原子 按意愿组织起来是极其艰难的。</li>
+</ul>
+<p>怎么解决上面说到的两个难题？  </p>
+<p>在现实世界中，<br>我们想要合成一种新的元素极其艰难的原因之一是，排列是以三维立体的形式来呈现的。<br>如果我们能将三维降到一维，那么一切将会简单很多，那么一维排序能否创造出万物呢？  </p>
+<p>让我们来看看 7000 多年前的伏羲——华夏文明的人文始祖，是怎么用他独特的方式来描述这个世界的。</p>
+<p>7000 多年前，人类还没有发明文字，<br>伏羲看到世界：有天、有地；有男、有女；有光、有暗……<br>悟出了天地万物的变化规律惟一阴一阳而已。<br>所以根据阴阳变化之理，创造了<code>八卦</code>，以八种简单的符号来概括天地之间的万事万物。</p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/the_eight_diagrams.jpg" alt="太极八卦图">  </p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>卦名</th>
+<th>拼音</th>
+<th>象征</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>☰</td>
+<td>乾</td>
+<td>qián</td>
+<td>天</td>
+</tr>
+<tr>
+<td>☱</td>
+<td>兑</td>
+<td>duì</td>
+<td>泽</td>
+</tr>
+<tr>
+<td>☲</td>
+<td>离</td>
+<td>lí</td>
+<td>火</td>
+</tr>
+<tr>
+<td>☳</td>
+<td>震</td>
+<td>zhèn</td>
+<td>雷</td>
+</tr>
+<tr>
+<td>☴</td>
+<td>巽</td>
+<td>xùn</td>
+<td>风</td>
+</tr>
+<tr>
+<td>☵</td>
+<td>坎</td>
+<td>kǎn</td>
+<td>水</td>
+</tr>
+<tr>
+<td>☶</td>
+<td>艮</td>
+<td>gèn</td>
+<td>山</td>
+</tr>
+<tr>
+<td>☷</td>
+<td>坤</td>
+<td>kūn</td>
+<td>地</td>
+</tr>
+</tbody>
+</table>
+<p>可以看出，只要用<code>三个位</code>，每个位置上要么是<code>阳</code>，要么是<code>阴</code>，就可以代表成八种不同的事物。<br>记作：2^3 = 2³ = 8</p>
+<p>接下来看看由<code>八卦</code>扩展到<code>六十四卦</code></p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/the_eight_diagrams_64.png" alt="六十四卦名速見表">  </p>
+<p>可以看出，只要用<code>六个位</code>，每个位置上要么是<code>阳</code>，要么是<code>阴</code>，就可以代表成六十四种不同的事物。<br>以此类推，只要我们不断地增加更多的<code>位</code>，就可以表示更多的事物，<br>用极限的思想来诉说。就可以表示用来表示万事万物。</p>
+<p>我们运用古希腊哲学家的推理来无限切割六十四卦中的任何一个卦象，<br>也就是对半切，再对半切，再对半切…<br>直到最后，我们得到 <code>最小不可分割的阳</code> 或 <code>最小不可分割的阴</code><br>貌似有两种 <code>最小不可分割的颗粒</code>  </p>
+<p>如果是只有一种 <code>最小不可分割的颗粒</code> 就好了。<br>再看看我们的 金刚石 和 石墨 的结构图吧。</p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond_graphite.png" alt="金刚石 石墨"><br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/diamond.gif" alt="金刚石"><br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/graphite.gif" alt="石墨"></p>
+<p>在 金刚石 和 石墨 的结构图，<br>有原子的点，我们称之为<code>有</code>，<br>没有原子的空白空间也有最小不可分割空间(刚好可以容下一个原子，但还没有)，我们称之为<code>无</code>  </p>
+<p>所以，最小不可分割空间上要么有<code>最小不可分割的颗粒</code>，要么没有(<code>无</code>)，只有这两种可能。<br>替换一下八卦中的阴阳：<br><code>阳</code> = <code>有</code><br><code>阴</code> = <code>无</code> (因为 阴 = 无了，所以我们只剩下 阳 了)</p>
+<p>也可以：<br><code>阳</code> = <code>无</code><br><code>阴</code> = <code>有</code> (因为 阳 = 无了，所以我们只剩下 阴 了)</p>
+<p>用更简单的符号来表示吧：<br><code>阳</code> = <code>有</code> = <code>1</code><br><code>阴</code> = <code>无</code> = <code>0</code></p>
+<p>想象一下，将金刚石 和 石墨 的结构图中<br>有原子点用 <code>1</code> 代替，<br>空白空间用 <code>0</code> 代替(不是整片空白，而是刚好可以容下一个原子最小不可分割空白空间)  </p>
+<p>所以我们得到了 <code>最小不可分割的颗粒</code> —— <code>1</code>，<br>而 <code>0</code> 则表示 <code>最小不可分割空白空间</code>，也可以来容下 <code>最小不可分割的颗粒</code> —— <code>1</code>，但目的是为了隔开 <code>1</code>，让其呈现<code>排列结构</code></p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>卦名</th>
+<th>拼音</th>
+<th>象征</th>
+<th>新表示方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>☰</td>
+<td>乾</td>
+<td>qián</td>
+<td>天</td>
+<td>111</td>
+</tr>
+<tr>
+<td>☱</td>
+<td>兑</td>
+<td>duì</td>
+<td>泽</td>
+<td>011</td>
+</tr>
+<tr>
+<td>☲</td>
+<td>离</td>
+<td>lí</td>
+<td>火</td>
+<td>101</td>
+</tr>
+<tr>
+<td>☳</td>
+<td>震</td>
+<td>zhèn</td>
+<td>雷</td>
+<td>001</td>
+</tr>
+<tr>
+<td>☴</td>
+<td>巽</td>
+<td>xùn</td>
+<td>风</td>
+<td>110</td>
+</tr>
+<tr>
+<td>☵</td>
+<td>坎</td>
+<td>kǎn</td>
+<td>水</td>
+<td>010</td>
+</tr>
+<tr>
+<td>☶</td>
+<td>艮</td>
+<td>gèn</td>
+<td>山</td>
+<td>100</td>
+</tr>
+<tr>
+<td>☷</td>
+<td>坤</td>
+<td>kūn</td>
+<td>地</td>
+<td>000</td>
+</tr>
+</tbody>
+</table>
+<p>前面说了，创造万物的 <code>道</code> 是：<code>最小不可分割的颗粒</code> + <code>排列方式</code>  </p>
+<p>所以，在我们创造的世界中，由于我们是神，<br>因此我们可以指定 <code>最小不可分割的颗粒</code> 是 <code>1</code>，<br>然后用 <code>一维排列的排列方式</code>，就可以在我们创造的世界中创造万物！</p>
+<p>在数字网络时代，你看到的文字、图片、音乐、电影、游戏，这一切都是由 <code>1</code> 和 <code>0</code> 组成。<br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/the_matrix_awake.gif" alt="黑客帝国_觉醒"></p>
+<p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/the_matrix_neo.gif" alt="黑客帝国_尼奥"></p>
+<blockquote>
+<p>二进制的发明者莱布尼兹首次接触到八卦图是与 1685年 来中国作为传教士白晋的联系中。</p>
+</blockquote>
+<h2 id="佛"><a href="#佛" class="headerlink" title="佛"></a>佛</h2><p>在现实世界中，物理结构相同则是同样的事物，物理结构不同则是不同的事物。<br>然后佛且告诉我们，一切由心而生。</p>
+<p>看山是山，看山不是山，看山还是山~</p>
+<p>在现在的电脑世界中，同样的<code>排列方式</code>可以表示多种事物，取决于你怎么“看”，<br>如：<br><code>01100001</code> = 可以表示：字母 <code>a</code><br><code>01100001</code> = 可以表示：数字 <code>97</code>  </p>
+<p>如果我们将其相加，可能有多种结果：<br><code>01100001</code> + <code>01100001</code> = <code>aa</code><br><code>01100001</code> + <code>01100001</code> = <code>a97</code><br><code>01100001</code> + <code>01100001</code> = <code>97a</code><br><code>01100001</code> + <code>01100001</code> = <code>194</code>  </p>
+<p>一切的<code>因果</code>取决你心中的<code>“看”</code>法  </p>
+<p>在数字网络中，一切的交流都是由 <code>1</code> 和 <code>0</code> 组成。<br>如果一台电脑将 <code>01100001</code> 发送给另外另外一台电脑，<br>另外一台电脑是否能明白取决于两个电脑是否拥有相同的<code>“看”</code>法。  </p>
+<p>所以，戒酒戒色，练武功都不会让你成佛，<br>你是否能成佛，取决于你对这个世界的<code>“看”</code>法是否和佛的<code>“看”</code>法一样。</p>
+<p><em>这里有点讲得有点玄了，下几章讲到编程中得<code>类型</code>应该就会好懂很多了。</em></p>
+<h2 id="太极"><a href="#太极" class="headerlink" title="太极"></a>太极</h2><p>八卦图是由伏羲画的，中间的太极图是由孔子画的。<br><code>太</code> 由 <code>大</code> 和 <code>点</code> 组成，在孔子的哲学观中：<br>这个世界是由 大到极限(宇宙) 和 (点)小到极限(最小不可分割的颗粒) 的组成的。  </p>
+<p>下一章，我们将开始用 小到极限(最小不可分割的颗粒) 在 大到极限(宇宙) 中创建万物！</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>在很多计算机书籍中都会有下面一段话：  </p>
+<blockquote>
+<p>比特(bit)是英文 binary digit 的缩写，表示信息的最小单位，只有两种元素：<code>0</code> 和 <code>1</code> 。  </p>
+</blockquote>
+<p>本章的内容就是解释为什么只用 <code>0</code> 和 <code>1</code> 就能来描述我们现实世界中的一切。</p>
+<p>最后说明：本章内容和<strong>思想</strong>是计算机与信息时代的根基，适合任意编程语言。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，来一波打赏可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>韦旭彬</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/programming-philosophy-csharp-how-to-create-everything/" title="编程哲学之C#篇：007——如何创造万物">https://iweixubin.github.io/posts/programming-philosophy-csharp-how-to-create-everything/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编程哲学/" rel="tag"># 编程哲学</a>
+          
+            <a href="/tags/编程思想/" rel="tag"># 编程思想</a>
+          
+            <a href="/tags/编程入门/" rel="tag"># 编程入门</a>
+          
+            <a href="/tags/Net/" rel="tag"># .Net</a>
+          
+            <a href="/tags/C/" rel="tag"># C#</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+            
+              
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/programming-philosophy-csharp-what-is-dotnet/" rel="next" title="编程哲学之C#篇：006——什么是.NET">
+                  <i class="fa fa-chevron-left"></i> 编程哲学之C#篇：006——什么是.NET
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
+            
+              <p class="site-author-name" itemprop="name">韦旭彬</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#道"><span class="nav-number">1.</span> <span class="nav-text">道</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#佛"><span class="nav-number">2.</span> <span class="nav-text">佛</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#太极"><span class="nav-number">3.</span> <span class="nav-text">太极</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">4.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">韦旭彬</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

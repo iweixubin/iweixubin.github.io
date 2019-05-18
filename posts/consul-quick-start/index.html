@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="为了让网关更好地了解内部服务的情况，我们需要服务发现组件，如：Consul。">
+<meta name="keywords" content="微服务,Consul">
+<meta property="og:type" content="article">
+<meta property="og:title" content="服务发现 Consul 快速入门">
+<meta property="og:url" content="https://iweixubin.github.io/posts/consul-quick-start/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="为了让网关更好地了解内部服务的情况，我们需要服务发现组件，如：Consul。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-04-24T15:38:48.187Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="服务发现 Consul 快速入门">
+<meta name="twitter:description" content="为了让网关更好地了解内部服务的情况，我们需要服务发现组件，如：Consul。">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/consul-quick-start/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>服务发现 Consul 快速入门 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/consul-quick-start/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="韦旭彬">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">服务发现 Consul 快速入门
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-16 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-16T00:00:01+08:00">2019-01-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-04-24 23:38:48" itemprop="dateModified" datetime="2019-04-24T23:38:48+08:00">2019-04-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/微服务/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>为了让网关更好地了解内部服务的情况，我们需要服务发现组件，如：Consul。</p>
+<a id="more"></a>
+<h2 id="Consul-的安装与运行"><a href="#Consul-的安装与运行" class="headerlink" title="Consul 的安装与运行"></a>Consul 的安装与运行</h2><p><a href="https://www.consul.io/downloads.html" target="_blank" rel="noopener">Consul 官网下载地址</a></p>
+<p>选择下载后，解压，确定里面的 exe 文件名为 <code>consul.exe</code><br>如果不是，请修改成 <code>consul.exe</code>。<br>然后将 <code>consul.exe</code> 剪切到 <code>D:\cmd</code> 中，至于为什么请，请看  </p>
+<p>打开 <code>cmd</code> 输入命令 <code>consul version</code>，显示版本号，则说明安装成功~</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; consul version</span><br><span class="line">Consul v1.<span class="number">4</span>.<span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>然后继续输入以下命令启动 Consul，这里不解释命令各个参数的意义，<br>把注意力集中用于理解 Consul 和 Ocelot 是怎么配合运作的。</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; consul agent -server -bootstrap-expect=<span class="number">1</span> -data-<span class="built_in">dir</span>=/tmp/consul -node=s1 -bind=<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span> -ui</span><br></pre></td></tr></table></figure>
+<p>在浏览器中输入：<a href="http://127.0.0.1:8500" target="_blank" rel="noopener">http://127.0.0.1:8500</a><br>如果能成功浏览则说明成功启动 consul，<br>内容大约如下：<br>| Service | Health Checks | Tag |<br>| ——- | ————- | — |<br>| consul  | √ 1           |     |</p>
+<p>如果不能访问，那么很大可能是 <code>8500</code> 端口被其中程序占用了。<br>可以使用 <code>netstat -ano</code> 命令查看哪个程序占用了 <code>8500</code> ，将程序关闭之。  </p>
+<h2 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h2><p>使用 <code>NuGet</code> 给 <code>Catalog</code> 项目，添加 <code>Consul</code>。<br>然后将 <code>Catalog</code> 项目的 <code>Startup.cs</code> 修改成内容如下：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Builder;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Hosting;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Configuration;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.DependencyInjection;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Options;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> Consul;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Catalog</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Startup</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Startup</span>(<span class="params">IConfiguration configuration</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            Configuration = configuration;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> IConfiguration Configuration &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// This method gets called by the runtime. </span></span><br><span class="line">        <span class="comment">// Use this method to add services to the container.</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            services.AddMvc()</span><br><span class="line">                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// This method gets called by the runtime. </span></span><br><span class="line">        <span class="comment">// Use this method to configure the HTTP request pipeline.</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Configure</span>(<span class="params">IApplicationBuilder app, IHostingEnvironment env</span></span></span><br><span class="line"><span class="function"><span class="params">            , IApplicationLifetime lifetime</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line"></span><br><span class="line">            RegisterService(lifetime);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (env.IsDevelopment())</span><br><span class="line">            &#123;</span><br><span class="line">                app.UseDeveloperExceptionPage();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            app.UseMvc();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">SetRuntimeIpAndPort</span>(<span class="params"><span class="keyword">ref</span> <span class="keyword">string</span> ip, <span class="keyword">ref</span> <span class="keyword">int</span> port</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> server_urls = Configuration[<span class="string">"server.urls"</span>]</span><br><span class="line">                .Replace(<span class="string">"http://"</span>, <span class="keyword">string</span>.Empty)</span><br><span class="line">                .Split(<span class="string">":"</span>);</span><br><span class="line"></span><br><span class="line">            ip = server_urls[<span class="number">0</span>];</span><br><span class="line">            port = <span class="keyword">int</span>.Parse(server_urls[<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">RegisterService</span>(<span class="params">IApplicationLifetime appLifetime</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">string</span> serviceIp = <span class="keyword">string</span>.Empty;</span><br><span class="line">            <span class="keyword">int</span> servicePort = <span class="number">80</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 从命令行中获取程序运行时的地址与端口</span></span><br><span class="line">            <span class="comment">// 这里只是为了演示方便，实际写到配置文件或环境变量中会比较好</span></span><br><span class="line">            SetRuntimeIpAndPort(<span class="keyword">ref</span> serviceIp, <span class="keyword">ref</span> servicePort);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">string</span> serviceId = <span class="string">"CatalogApi_"</span> + Guid.NewGuid();<span class="comment">//服务编号保证不重复</span></span><br><span class="line">            <span class="keyword">string</span> serviceName = <span class="string">"CatalogService"</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> client = <span class="keyword">new</span> ConsulClient(ConfigurationOverview); <span class="comment">//回调获取</span></span><br><span class="line">            <span class="keyword">var</span> result = client.Agent.ServiceRegister(<span class="keyword">new</span> AgentServiceRegistration()</span><br><span class="line">            &#123;</span><br><span class="line">                ID = serviceId,</span><br><span class="line">                Name = serviceName,</span><br><span class="line">                Address = serviceIp,</span><br><span class="line">                Port = servicePort,</span><br><span class="line"></span><br><span class="line">                Check = <span class="keyword">new</span> AgentServiceCheck <span class="comment">//健康检查</span></span><br><span class="line">                &#123;</span><br><span class="line">                    DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(<span class="number">5</span>),<span class="comment">//服务启动多久后反注册</span></span><br><span class="line">                    Interval = TimeSpan.FromSeconds(<span class="number">10</span>),<span class="comment">//健康检查时间间隔</span></span><br><span class="line">                    HTTP = <span class="string">$"http://<span class="subst">&#123;serviceIp&#125;</span>:<span class="subst">&#123;servicePort&#125;</span>/api/Health"</span>,<span class="comment">//健康检查地址</span></span><br><span class="line">                    Timeout = TimeSpan.FromSeconds(<span class="number">5</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            appLifetime.ApplicationStopping.Register(() =&gt;</span><br><span class="line">            &#123;</span><br><span class="line">                Console.WriteLine(<span class="string">"注销方法"</span>);</span><br><span class="line">                client.Agent.ServiceDeregister(serviceId).Wait();<span class="comment">//服务停止时取消注册</span></span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ConfigurationOverview</span>(<span class="params">ConsulClientConfiguration obj</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="comment">//consul的地址</span></span><br><span class="line">            obj.Address = <span class="keyword">new</span> Uri(<span class="string">"http://127.0.0.1:8500"</span>);</span><br><span class="line">            <span class="comment">//数据中心命名</span></span><br><span class="line">            obj.Datacenter = <span class="string">"dc1"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>Catalog</code> 项目下的 <code>Controllers</code> 下创建 <code>HealthController.cs</code>，<br>然后将其内容修改成如下：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Catalog.Controllers</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 用于被 Consul 的检查服务是否健康</span></span><br><span class="line">    [<span class="meta">Produces(<span class="meta-string">"application/json"</span>)</span>]</span><br><span class="line">    [<span class="meta">Route(<span class="meta-string">"api/Health"</span>)</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HealthController</span> : <span class="title">Controller</span></span><br><span class="line">    &#123;</span><br><span class="line">        [<span class="meta">HttpGet</span>]</span><br><span class="line">        <span class="function"><span class="keyword">public</span> IActionResult <span class="title">Get</span>(<span class="params"></span>) </span>=&gt; Ok(<span class="string">"ok"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译 <code>Catalog</code> 项目，<br>打开一个新的 <code>cmd</code> ，<code>cd</code> 到 <code>Catalog.ddl</code> 所在的目录路径。<br>路径大约：<code>xxx\eShop\Catalog\bin\Debug\netcoreapp2.1</code><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; dotnet catalog.dll --server.urls "http://<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span>:<span class="number">8001</span>"</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">Now listening on: http://<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span>:<span class="number">8001</span></span><br><span class="line">Application started. Press Ctrl+C to shut down.</span><br></pre></td></tr></table></figure></p>
+<p>在浏览器中输入：<a href="http://127.0.0.1:8001/api/values" target="_blank" rel="noopener">http://127.0.0.1:8001/api/values</a><br>显示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&quot;value from Catalog&quot;,&quot;http://127.0.0.1:8001/api/values&quot;]</span><br></pre></td></tr></table></figure></p>
+<p>说明我们的服务已经正常运行了~</p>
+<p>在浏览器中输入：<a href="http://127.0.0.1:8500" target="_blank" rel="noopener">http://127.0.0.1:8500</a><br>可以看到服务已经注册到 consul 中了</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Health Checks</th>
+<th>Tag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CatalogService</td>
+<td>√ 2</td>
+<td></td>
+</tr>
+<tr>
+<td>consul</td>
+<td>√ 1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="Ocelot-与-Consul"><a href="#Ocelot-与-Consul" class="headerlink" title="Ocelot 与 Consul"></a>Ocelot 与 Consul</h2><p>使用 <code>NuGet</code> 给 <code>OcelotGateWay</code> 项目，添加 <code>Ocelot.Provider.Consul</code>。</p>
+<p>修改 <code>OcelotGateWay</code> 项目的 <code>ocelot.json</code>，内容如下：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"ReRoutes"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"DownstreamPathTemplate"</span>: <span class="string">"/api/&#123;everything&#125;"</span>,</span><br><span class="line">      <span class="attr">"DownstreamScheme"</span>: <span class="string">"http"</span>,</span><br><span class="line">      <span class="attr">"UpstreamPathTemplate"</span>: <span class="string">"/catalog/&#123;everything&#125;"</span>,</span><br><span class="line">      <span class="attr">"UpstreamHttpMethod"</span>: [ <span class="string">"Get"</span>, <span class="string">"Post"</span> ],</span><br><span class="line">      <span class="attr">"UseServiceDiscovery"</span>: <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"ServiceName"</span>: <span class="string">"CatalogService"</span>,</span><br><span class="line">      <span class="attr">"LoadBalancerOptions"</span>: &#123;</span><br><span class="line">        <span class="attr">"Type"</span>: <span class="string">"RoundRobin"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">"DownstreamPathTemplate"</span>: <span class="string">"/api/&#123;everything&#125;"</span>,</span><br><span class="line">      <span class="attr">"DownstreamScheme"</span>: <span class="string">"http"</span>,</span><br><span class="line">      <span class="attr">"UpstreamPathTemplate"</span>: <span class="string">"/order/&#123;everything&#125;"</span>,</span><br><span class="line">      <span class="attr">"UpstreamHttpMethod"</span>: [ <span class="string">"Get"</span>, <span class="string">"Post"</span> ],</span><br><span class="line">      <span class="attr">"UseServiceDiscovery"</span>: <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">"ServiceName"</span>: <span class="string">"OrderingApiServer"</span>,</span><br><span class="line">      <span class="attr">"LoadBalancerOptions"</span>: &#123;</span><br><span class="line">        <span class="attr">"Type"</span>: <span class="string">"RoundRobin"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">"GlobalConfiguration"</span>: &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>特别说明：<br><code>&quot;UseServiceDiscovery&quot;: true,</code> ： 使用服务发现。<br><code>&quot;ServiceName&quot;: &quot;CatalogService&quot;,</code> ： 服务的名称一定要对应上。<br><code>GlobalConfiguration</code> 中什么都没有配置，是因为 Ocelot 默认使用 Consul。    </p>
+<p>修改 <code>OcelotGateWay</code> 项目的 <code>Program.cs</code>，内容如下：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Builder;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Hosting;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Configuration;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.DependencyInjection;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> Ocelot.DependencyInjection;</span><br><span class="line"><span class="keyword">using</span> Ocelot.Middleware;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> Ocelot.Provider.Consul; <span class="comment">// 新增</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">OcelotGateWay</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">new</span> WebHostBuilder()</span><br><span class="line">            .UseKestrel()</span><br><span class="line">            .UseContentRoot(Directory.GetCurrentDirectory())</span><br><span class="line">            .ConfigureAppConfiguration((hostingContext, config) =&gt;</span><br><span class="line">            &#123;</span><br><span class="line">                config</span><br><span class="line">                    .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)</span><br><span class="line">                    .AddJsonFile(<span class="string">"appsettings.json"</span>, <span class="literal">true</span>, <span class="literal">true</span>)</span><br><span class="line">                    .AddJsonFile(<span class="string">"ocelot.json"</span>) <span class="comment">// 加载 Ocelot 配置</span></span><br><span class="line">                    .AddEnvironmentVariables();</span><br><span class="line">            &#125;)</span><br><span class="line">            .ConfigureServices(s =&gt; &#123;</span><br><span class="line">                s.AddOcelot()</span><br><span class="line">                    .AddConsul(); <span class="comment">// 新增</span></span><br><span class="line">            &#125;)</span><br><span class="line">            .ConfigureLogging((hostingContext, logging) =&gt;</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//add your logging</span></span><br><span class="line">            &#125;)</span><br><span class="line">            .Configure(app =&gt;</span><br><span class="line">            &#123;</span><br><span class="line">                app.UseOcelot().Wait();</span><br><span class="line">            &#125;)</span><br><span class="line">            .Build()</span><br><span class="line">            .Run();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//public static IWebHostBuilder CreateWebHostBuilder(string[] args) =&gt;</span></span><br><span class="line">        <span class="comment">//    WebHost.CreateDefaultBuilder(args)</span></span><br><span class="line">        <span class="comment">//        .UseStartup&lt;Startup&gt;();</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将 <code>OcelotGateWay</code> 设为启动项目，按 <code>F5</code> 运行我们的网关~<br>在浏览器中输入：<a href="http://localhost:7000/catalog/values" target="_blank" rel="noopener">http://localhost:7000/catalog/values</a><br>可以看到：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&quot;value from Catalog&quot;,&quot;http://127.0.0.1:8001/api/values&quot;]</span><br></pre></td></tr></table></figure></p>
+<p>打开一个新的 <code>cmd</code> ，<code>cd</code> 到 <code>Catalog.ddl</code> 所在的目录路径。<br>路径大约：<code>xxx\eShop\Catalog\bin\Debug\netcoreapp2.1</code><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; dotnet catalog.dll --server.urls "http://<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span>:<span class="number">8002</span>"</span><br></pre></td></tr></table></figure></p>
+<p>打开一个新的 <code>cmd</code> ，<code>cd</code> 到 <code>Catalog.ddl</code> 所在的目录路径。<br>路径大约：<code>xxx\eShop\Catalog\bin\Debug\netcoreapp2.1</code><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; dotnet catalog.dll --server.urls "http://<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span>:<span class="number">8003</span>"</span><br></pre></td></tr></table></figure></p>
+<p>在浏览器中输入：<a href="http://127.0.0.1:8500" target="_blank" rel="noopener">http://127.0.0.1:8500</a><br>可以新启动的服务都已经注册到 consul 中了<br>| Service        | Health Checks | Tag |<br>| ————– | ————- | — |<br>| CatalogService | √ 6           |     |<br>| consul         | √ 1           |     |</p>
+<p>点击 <code>CatalogService</code> 看看~  </p>
+<p>不断地刷新：<a href="http://localhost:7000/catalog/values" target="_blank" rel="noopener">http://localhost:7000/catalog/values</a><br>会看到以下内容轮流替换：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&quot;value from Catalog&quot;,&quot;http://127.0.0.1:8001/api/values&quot;]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&quot;value from Catalog&quot;,&quot;http://127.0.0.1:8002/api/values&quot;]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&quot;value from Catalog&quot;,&quot;http://127.0.0.1:8003/api/values&quot;]</span><br></pre></td></tr></table></figure>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>可以看出用 Consul 来搭建网关很简单方便，<br>然而使用起来简单方便不是我们选择的标准，<br>网关作为流量汇总的入口，它除了能正常运转外，还必须快！快！！快！！！，<br>所以，我会将更多的时间投入到：  <a href="https://github.com/Kong/kong" target="_blank" rel="noopener">Kong</a> 和 <a href="https://github.com/containous/traefik" target="_blank" rel="noopener">traefik</a>  </p>
+<p>小流量项目使用 Consul，<br>大流量项目则必须用牛刀了。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，来一波打赏可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>韦旭彬</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/consul-quick-start/" title="服务发现 Consul 快速入门">https://iweixubin.github.io/posts/consul-quick-start/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/微服务/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/Consul/" rel="tag"># Consul</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+                
+                
+                
+              
+            
+              
+            
+            
+              
+              
+            
+              
+              
+                
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/ocelot-quick-start/" rel="prev" title="Api网关 Ocelot 快速入门">
+                  Api网关 Ocelot 快速入门 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
+            
+              <p class="site-author-name" itemprop="name">韦旭彬</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Consul-的安装与运行"><span class="nav-number">1.</span> <span class="nav-text">Consul 的安装与运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务注册"><span class="nav-number">2.</span> <span class="nav-text">服务注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ocelot-与-Consul"><span class="nav-number">3.</span> <span class="nav-text">Ocelot 与 Consul</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">4.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">韦旭彬</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

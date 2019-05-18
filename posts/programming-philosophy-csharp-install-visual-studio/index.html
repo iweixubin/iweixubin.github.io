@@ -15,10 +15,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="zh-CN">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 
 
@@ -32,8 +32,6 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -46,6 +44,21 @@
 
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
 
 
 
@@ -53,38 +66,15 @@
 
 
 
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=6.5.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=6.5.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=6.5.0">
-
-
-
-
-
-
-
-
-
-
-<script type="text/javascript" id="hexo.configurations">
+<script id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
     scheme: 'Gemini',
-    version: '6.5.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -109,7 +99,7 @@
   <meta name="description" content="工欲善其事必先利其器，本章介绍安装Visual Studio这个号称宇宙最强IDE(Integrated Development Environment[集成开发环境])。">
 <meta name="keywords" content="编程哲学,编程思想,编程入门,.Net,C#">
 <meta property="og:type" content="article">
-<meta property="og:title" content="编程哲学之C#篇：04——安装 Visual Studio">
+<meta property="og:title" content="编程哲学之C#篇：004——安装 Visual Studio">
 <meta property="og:url" content="https://iweixubin.github.io/posts/programming-philosophy-csharp-install-visual-studio/index.html">
 <meta property="og:site_name" content="思与行">
 <meta property="og:description" content="工欲善其事必先利其器，本章介绍安装Visual Studio这个号称宇宙最强IDE(Integrated Development Environment[集成开发环境])。">
@@ -122,9 +112,9 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/vs_install_step_05.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/vs_install_step_06.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/vs_install_step_07.png">
-<meta property="og:updated_time" content="2018-11-05T00:04:48.705Z">
+<meta property="og:updated_time" content="2019-05-18T13:40:28.844Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="编程哲学之C#篇：04——安装 Visual Studio">
+<meta name="twitter:title" content="编程哲学之C#篇：004——安装 Visual Studio">
 <meta name="twitter:description" content="工欲善其事必先利其器，本章介绍安装Visual Studio这个号称宇宙最强IDE(Integrated Development Environment[集成开发环境])。">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/vs_install_step_01.png">
 
@@ -132,18 +122,19 @@
 
 
 
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/programming-philosophy-csharp-install-visual-studio/">
 
-  <link rel="canonical" href="https://iweixubin.github.io/posts/programming-philosophy-csharp-install-visual-studio/"/>
 
 
-
-<script type="text/javascript" id="page.configurations">
+<script id="page.configurations">
   CONFIG.page = {
     sidebar: "",
   };
 </script>
 
-  <title>编程哲学之C#篇：04——安装 Visual Studio | 思与行</title>
+  <title>编程哲学之C#篇：004——安装 Visual Studio | 思与行</title>
   
 
 
@@ -156,30 +147,29 @@
 
 
 
+
   <noscript>
-  <style type="text/css">
-    .use-motion .motion-element,
-    .use-motion .brand,
-    .use-motion .menu-item,
-    .sidebar-inner,
-    .use-motion .post-block,
-    .use-motion .pagination,
-    .use-motion .comments,
-    .use-motion .post-header,
-    .use-motion .post-body,
-    .use-motion .collection-title { opacity: initial; }
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
 
-    .use-motion .logo,
-    .use-motion .site-title,
-    .use-motion .site-subtitle {
-      opacity: initial;
-      top: initial;
-    }
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
-    .use-motion {
-      .logo-line-before i { left: initial; }
-      .logo-line-after i { right: initial; }
-    }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
@@ -197,7 +187,7 @@
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+  <div class="site-meta">
     
 
     <div class="custom-logo-site-title">
@@ -207,6 +197,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+    
     
   </div>
 
@@ -230,32 +221,68 @@
         
           
           <li class="menu-item menu-item-home">
-    <a href="/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-tags">
-    <a href="/tags/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-categories">
-    <a href="/categories/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-archives">
-    <a href="/archives/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
   </li>
 
       
@@ -323,7 +350,8 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">编程哲学之C#篇：04——安装 Visual Studio
+          <h1 class="post-title" itemprop="name headline">编程哲学之C#篇：004——安装 Visual Studio
+
               
             
           </h1>
@@ -365,13 +393,13 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-05 08:04:48" itemprop="dateModified" datetime="2018-11-05T08:04:48+08:00">2018-11-05</time>
+                <time title="修改时间：2019-05-18 21:40:28" itemprop="dateModified" datetime="2019-05-18T21:40:28+08:00">2019-05-18</time>
               
             
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -391,6 +419,7 @@
           
 
           
+            
             
           
 
@@ -420,10 +449,7 @@
 <a id="more"></a>
 <h2 id="安装-Visual-Studio"><a href="#安装-Visual-Studio" class="headerlink" title="安装 Visual Studio"></a>安装 Visual Studio</h2><p><a href="https://visualstudio.microsoft.com/zh-hans/downloads/" title="Visual Studio官网下载地址" target="_blank" rel="noopener">Visual Studio官网下载地址</a></p>
 <p>选择</p>
-<blockquote>
-<p>Visual Studio Community 2017<br>适用于学生、开源和个人开发人员的功能完备的免费 IDE</p>
-</blockquote>
-<p>当然你也可以选择其他版本~</p>
+<p>按你的需求选择你想下载的版本，本文介绍 <code>社区</code>2017 版的安装。</p>
 <p>点击 <code>免费下载</code> 下载完毕后得到一个 <code>vs_community.exe</code> 文件，运行 <code>vs_community.exe</code></p>
 <p>安装过程如下：</p>
 <p><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/vs_install_step_01.png" alt="visual studio installer"></p>
@@ -458,28 +484,35 @@
     
 
     
+      
+    
+    
       <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>觉得文章对您有帮助，来一波打赏 (๑•̀ㅂ•́)و✧</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，来一波打赏可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
   </button>
-  <div id="QR" style="display: none;">
+  <div id="qr" style="display: none;">
 
     
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="/images/wechatpay.png" alt="韦旭彬 微信支付"/>
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
         <p>微信支付</p>
       </div>
     
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="/images/alipay.png" alt="韦旭彬 支付宝"/>
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
         <p>支付宝</p>
       </div>
-    
-
     
 
   </div>
@@ -490,17 +523,30 @@
 
     
       <div>
-        <ul class="post-copyright">
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
   <li class="post-copyright-author">
     <strong>本文作者： </strong>韦旭彬</li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://iweixubin.github.io/posts/programming-philosophy-csharp-install-visual-studio/" title="编程哲学之C#篇：04——安装 Visual Studio">https://iweixubin.github.io/posts/programming-philosophy-csharp-install-visual-studio/</a>
+    
+    <a href="https://iweixubin.github.io/posts/programming-philosophy-csharp-install-visual-studio/" title="编程哲学之C#篇：004——安装 Visual Studio">https://iweixubin.github.io/posts/programming-philosophy-csharp-install-visual-studio/</a>
   </li>
   <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
 </ul>
-
       </div>
     
 
@@ -526,25 +572,95 @@
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/posts/why-use-entity-framework/" rel="next" title="为什么要使用Entity Framework">
-                <i class="fa fa-chevron-left"></i> 为什么要使用Entity Framework
-              </a>
-            
-          </div>
+        
+        
 
-          <span class="post-nav-divider"></span>
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+              
+            
+              
+            
+            
+              
+              
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+              
+              
+            
+              
+              
+            
+          
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/posts/programming-philosophy-csharp-hello-world/" rel="prev" title="编程哲学之C#篇：05——"Hello,World!"">
-                编程哲学之C#篇：05——"Hello,World!" <i class="fa fa-chevron-right"></i>
-              </a>
-            
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/programming-philosophy-csharp-why-csharp/" rel="next" title="编程哲学之C#篇：003——为什么选择C#">
+                  <i class="fa fa-chevron-left"></i> 编程哲学之C#篇：003——为什么选择C#
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/programming-philosophy-csharp-hello-world/" rel="prev" title="编程哲学之C#篇：005——" hello,world!"">
+                  编程哲学之C#篇：005——"Hello,World!" <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
           </div>
-        </div>
+         
+       
+
+
       
 
       
@@ -580,7 +696,6 @@
   </div>
 
   <aside id="sidebar" class="sidebar">
-    
     <div class="sidebar-inner">
 
       
@@ -596,16 +711,14 @@
         </ul>
       
 
-      <section class="site-overview-wrap sidebar-panel">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image"
-                src="/images/avatar.png"
-                alt="韦旭彬" />
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
             
               <p class="site-author-name" itemprop="name">韦旭彬</p>
-              <p class="site-description motion-element" itemprop="description">苏格拉底粉</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
           </div>
 
           
@@ -615,7 +728,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -625,7 +738,11 @@
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
                     
                     
                       
@@ -636,7 +753,17 @@
                     
                       
                     
-                    <span class="site-state-item-count">4</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -646,7 +773,11 @@
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
                     
                     
                       
@@ -691,7 +822,53 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">29</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -702,28 +879,45 @@
           
 
           
+
+          
             <div class="links-of-author motion-element">
               
                 <span class="links-of-author-item">
-                  <a href="https://github.com/iweixubin" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
                   
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
                 </span>
               
                 <span class="links-of-author-item">
-                  <a href="mailto:35925259@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
                   
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
                 </span>
               
             </div>
           
 
           
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
-              </a>
-            </div>
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
           
 
           
@@ -735,15 +929,16 @@
           
 
         </div>
-      </section>
+      </div>
 
       
       <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
           <div class="post-toc">
 
             
-              
+            
+            
             
 
             
@@ -751,7 +946,7 @@
             
 
           </div>
-        </section>
+        </div>
       <!--/noindex-->
       
 
@@ -759,6 +954,7 @@
 
     </div>
   </aside>
+  
 
 
         
@@ -767,7 +963,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright"> &copy; 2018 – <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -777,8 +973,6 @@
 
   
 </div>
-
-
 
 
 
@@ -809,7 +1003,7 @@
     
 
     
-	
+
     
 
     
@@ -817,7 +1011,7 @@
 
   
 
-<script type="text/javascript">
+<script>
   if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
     window.Promise = null;
   }
@@ -849,27 +1043,21 @@
 
 
   
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+  <script src="/js/utils.js?v=7.1.0"></script>
 
-  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+  <script src="/js/motion.js?v=7.1.0"></script>
 
 
 
@@ -877,44 +1065,37 @@
   
 
 
-  <script type="text/javascript" src="/js/src/affix.js?v=6.5.0"></script>
+  <script src="/js/affix.js?v=7.1.0"></script>
 
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.5.0"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
 
 
 
 
   
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
 
 
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
 
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
 
 
   
@@ -925,9 +1106,31 @@
 
   
 
+
+  
+
+
+  
+
+
+
+
   
 
   
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
   
 
   
