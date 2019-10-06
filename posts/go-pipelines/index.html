@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文翻译自 Go 官方博客中的 Go Concurrency Patterns: Pipelines and cancellation，讲述怎么用若干通道(channel)组成管道(pipeline)实现并发任务，并做到如何确保释放资源。">
+<meta name="keywords" content="go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go 并发模式：管道 与 取消">
+<meta property="og:url" content="https://iweixubin.github.io/posts/go-pipelines/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文翻译自 Go 官方博客中的 Go Concurrency Patterns: Pipelines and cancellation，讲述怎么用若干通道(channel)组成管道(pipeline)实现并发任务，并做到如何确保释放资源。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/fan-out.png">
+<meta property="og:updated_time" content="2019-10-06T17:02:08.439Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go 并发模式：管道 与 取消">
+<meta name="twitter:description" content="本文翻译自 Go 官方博客中的 Go Concurrency Patterns: Pipelines and cancellation，讲述怎么用若干通道(channel)组成管道(pipeline)实现并发任务，并做到如何确保释放资源。">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/fan-out.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/go-pipelines/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Go 并发模式：管道 与 取消 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/go-pipelines/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="韦旭彬">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go 并发模式：管道 与 取消
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-26 00:00:01" itemprop="dateCreated datePublished" datetime="2019-08-26T00:00:01+08:00">2019-08-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-07 01:02:08" itemprop="dateModified" datetime="2019-10-07T01:02:08+08:00">2019-10-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文翻译自 Go 官方博客中的 <a href="https://blog.golang.org/pipelines" target="_blank" rel="noopener">Go Concurrency Patterns: Pipelines and cancellation</a>，讲述怎么用若干通道(channel)组成管道(pipeline)实现并发任务，并做到如何确保释放资源。</p>
+<a id="more"></a>
+<h2 id="简介-Introduction"><a href="#简介-Introduction" class="headerlink" title="简介(Introduction)"></a>简介(Introduction)</h2><p>Go’s concurrency primitives make it easy to construct streaming data pipelines that make efficient use of I/O and multiple CPUs.<br>Go 的并发基元可以轻松构建流数据流管道，从而有效利用 I/O 和多个 CPU。</p>
+<p>This article presents examples of such pipelines, highlights subtleties that arise when operations fail, and introduces techniques for dealing with failures cleanly.<br>本文介绍了此类管道的示例，重点介绍了操作失败时出现的细节，并介绍如何利索地处理故障的技巧。</p>
+<h2 id="什么是管道-What-is-a-pipeline"><a href="#什么是管道-What-is-a-pipeline" class="headerlink" title="什么是管道(What is a pipeline?)"></a>什么是管道(What is a pipeline?)</h2><p>There’s no formal definition of a pipeline in Go; it’s just one of many kinds of concurrent programs.<br>Go 中没有正式的管道定义; 它只是众多并发程序中的一种。</p>
+<p>Informally, a pipeline is a series of stages connected by channels, where each stage is a group of goroutines running the same function.<br>非正式地，管道(pipeline)是由通道(channel)连接的一系列阶段，其中每个阶段是一组协程(goroutine)运行相同的函数。 </p>
+<p>In each stage, the goroutines<br>在每个阶段，goroutines：</p>
+<ul>
+<li>receive values from upstream via inbound channels<br>通过入站通道从上游接收值</li>
+<li>perform some function on that data, usually producing new values<br>对该数据执行某些功能，通常生成新值</li>
+<li>send values downstream via outbound channels<br>通过出站通道向下游发送值</li>
+</ul>
+<p>Each stage has any number of inbound and outbound channels, except the first and last stages, which have only outbound or inbound channels, respectively.<br>每个阶段都有任意数量的入站和出站通道，第一阶段和最后一个阶段除外，它们分别只有出站或入站通道。  </p>
+<p>The first stage is sometimes called the <em>source</em> or <em>producer</em>; the last stage, the <em>sink</em> or <em>consumer</em>.<br>第一阶段有时称为 <em>源头(source)</em> 或 <em>生产者(producer)</em>；最后一个阶段，<em>接收器(sink)</em> 或 <em>消费者(consumer)</em>。  </p>
+<p>We’ll begin with a simple example pipeline to explain the ideas and techniques.<br>我们将从一个简单的示例管道开始来解释这些概念和技术。  </p>
+<p>Later, we’ll present a more realistic example.<br>稍后，我们将举一个更真实的示例。  </p>
+<h2 id="平方数-Squaring-numbers"><a href="#平方数-Squaring-numbers" class="headerlink" title="平方数(Squaring numbers)"></a>平方数(Squaring numbers)</h2><p>Consider a pipeline with three stages.<br>考虑一个具有三个阶段的管道。  </p>
+<p>The first stage, <code>gen</code>, is a function that converts a list of integers to a channel that emits the integers in the list.<br>第一个阶段， <code>gen</code> 是一个函数，它将整数列表转换为发出列表中整数的通道。  </p>
+<p>The <code>gen</code> function starts a goroutine that sends the integers on the channel and closes the channel when all the values have been sent:<br><code>gen</code> 函数启动一个 协程(goroutine)，它在通道(channel)上发送整数，并在发送所有值后关闭通道(channel)：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">gen</span><span class="params">(nums ...<span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> _, n := <span class="keyword">range</span> nums &#123;</span><br><span class="line">            out &lt;- n</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">close</span>(out)</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The second stage, <code>sq</code>, receives integers from a channel and returns a channel that emits the square of each received integer.<br>第二阶段，<code>sq</code>， 从通道接收整数，并返回一个通道，该通道发出每个接收整数的平方。  </p>
+<p>After the inbound channel is closed and this stage has sent all the values downstream, it closes the outbound channel:<br>在入站通道关闭且此阶段已将所有值发送到下游后，它将关闭出站通道：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sq</span><span class="params">(in &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> n := <span class="keyword">range</span> in &#123;</span><br><span class="line">            out &lt;- n * n</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">close</span>(out)</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The <code>main</code> function sets up the pipeline and runs the final stage:<br><code>main</code> 函数设置管道并运行最后阶段：  </p>
+<p>it receives values from the second stage and prints each one, until the channel is closed:<br>它从第二阶段接收值并打印每一个，直到通道关闭：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// Set up the pipeline. // 这里可以自行猜测一下 pipeline 在 Go 中的定义了。</span></span><br><span class="line">    <span class="comment">// 设置管道。</span></span><br><span class="line">    c := gen(<span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">    out := sq(c)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Consume the output.</span></span><br><span class="line">    <span class="comment">// 消费输出。</span></span><br><span class="line">    fmt.Println(&lt;-out) <span class="comment">// 4</span></span><br><span class="line">    fmt.Println(&lt;-out) <span class="comment">// 9</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Since <code>sq</code>has the same type for its inbound and outbound channels, we can compose it any number of times.<br>由于 <code>sq</code> 的入站和出站通道的类型相同，因此我们可以多次编写它。  </p>
+<p>We can also rewrite <code>main</code> as a range loop, like the other stages:<br>我们还可以重写 <code>main</code> 作为范围循环，就像其它阶段一样：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// Set up the pipeline and consume the output.</span></span><br><span class="line">    <span class="keyword">for</span> n := <span class="keyword">range</span> sq(sq(gen(<span class="number">2</span>, <span class="number">3</span>))) &#123;</span><br><span class="line">        fmt.Println(n) <span class="comment">// 16 then 81</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>译注：<br>上面的列子虽然用了 goroutine 和 channel，但不具有并发功能，依旧是一个数处理，然后再处理一个数。<br>接下来的例子会慢慢加上并发。<br>接下来会讲 <strong>扇出，扇入</strong> 的概念，如对 <strong>扇出，扇入</strong> 没有概念，<br>请看维基百科上对<a href="https://zh.wikipedia.org/wiki/%E6%89%87%E5%85%A5" target="_blank" rel="noopener">扇入</a>的解释，特别留意该页面中的图片，有助于想象。<br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/fan-out.png" alt="fanout"><br>译注结束  </p>
+<h2 id="扇出，扇入-Fan-out-fan-in"><a href="#扇出，扇入-Fan-out-fan-in" class="headerlink" title="扇出，扇入(Fan-out, fan-in)"></a>扇出，扇入(Fan-out, fan-in)</h2><p>Multiple functions can read from the same channel until that channel is closed; this is called <em>fan-out</em>.<br>多个函数可以从同一通道读取，直到该通道关闭；这称为 <em>(扇出)fan-out</em>。  </p>
+<p>This provides a way to distribute work amongst a group of workers to parallelize CPU use and I/O.<br>这提供了一种在一组工作线程(在Go中可对应工作协程)之间分配工作的方法，以便并行化 CPU 使用和 I/O  </p>
+<p>A function can read from multiple inputs and proceed until all are closed by multiplexing the input channels onto a single channel that’s closed when all the inputs are closed.<br>函数可以从多个输入读取并继续执行，直到所有输入通道多路复用到单个通道关闭，当所有输入都关闭时关闭。  </p>
+<p>This is called <em>fan-in</em>.<br>这称为 <em>(扇入)fan-in</em>。  </p>
+<p>We can change our pipeline to run two instances of <code>sq</code>, each reading from the same input channel.<br>我们可以更改我们的管道以运行两个 <code>sq</code> 实例，每个实例从相同的输入通道读取。  </p>
+<p>We introduce a new function, <code>merge</code>, to fan in the results:<br>我们引入了一个新的函数 <code>合并(merge)</code>，用于扇入(fan in)结果:  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    in := gen(<span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Distribute the sq work across two goroutines that both read from in.</span></span><br><span class="line">    <span class="comment">// 将 sq 的工作分配给交叉的协程，它们都从 in 取值。——译注：交叉(across)，不再排队执行。</span></span><br><span class="line">    <span class="comment">// 将从 in 中读到的值，分配给并行的协程，这就对应上面提到的 扇出(fan-out)概念。</span></span><br><span class="line">    c1 := sq(in)</span><br><span class="line">    c2 := sq(in)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Consume the merged output from c1 and c2.</span></span><br><span class="line">    <span class="keyword">for</span> n := <span class="keyword">range</span> merge(c1, c2) &#123;</span><br><span class="line">        fmt.Println(n) <span class="comment">// 4 then 9, or 9 then 4 ——译注：并行了，不确定那个会先输入。</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The <code>merge</code> function converts a list of channels to a single channel by starting a goroutine for each inbound channel that copies the values to the sole outbound channel.<br><code>merge</code> 通过为每个入站通道启动 goroutine 将通道列表转换为单个通道。  </p>
+<p>Once all the <code>output</code> goroutines have been started, <code>merge</code> starts one more goroutine to close the outbound channel after all sends on that channel are done.<br>一旦所有 <code>output</code> goroutine 都已启动，<code>merge</code> 会再启动一个 goroutine 来关闭出站通道，在该通道上的所有发送完成之后。  </p>
+<p>Sends on a closed channel panic, so it’s important to ensure all sends are done before calling close.<br>发送一个封闭的通道 panic，因此确保在调用 close 之前完成所有发送是很重要的。  </p>
+<p>The <a href="https://golang.org/pkg/sync/#WaitGroup" target="_blank" rel="noopener">sync.WaitGroup</a> type provides a simple way to arrange this synchronization:<br><a href="https://golang.org/pkg/sync/#WaitGroup" target="_blank" rel="noopener">sync.WaitGroup</a> 类型提供了一种的方法安排这样的同步：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(cs ...&lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;<span class="comment">// ——译注：注意 merge 可以接收多个参数</span></span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start an output goroutine for each input channel in cs.  output</span></span><br><span class="line">    <span class="comment">// copies values from c to out until c is closed, then calls wg.Done.</span></span><br><span class="line">    output := <span class="function"><span class="keyword">func</span><span class="params">(c &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> n := <span class="keyword">range</span> c &#123;</span><br><span class="line">            out &lt;- n</span><br><span class="line">        &#125;</span><br><span class="line">        wg.Done()</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Add(<span class="built_in">len</span>(cs))</span><br><span class="line">    <span class="keyword">for</span> _, c := <span class="keyword">range</span> cs &#123;</span><br><span class="line">        <span class="keyword">go</span> output(c)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start a goroutine to close out once all the output goroutines are done.</span></span><br><span class="line">    <span class="comment">// This must start after the wg.Add call.</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        wg.Wait()</span><br><span class="line">        <span class="built_in">close</span>(out)</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="停一停-Stopping-short"><a href="#停一停-Stopping-short" class="headerlink" title="停一停(Stopping short)"></a>停一停(Stopping short)</h2><p>There is a pattern to our pipeline functions：<br>在我们的管道函数有一个模式：  </p>
+<ul>
+<li>stages close their outbound channels when all the send operations are done.<br>所有发送操作完成后，阶段关闭其出站通道。</li>
+<li>stages keep receiving values from inbound channels until those channels are closed.<br>阶段继续接收来自入站通道的值，直到这些通道都关闭。  </li>
+</ul>
+<p>This pattern allows each receiving stage to be written as a <code>range</code> loop and ensures that all goroutines exit once all values have been successfully sent downstream.<br>此模式允许将每个接收阶段写成一个 <code>range</code> 循环，并确保一旦所有值都已成功发送到下游，所有 goroutine 都将退出。</p>
+<p>But in real pipelines, stages don’t always receive all the inbound values.<br>但在实际管道中，阶段并不总是接收所有入站值。  </p>
+<p>Sometimes this is by design: the receiver may only need a subset of values to make progress.<br>有时会这样设计的：接收者可能只需要一个值的子集来取得进展。  </p>
+<p>More often, a stage exits early because an inbound value represents an error in an earlier stage.<br>更常见的是，阶段会提前退出，因为入站值表示较早阶段的错误。  </p>
+<p>In either case the receiver should not have to wait for the remaining values to arrive, and we want earlier stages to stop producing values that later stages don’t need.<br>在这两种情况下，接收方都不必等待剩余值到达，我们希望早期阶段停止生成后期不需要的值。  </p>
+<p>In our example pipeline, if a stage fails to consume all the inbound values, the goroutines attempting to send those values will block indefinitely:<br>在我们的示例管道中，如果某个阶段无法使用所有入站值，则尝试发送这些值的 goroutine 将无限期地阻塞：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// Consume the first value from the output.</span></span><br><span class="line">    <span class="comment">// 消费输出中的第一个值</span></span><br><span class="line">    out := merge(c1, c2)</span><br><span class="line">    fmt.Println(&lt;-out) <span class="comment">// 4 or 9</span></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">    <span class="comment">// Since we didn't receive the second value from out,</span></span><br><span class="line">    <span class="comment">// 由于我们没有收到第二个值，</span></span><br><span class="line">    <span class="comment">// one of the output goroutines is hung attempting to send it.</span></span><br><span class="line">    <span class="comment">// 其中一个输出 goroutine 会被挂起一直尝试发送它(第二个值)。</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 译注</span></span><br><span class="line">    <span class="comment">// 这里的代码是来说明 merge 的缺陷。</span></span><br><span class="line">    <span class="comment">// 如果我们合并了两个通道(有两个值)，但只从合并后的通道取出一个值，</span></span><br><span class="line">    <span class="comment">// 那么 merge 内部的值再也发不来了，这样会造成资源泄漏。</span></span><br><span class="line">    <span class="comment">// 译注结束</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This is a resource leak: goroutines consume memory and runtime resources, and heap references in goroutine stacks keep data from being garbage collected.<br>这是资源泄漏：goroutines 消耗内存和运行时资源，goroutine 堆栈中的堆引用使数据不被垃圾收集。  </p>
+<p>Goroutines are not garbage collected; they must exit on their own.<br>Goroutines 不会被垃圾收集; 他们必须自己退出。  </p>
+<p>We need to arrange for the upstream stages of our pipeline to exit even when the downstream stages fail to receive all the inbound values.<br>即使下游阶段未能接收到所有入站值，我们也需要安排管道的上游阶段退出。  </p>
+<p>One way to do this is to change the outbound channels to have a buffer.<br>一种方法是将出站通道更改为具有缓冲区。  </p>
+<p>A buffer can hold a fixed number of values; send operations complete immediately if there’s room in the buffer:<br>缓冲区可以包含固定数量的值; 如果缓冲区中有空间，则立即发送操作：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">2</span>) <span class="comment">// buffer size 2</span></span><br><span class="line">c &lt;- <span class="number">1</span>  <span class="comment">// succeeds immediately</span></span><br><span class="line">c &lt;- <span class="number">2</span>  <span class="comment">// succeeds immediately</span></span><br><span class="line">c &lt;- <span class="number">3</span>  <span class="comment">// blocks until another goroutine does &lt;-c and receives 1</span></span><br></pre></td></tr></table></figure>
+<p>When the number of values to be sent is known at channel creation time, a buffer can simplify the code.<br>当在通道创建时知道要发送的值的数量时，缓冲区可以简化代码。  </p>
+<p>For example, we can rewrite <code>gen</code> to copy the list of integers into a buffered channel and avoid creating a new goroutine:<br>例如，我们可以重写 <code>gen</code> 以将整数列表复制到缓冲通道中，并避免创建新的 goroutine：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">gen</span><span class="params">(nums ...<span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123; <span class="comment">// 译注：注意返回类型是 &lt;-chan int</span></span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="built_in">len</span>(nums))<span class="comment">//译注：而这里 out 是 make(chan int, len(nums))</span></span><br><span class="line">    <span class="keyword">for</span> _, n := <span class="keyword">range</span> nums &#123;</span><br><span class="line">        out &lt;- n</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">close</span>(out)</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Returning to the blocked goroutines in our pipeline, we might consider adding a buffer to the outbound channel returned by <code>merge</code>:<br>回到我们管道中阻塞的 goroutines，我们可能会考虑为 <code>merge</code> 返回的出站通道添加一个缓冲区：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(cs ...&lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">1</span>) <span class="comment">// enough space for the unread inputs</span></span><br><span class="line">    <span class="comment">// ... the rest is unchanged ...</span></span><br></pre></td></tr></table></figure>
+<p>While this fixes the blocked goroutine in this program, this is bad code.<br>虽然这修复了此程序中阻塞的 goroutine，但这是错误的代码。  </p>
+<p>The choice of buffer size of 1 here depends on knowing the number of values <code>merge</code> will receive and the number of values downstream stages will consume.<br>此处缓冲区大小为 1 的选择取决于知道合并将接收的值的数量以及下游阶段将消耗的值的数量。  </p>
+<p>This is fragile: if we pass an additional value to <code>gen</code>, or if the downstream stage reads any fewer values, we will again have blocked goroutines.<br>这很脆弱：如果我们将一个额外的值传递给 <code>gen</code>，或者如果下游阶段读取任何更少的值，我们将再次阻止 goroutines。  </p>
+<p>Instead, we need to provide a way for downstream stages to indicate to the senders that they will stop accepting input.<br>相反，我们需要为下游阶段提供一种方法，以向发送方指示他们将停止接受输入。  </p>
+<h2 id="显式取消-Explicit-cancellation"><a href="#显式取消-Explicit-cancellation" class="headerlink" title="显式取消 Explicit cancellation"></a>显式取消 Explicit cancellation</h2><p>When <code>main</code> decides to exit without receiving all the values from <code>out</code>, it must tell the goroutines in the upstream stages to abandon the values they’re trying to send.<br>当 <code>main</code> 决定退出而没有从 <code>out</code> 中接收所有值时，它必须告诉上游阶段的 goroutines 放弃他们试图发送的值。  </p>
+<p>It does so by sending values on a channel called <code>done</code>.<br>它通过在名为 <code>done</code> 的通道上发送值来实现。  </p>
+<p>It sends two values since there are potentially two blocked senders:<br>它发送两个值，因为可能有两个阻塞的发件人：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    in := gen(<span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Distribute the sq work across two goroutines that both read from in.</span></span><br><span class="line">    c1 := sq(in)</span><br><span class="line">    c2 := sq(in)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Consume the first value from output.</span></span><br><span class="line">    done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, <span class="number">2</span>)</span><br><span class="line">    out := merge(done, c1, c2)</span><br><span class="line">    fmt.Println(&lt;-out) <span class="comment">// 4 or 9</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Tell the remaining senders we're leaving.</span></span><br><span class="line">    done &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">    done &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The sending goroutines replace their send operation with a <code>select</code> statement that proceeds either when the send on <code>out</code> happens or when they receive a value from <code>done</code>.<br>发送 goroutines 用 <code>select</code> 语句替换它们的发送操作，该语句在 <code>out</code> 时发送或者从 <code>done</code> 接收值时继续。  </p>
+<p>The value type of <code>done</code> is the empty struct because the value doesn’t matter: it is the receive event that indicates the send on <code>out</code> should be abandoned.<br><code>done</code> 的值类型是空结构，因为值无关紧要：它是接收事件，指示发送 out 应该放弃。  </p>
+<p>The <code>output</code> goroutines continue looping on their inbound channel, <code>c</code>, so the upstream stages are not blocked.<br><code>output</code> goroutine 继续在其入站通道 <code>c</code> 上循环，因此上游阶段不会被阻塞。  </p>
+<p>(We’ll discuss in a moment how to allow this loop to return early.)<br>（我们将在稍后讨论如何让这个循环尽早返回。）  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, cs ...&lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start an output goroutine for each input channel in cs.  output</span></span><br><span class="line">    <span class="comment">// copies values from c to out until c is closed or it receives a value</span></span><br><span class="line">    <span class="comment">// from done, then output calls wg.Done.</span></span><br><span class="line">    output := <span class="function"><span class="keyword">func</span><span class="params">(c &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> n := <span class="keyword">range</span> c &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> out &lt;- n:</span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        wg.Done()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ... the rest is unchanged ...</span></span><br></pre></td></tr></table></figure>
+<p>This approach has a problem: <em>each</em> downstream receiver needs to know the number of potentially blocked upstream senders and arrange to signal those senders on early return.<br>这种方法存在一个问题：_每个_下游接收器需要知道可能被阻塞的上游发送器的数量，并安排在早期返回时发信号通知这些发送器。  </p>
+<p>Keeping track of these counts is tedious and error-prone.<br>跟踪这些计数是单调乏味且容易出错的。  </p>
+<p>We need a way to tell an unknown and unbounded number of goroutines to stop sending their values downstream.<br>我们需要一种方法来告诉未知和无限数量的 goroutine 停止向下游发送它们的值。  </p>
+<p>In Go, we can do this by closing a channel, because <a href="https://golang.org/ref/spec#Receive_operator" target="_blank" rel="noopener">a receive operation on a closed channel can always proceed immediately, yielding the element type’s zero value.</a><br>在 Go 中，我们可以通过关闭通道来完成此操作，因为<a href="https://golang.org/ref/spec#Receive_operator" target="_blank" rel="noopener">关闭通道上的接收操作总是可以立即进行，从而产生元素类型的零值</a>。  </p>
+<p>This means that <code>main</code> can unblock all the senders simply by closing the <code>done</code> channel.<br>这意味着 <code>main</code> 可以通过关闭 <code>done</code> 的通道来解锁所有发送者。  </p>
+<p>This close is effectively a broadcast signal to the senders.<br>这种关闭实际上是发送者的广播信号。  </p>
+<p>We extend each of our pipeline functions to accept <code>done</code> as a parameter and arrange for the close to happen via a <code>defer</code> statement, so that all return paths from <code>main</code> will signal the pipeline stages to exit.<br>我们扩展每个管道函数以接受 <code>done</code> 作为参数并通过 <code>defer</code> 语句安排接近发生，以便来自 <code>main</code> 的所有返回路径将通知管道阶段退出。  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// Set up a done channel that's shared by the whole pipeline,</span></span><br><span class="line">    <span class="comment">// and close that channel when this pipeline exits, as a signal</span></span><br><span class="line">    <span class="comment">// for all the goroutines we started to exit.</span></span><br><span class="line">    done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">    <span class="keyword">defer</span> <span class="built_in">close</span>(done)</span><br><span class="line"></span><br><span class="line">    in := gen(done, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Distribute the sq work across two goroutines that both read from in.</span></span><br><span class="line">    c1 := sq(done, in)</span><br><span class="line">    c2 := sq(done, in)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Consume the first value from output.</span></span><br><span class="line">    out := merge(done, c1, c2)</span><br><span class="line">    fmt.Println(&lt;-out) <span class="comment">// 4 or 9</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// done will be closed by the deferred call.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Each of our pipeline stages is now free to return as soon as <code>done</code> is closed.<br>我们的每个管道阶段现在都可以在 <code>done</code> 关闭后自由返回。</p>
+<p>The <code>output</code> routine in <code>merge</code> can return without draining its inbound channel, since it knows the upstream sender, <code>sq</code>, will stop attempting to send when <code>done</code> is closed. <code>output</code> ensures <code>wg.Done</code> is called on all return paths via a <code>defer</code> statement:</p>
+<p>合并中的输出例程可以返回而不会耗尽其入站通道，因为它知道上游发送器 <code>sq</code> 将在完成关闭时停止尝试发送。 输出确保通过 <code>defer</code> 语句在所有返回路径上调用 <code>wg.Done</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, cs ...&lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start an output goroutine for each input channel in cs.  output</span></span><br><span class="line">    <span class="comment">// copies values from c to out until c or done is closed, then calls</span></span><br><span class="line">    <span class="comment">// wg.Done.</span></span><br><span class="line">    output := <span class="function"><span class="keyword">func</span><span class="params">(c &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        <span class="keyword">for</span> n := <span class="keyword">range</span> c &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> out &lt;- n:</span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ... the rest is unchanged ...</span></span><br></pre></td></tr></table></figure>
+<p>Similarly, <code>sq</code> can return as soon as <code>done</code> is closed. <code>sq</code> ensures its <code>out</code> channel is closed on all return paths via a <code>defer</code> statement:<br>同样，<code>sq</code> 可以在 <code>done</code> 关闭后立即返回。 <code>sq</code> 确保通过 <code>defer</code> 语句在所有返回路径上关闭其 <code>out</code> 通道：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sq</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, in &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">        <span class="keyword">for</span> n := <span class="keyword">range</span> in &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> out &lt;- n * n:</span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Here are the guidelines for pipeline construction:<br>以下是管道构造的指导原则：  </p>
+<ul>
+<li>stages close their outbound channels when all the send operations are done.<br>所有发送操作完成后，阶段内部关闭其出站通道。  </li>
+<li>stages keep receiving values from inbound channels until those channels are closed or the senders are unblocked.<br>阶段保持从入站通道接收值，直到这些通道关闭或发件人被解除阻塞。  </li>
+</ul>
+<p>Pipelines unblock senders either by ensuring there’s enough buffer for all the values that are sent or by explicitly signalling senders when the receiver may abandon the channel.<br>管道通过确保为发送的所有值提供足够的缓冲区或通过在接收方放弃信道时显式地发送信令来发送信号，从而解锁发送方。  </p>
+<h1 id="Digesting-a-tree"><a href="#Digesting-a-tree" class="headerlink" title="Digesting a tree"></a>Digesting a tree</h1><p>Let’s consider a more realistic pipeline.<br>让我们考虑一个更现实的管道。  </p>
+<p>MD5 is a message-digest algorithm that’s useful as a file checksum.<br>MD5 是一种消息摘要算法，可用作文件校验和。  </p>
+<p>The command line utility md5sum prints digest values for a list of files.<br>命令行实用程序 <code>md5sum</code> 打印文件列表的摘要值。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">% md5sum *.go</span><br><span class="line">d47c2bbc28298ca9befdfbc5d3aa4e65  bounded.go</span><br><span class="line">ee869afd31f83cbb2d10ee81b2b831dc  parallel.go</span><br><span class="line">b88175e65fdcbc01ac08aaf1fd9b5e96  serial.go</span><br></pre></td></tr></table></figure>
+<p>The main function of our program invokes a helper function <code>MD5All</code>, which returns a map from path name to digest value, then sorts and prints the results:<br>我们程序的主要功能是调用辅助函数 <code>MD5All</code>，它将路径名称中的映射返回到摘要值，然后对结果进行排序和打印：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// Calculate the MD5 sum of all files under the specified directory,</span></span><br><span class="line">    <span class="comment">// then print the results sorted by path name.</span></span><br><span class="line">    m, err := MD5All(os.Args[<span class="number">1</span>])</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> paths []<span class="keyword">string</span></span><br><span class="line">    <span class="keyword">for</span> path := <span class="keyword">range</span> m &#123;</span><br><span class="line">        paths = <span class="built_in">append</span>(paths, path)</span><br><span class="line">    &#125;</span><br><span class="line">    sort.Strings(paths)</span><br><span class="line">    <span class="keyword">for</span> _, path := <span class="keyword">range</span> paths &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"%x  %s\n"</span>, m[path], path)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The <code>MD5All</code> function is the focus of our discussion.<br><code>MD5All</code> 功能是我们讨论的重点。  </p>
+<p>In <a href="https://blog.golang.org/pipelines/serial.go" target="_blank" rel="noopener">serial.go</a>, the implementation uses no concurrency and simply reads and sums each file as it walks the tree.<br>在 <a href="https://blog.golang.org/pipelines/serial.go" target="_blank" rel="noopener">serial.go</a> 中，实现不使用并发，只是在遍历树时读取和求和每个文件。  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MD5All reads all the files in the file tree rooted at root and returns a map</span></span><br><span class="line"><span class="comment">// from file path to the MD5 sum of the file's contents.  If the directory walk</span></span><br><span class="line"><span class="comment">// fails or any read operation fails, MD5All returns an error.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MD5All</span><span class="params">(root <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">map</span>[<span class="keyword">string</span>][md5.Size]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">    m := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>][md5.Size]<span class="keyword">byte</span>)</span><br><span class="line">    err := filepath.Walk(root, <span class="function"><span class="keyword">func</span><span class="params">(path <span class="keyword">string</span>, info os.FileInfo, err error)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> err</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> !info.Mode().IsRegular() &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">        data, err := ioutil.ReadFile(path)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> err</span><br><span class="line">        &#125;</span><br><span class="line">        m[path] = md5.Sum(data)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> m, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="平行消费-Parallel-digestion"><a href="#平行消费-Parallel-digestion" class="headerlink" title="平行消费(Parallel digestion)"></a>平行消费(Parallel digestion)</h2><p>In <a href="https://blog.golang.org/pipelines/parallel.go" target="_blank" rel="noopener">parallel.go</a>, we split <code>MD5All</code> into a two-stage pipeline.<br>在 <a href="https://blog.golang.org/pipelines/parallel.go" target="_blank" rel="noopener">parallel.go</a> 中，我们将 <code>MD5All</code> 拆分为两阶段管道。  </p>
+<p>The first stage, <code>sumFiles</code>, walks the tree, digests each file in a new goroutine, and sends the results on a channel with value type <code>result</code>:<br>第一个阶段 <code>sumFiles</code> 遍历树，在新的 goroutine 中消化每个文件，并在具有值类型结果的通道上发送结果：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> result <span class="keyword">struct</span> &#123;</span><br><span class="line">    path <span class="keyword">string</span></span><br><span class="line">    sum  [md5.Size]<span class="keyword">byte</span></span><br><span class="line">    err  error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>sumFiles</code> returns two channels: one for the results and another for the error returned by <code>filepath.Walk</code>.<br><code>sumFiles</code> 返回两个通道：一个用于结果，另一个用于 <code>filepath.Walk</code> 返回的错误。  </p>
+<p>The walk function starts a new goroutine to process each regular file, then checks <code>done</code>.<br>walk 函数启动一个新的 goroutine 来处理每个常规文件，然后检查 <code>done</code>。</p>
+<p>If <code>done</code> is closed, the walk stops immediately:<br>如果<code>done</code> 关闭，walk 会立即停止：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sumFiles</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, root <span class="keyword">string</span>)</span> <span class="params">(&lt;-<span class="keyword">chan</span> result, &lt;-<span class="keyword">chan</span> error)</span></span> &#123;</span><br><span class="line">    <span class="comment">// For each regular file, start a goroutine that sums the file and sends</span></span><br><span class="line">    <span class="comment">// the result on c.  Send the result of the walk on errc.</span></span><br><span class="line">    c := <span class="built_in">make</span>(<span class="keyword">chan</span> result)</span><br><span class="line">    errc := <span class="built_in">make</span>(<span class="keyword">chan</span> error, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">        err := filepath.Walk(root, <span class="function"><span class="keyword">func</span><span class="params">(path <span class="keyword">string</span>, info os.FileInfo, err error)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> err</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> !info.Mode().IsRegular() &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">            &#125;</span><br><span class="line">            wg.Add(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">                data, err := ioutil.ReadFile(path)</span><br><span class="line">                <span class="keyword">select</span> &#123;</span><br><span class="line">                <span class="keyword">case</span> c &lt;- result&#123;path, md5.Sum(data), err&#125;:</span><br><span class="line">                <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                &#125;</span><br><span class="line">                wg.Done()</span><br><span class="line">            &#125;()</span><br><span class="line">            <span class="comment">// Abort the walk if done is closed.</span></span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                <span class="keyword">return</span> errors.New(<span class="string">"walk canceled"</span>)</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="comment">// Walk has returned, so all calls to wg.Add are done.  Start a</span></span><br><span class="line">        <span class="comment">// goroutine to close c once all the sends are done.</span></span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            wg.Wait()</span><br><span class="line">            <span class="built_in">close</span>(c)</span><br><span class="line">        &#125;()</span><br><span class="line">        <span class="comment">// No select needed here, since errc is buffered.</span></span><br><span class="line">        errc &lt;- err</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> c, errc</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>MD5All</code> receives the digest values from <code>c</code>.<br><code>MD5All</code>从 <code>c</code> 接收摘要值。  </p>
+<p><code>MD5All</code> returns early on error, closing <code>done</code> via a <code>defer</code>:<br><code>MD5All</code> 会在错误时提前返回，通过延迟 <code>done</code> 关闭：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MD5All</span><span class="params">(root <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">map</span>[<span class="keyword">string</span>][md5.Size]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="comment">// MD5All closes the done channel when it returns; it may do so before</span></span><br><span class="line">    <span class="comment">// receiving all the values from c and errc.</span></span><br><span class="line">    done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">    <span class="keyword">defer</span> <span class="built_in">close</span>(done)</span><br><span class="line"></span><br><span class="line">    c, errc := sumFiles(done, root)</span><br><span class="line"></span><br><span class="line">    m := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>][md5.Size]<span class="keyword">byte</span>)</span><br><span class="line">    <span class="keyword">for</span> r := <span class="keyword">range</span> c &#123;</span><br><span class="line">        <span class="keyword">if</span> r.err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, r.err</span><br><span class="line">        &#125;</span><br><span class="line">        m[r.path] = r.sum</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> err := &lt;-errc; err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> m, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="有限的并行性-Bounded-parallelism"><a href="#有限的并行性-Bounded-parallelism" class="headerlink" title="有限的并行性(Bounded parallelism)"></a>有限的并行性(Bounded parallelism)</h2><p>The <code>MD5All</code> implementation in <a href>parallel.go</a> starts a new goroutine for each file.<br><code>parallel.go</code> 中的 <code>MD5All</code> 实现为每个文件启动一个新的 goroutine。  </p>
+<p>In a directory with many large files, this may allocate more memory than is available on the machine.<br>在具有许多大文件的目录中，这可能会分配比计算机上可用内存更多的内存。  </p>
+<p>We can limit these allocations by bounding the number of files read in parallel.<br>我们可以通过限制并行读取的文件数来限制这些分配。  </p>
+<p>In <a href="https://blog.golang.org/pipelines/bounded.go" target="_blank" rel="noopener">bounded.go</a>, we do this by creating a fixed number of goroutines for reading files.<br>在 <a href="https://blog.golang.org/pipelines/bounded.go" target="_blank" rel="noopener">bounded.go</a> 中，我们通过创建固定数量的goroutine来读取文件。  </p>
+<p>Our pipeline now has three stages: walk the tree, read and digest the files, and collect the digests.<br>我们的管道现在有三个阶段：走树，读取和消化文件，并收集摘要。  </p>
+<p>The first stage, <code>walkFiles</code>, emits the paths of regular files in the tree:<br>第一个阶段，<code>walkFiles</code>，发出树中常规文件的路径：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">walkFiles</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, root <span class="keyword">string</span>)</span> <span class="params">(&lt;-<span class="keyword">chan</span> <span class="keyword">string</span>, &lt;-<span class="keyword">chan</span> error)</span></span> &#123;</span><br><span class="line">    paths := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">    errc := <span class="built_in">make</span>(<span class="keyword">chan</span> error, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// Close the paths channel after Walk returns.</span></span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(paths)</span><br><span class="line">        <span class="comment">// No select needed for this send, since errc is buffered.</span></span><br><span class="line">        errc &lt;- filepath.Walk(root, <span class="function"><span class="keyword">func</span><span class="params">(path <span class="keyword">string</span>, info os.FileInfo, err error)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> err</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> !info.Mode().IsRegular() &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> paths &lt;- path:</span><br><span class="line">            <span class="keyword">case</span> &lt;-done:</span><br><span class="line">                <span class="keyword">return</span> errors.New(<span class="string">"walk canceled"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> paths, errc</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The middle stage starts a fixed number of <code>digester</code> goroutines that receive file names from <code>paths</code> and send <code>results</code> on channel <code>c</code>:<br>中间阶段启动固定数量的<code>digester</code> goroutine，从 <code>paths</code> 接收文件名并在通道 <code>c</code> 上发送 <code>results</code>：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">digester</span><span class="params">(done &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;, paths &lt;-<span class="keyword">chan</span> <span class="keyword">string</span>, c <span class="keyword">chan</span>&lt;- result)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> path := <span class="keyword">range</span> paths &#123;</span><br><span class="line">        data, err := ioutil.ReadFile(path)</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> c &lt;- result&#123;path, md5.Sum(data), err&#125;:</span><br><span class="line">        <span class="keyword">case</span> &lt;-done:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Unlike our previous examples, <code>digester</code> does not close its output channel, as multiple goroutines are sending on a shared channel.<br>与前面的示例不同，由于多个 goroutine 正在共享通道上发送，因此 <code>digester</code> 不会关闭其输出通道。  </p>
+<p>Instead, code in <code>MD5All</code> arranges for the channel to be closed when all the <code>digesters</code> are done:<br>相反，<code>MD5All</code> 中的代码会在所有 <code>digesters</code> 完成后安排关闭通道： </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Start a fixed number of goroutines to read and digest files.</span></span><br><span class="line">    c := <span class="built_in">make</span>(<span class="keyword">chan</span> result)</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    <span class="keyword">const</span> numDigesters = <span class="number">20</span></span><br><span class="line">    wg.Add(numDigesters)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; numDigesters; i++ &#123;</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            digester(done, paths, c)</span><br><span class="line">            wg.Done()</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        wg.Wait()</span><br><span class="line">        <span class="built_in">close</span>(c)</span><br><span class="line">    &#125;()</span><br></pre></td></tr></table></figure>
+<p>We could instead have each digester create and return its own output channel, but then we would need additional goroutines to fan-in the results.<br>我们可以让每个消化器(digester)创建并返回自己的输出通道，但是我们需要额外的 goroutine 来扇入(fan-in)结果。  </p>
+<p>The final stage receives all the <code>results</code> from <code>c</code> then checks the error from <code>errc</code>.<br>最后阶段从 <code>c</code> 接收所有 <code>results</code>，然后检查 <code>errc</code> 中的错误。 </p>
+<p>This check cannot happen any earlier, since before this point, <code>walkFiles</code> may block sending values downstream:<br>此检查不会更早发生，因为在此之前，<code>walkFiles</code> 可能会阻止向下游发送值：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">m := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>][md5.Size]<span class="keyword">byte</span>)</span><br><span class="line">    <span class="keyword">for</span> r := <span class="keyword">range</span> c &#123;</span><br><span class="line">        <span class="keyword">if</span> r.err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, r.err</span><br><span class="line">        &#125;</span><br><span class="line">        m[r.path] = r.sum</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Check whether the Walk failed.</span></span><br><span class="line">    <span class="keyword">if</span> err := &lt;-errc; err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> m, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结-Conclusion"><a href="#总结-Conclusion" class="headerlink" title="总结(Conclusion)"></a>总结(Conclusion)</h2><p>This article has presented techniques for constructing streaming data pipelines in Go.<br>本文介绍了在Go中构建流数据管道的技术。  </p>
+<p>Dealing with failures in such pipelines is tricky, since each stage in the pipeline may block attempting to send values downstream, and the downstream stages may no longer care about the incoming data.<br>处理此类管道中的故障非常棘手，因为管道中的每个阶段都可能阻止尝试向下游发送值，并且下游阶段可能不再关心传入数据。  </p>
+<p>We showed how closing a channel can broadcast a “done” signal to all the goroutines started by a pipeline and defined guidelines for constructing pipelines correctly.<br>我们展示了关闭一个通道如何向管道启动的所有 goroutine 广播 “done” 信号，并定义正确构建管道的准则。  </p>
+<p>Further reading(扩展阅读):</p>
+<ul>
+<li><a href="https://talks.golang.org/2012/concurrency.slide#1" target="_blank" rel="noopener">Go Concurrency Patterns</a> (<a href="https://talks.golang.org/2012/concurrency.slide#1" target="_blank" rel="noopener">video</a>) presents the basics of Go’s concurrency primitives and several ways to apply them.</li>
+<li><a href="https://blog.golang.org/advanced-go-concurrency-patterns" target="_blank" rel="noopener">Advanced Go Concurrency Patterns</a> (<a href="http://www.youtube.com/watch?v=QDDwwePbDtw" target="_blank" rel="noopener">video</a>) covers more complex uses of Go’s primitives, especially select.</li>
+<li>Douglas McIlroy’s paper <a href="https://swtch.com/~rsc/thread/squint.pdf" target="_blank" rel="noopener">Squinting at Power Series</a> shows how Go-like concurrency provides elegant support for complex calculations.</li>
+</ul>
+<h2 id="相关文章-Related-articles"><a href="#相关文章-Related-articles" class="headerlink" title="相关文章(Related articles)"></a>相关文章(Related articles)</h2><ul>
+<li><a href="https://blog.golang.org/context" target="_blank" rel="noopener">Go Concurrency Patterns: Context</a></li>
+<li><a href="https://blog.golang.org/race-detector" target="_blank" rel="noopener">Introducing the Go Race Detector</a></li>
+<li><a href="https://blog.golang.org/advanced-go-concurrency-patterns" target="_blank" rel="noopener">Advanced Go Concurrency Patterns</a></li>
+<li><a href="https://blog.golang.org/concurrency-is-not-parallelism" target="_blank" rel="noopener">Concurrency is not parallelism</a></li>
+<li><a href="https://blog.golang.org/go-videos-from-google-io-2012" target="_blank" rel="noopener">Go videos from Google I/O 2012</a></li>
+<li><a href="https://blog.golang.org/go-concurrency-patterns-timing-out-and" target="_blank" rel="noopener">Go Concurrency Patterns: Timing out, moving on</a></li>
+<li><a href="https://blog.golang.org/share-memory-by-communicating" target="_blank" rel="noopener">Share Memory By Communicating</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，请我喝瓶肥宅快乐水可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>韦旭彬</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/go-pipelines/" title="Go 并发模式：管道 与 取消">https://iweixubin.github.io/posts/go-pipelines/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/go/" rel="tag"># go</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/vscode_go_ide/" rel="next" title="vscode 配置 Go 开发环境">
+                  <i class="fa fa-chevron-left"></i> vscode 配置 Go 开发环境
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
+            
+              <p class="site-author-name" itemprop="name">韦旭彬</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介-Introduction"><span class="nav-number">1.</span> <span class="nav-text">简介(Introduction)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是管道-What-is-a-pipeline"><span class="nav-number">2.</span> <span class="nav-text">什么是管道(What is a pipeline?)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平方数-Squaring-numbers"><span class="nav-number">3.</span> <span class="nav-text">平方数(Squaring numbers)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扇出，扇入-Fan-out-fan-in"><span class="nav-number">4.</span> <span class="nav-text">扇出，扇入(Fan-out, fan-in)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#停一停-Stopping-short"><span class="nav-number">5.</span> <span class="nav-text">停一停(Stopping short)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显式取消-Explicit-cancellation"><span class="nav-number">6.</span> <span class="nav-text">显式取消 Explicit cancellation</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Digesting-a-tree"><span class="nav-number"></span> <span class="nav-text">Digesting a tree</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#平行消费-Parallel-digestion"><span class="nav-number">1.</span> <span class="nav-text">平行消费(Parallel digestion)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有限的并行性-Bounded-parallelism"><span class="nav-number">2.</span> <span class="nav-text">有限的并行性(Bounded parallelism)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结-Conclusion"><span class="nav-number">3.</span> <span class="nav-text">总结(Conclusion)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文章-Related-articles"><span class="nav-number">4.</span> <span class="nav-text">相关文章(Related articles)</span></a></li></ol></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">韦旭彬</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

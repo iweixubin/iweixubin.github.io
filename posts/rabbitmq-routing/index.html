@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文对应 RabbitMQ 官方教程的第四个例子——Routing(路由选择)，讲述怎么选择性的接收消息。">
+<meta name="keywords" content="消息队列,RabbitMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ 路由选择">
+<meta property="og:url" content="https://iweixubin.github.io/posts/rabbitmq-routing/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文对应 RabbitMQ 官方教程的第四个例子——Routing(路由选择)，讲述怎么选择性的接收消息。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/direct-exchange.png">
+<meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/direct-exchange-multiple.png">
+<meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/python-four.png">
+<meta property="og:updated_time" content="2019-10-06T17:27:50.691Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ 路由选择">
+<meta name="twitter:description" content="本文对应 RabbitMQ 官方教程的第四个例子——Routing(路由选择)，讲述怎么选择性的接收消息。">
+<meta name="twitter:image" content="https://www.rabbitmq.com/img/tutorials/direct-exchange.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/rabbitmq-routing/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>RabbitMQ 路由选择 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/rabbitmq-routing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="韦旭彬">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">RabbitMQ 路由选择
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-18 00:00:01" itemprop="dateCreated datePublished" datetime="2019-06-18T00:00:01+08:00">2019-06-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-07 01:27:50" itemprop="dateModified" datetime="2019-10-07T01:27:50+08:00">2019-10-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/RabbitMQ/" itemprop="url" rel="index"><span itemprop="name">RabbitMQ</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文对应 RabbitMQ 官方教程的第四个例子——Routing(路由选择)，讲述怎么选择性的接收消息。</p>
+<a id="more"></a>
+<h2 id="路由选择-Routing"><a href="#路由选择-Routing" class="headerlink" title="路由选择(Routing)"></a>路由选择(Routing)</h2><p>在上一篇的教程中，我们实现了一个简单的日志系统。可以把日志消息广播给多个接收者。 </p>
+<p>在本教程中，我们将为其添加一个功能 - 我们将只能订阅一部分消息。<br>例如，我们只能将关键错误消息定向到日志文件（以节省磁盘空间），同时仍然能够在控制台上打印所有日志消息。  </p>
+<h2 id="绑定-Bindings"><a href="#绑定-Bindings" class="headerlink" title="绑定(Bindings)"></a>绑定(Bindings)</h2><p>在之前的例子中，我们已经在创建绑定。 您可能会记得像：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">channel.QueueBind(queue: queueName,</span><br><span class="line">                  exchange: <span class="string">"logs"</span>,</span><br><span class="line">                  routingKey: <span class="string">""</span>);</span><br></pre></td></tr></table></figure>
+<p>绑定(binding)是指交换器和队列(queue)的关系。<br>可以简单理解为：这个队列(queue)对这个交换器的消息感兴趣。  </p>
+<p>绑定的时候可以带上一个额外的 <code>routingkey</code> 参数。为了避免与 <code>basicpublish</code> 的参数混淆，我们把它叫做 <code>binding key</code>。<br>以下是如何创建一个带 <code>binding key</code> 的绑定。  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ！机制：将 队列(queue) 绑定到指定 交换器(exchange) ！！！</span></span><br><span class="line">channel.QueueBind(queue: queueName,        <span class="comment">// 队列名</span></span><br><span class="line">                  exchange: <span class="string">"direct_logs"</span>, <span class="comment">// 交换器名</span></span><br><span class="line">                  routingKey: <span class="string">"black"</span>);    <span class="comment">// 路由键</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// RabbitMQ 消息传递模型：消费者(接收者)使用一个队列，绑定到某个交换器，指定路由键</span></span><br></pre></td></tr></table></figure>
+<p><code>binding key</code> 的含义取决于交换器的类型。我们之前使用过的 <code>fanout</code> 类型会忽略这个值。</p>
+<h2 id="指定类型交换器"><a href="#指定类型交换器" class="headerlink" title="指定类型交换器"></a>指定类型交换器</h2><p>指定类型交换器——(Direct exchange)  </p>
+<p>我们上一个教程中的日志记录系统向所有消费者(consumers)广播所有消息。我们希望扩展它以允许根据消息的严重性过滤消息。<br>例如，我们可能希望将日志消息写入磁盘的脚本仅接收严重错误，而不是在警告或信息日志消息上浪费磁盘空间。  </p>
+<p>我们使用的是 <code>fanout</code> 类型交换器，它没有给我们太大的灵活性 - 它只能进行无意识的广播。  </p>
+<p>我们将会使用 <code>direct</code> 类型的交换器来代替。<br>路由的算法很简单——交换器将会对 <code>binding key</code> 和 <code>routing key</code> 进行精确匹配，从而确定消息该分发到哪个队列。  </p>
+<p>下图能够很好的描述这个场景：  </p>
+<p><img src="https://www.rabbitmq.com/img/tutorials/direct-exchange.png" alt="direct 模式"></p>
+<p>在这个场景中，我们可以看到 <code>direct</code> 类型交换器 <code>X</code> 和两个队列绑定了。<br>第一个队列使用 <code>orange</code> 作为 <code>binding key</code>，<br>第二个队列有两个绑定，一个使用 <code>black</code> 作为 <code>binding key</code>，另外一个是 <code>green</code>。  </p>
+<p>这样以来，当 <code>routing key</code> 为 <code>orange</code> 的消息发布到交换器，<br>就会被路由(route)到队列 <code>Q1</code> 。<code>routing key</code> 为 <code>black</code> 或者 <code>green</code> 的消息就会路由到<code>Q2</code>。<br>其他的所有消息都将会被丢弃。  </p>
+<h2 id="多个绑定"><a href="#多个绑定" class="headerlink" title="多个绑定"></a>多个绑定</h2><p>多个绑定——(Multiple bindings)</p>
+<p><img src="https://www.rabbitmq.com/img/tutorials/direct-exchange-multiple.png" alt="Multiple bindings"></p>
+<p>使用相同的绑定密钥绑定多个队列是完全合法的。 在我们的示例中，我们可以在X和Q1之间添加绑定键黑色的绑定。 在这种情况下，直接交换将表现得像扇出一样，并将消息广播到所有匹配的队列。 路由键为黑色的消息将传送到Q1和Q2。</p>
+<p>多个队列使用相同的 <code>binding key</code> 是允许的。<br>我们的这个例子，我们可以添加一个X和Q1之间的绑定，使用 <code>black</code> 的 <code>binding key</code>。<br>这样一来，<code>direct</code> 类型交换器就和 <code>fanout</code> 类型交换器的行为一样，将会广播消息到所有匹配的队列。<br>带有 <code>routing key</code> 为 <code>black</code> 的消息都会发送到 <code>Q1</code> 和 <code>Q2</code>。  </p>
+<h2 id="发送日志"><a href="#发送日志" class="headerlink" title="发送日志"></a>发送日志</h2><p>我们将此模型用于我们的日志系统。 我们会将消息发送给 <code>direct</code> 类型交换器，而不是 <code>fanout</code> 类型交换器。<br>我们将提供日志级别作为 <code>routing key</code>。 这样子负责接收处理的脚本就可以选择它想要处理的日志级别。<br>让我们首先关注发送日志的实现。  </p>
+<p>一如既往，我们需要先创建一个交换器：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">channel.ExchangeDeclare(exchange: <span class="string">"direct_logs"</span>, <span class="comment">// 交换器名字</span></span><br><span class="line">                        type: <span class="string">"direct"</span>);         <span class="comment">// 交换器类型</span></span><br></pre></td></tr></table></figure>
+<p>我们就可以准备发送消息了：  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> body = Encoding.UTF8.GetBytes(message);</span><br><span class="line">channel.BasicPublish(exchange: <span class="string">"direct_logs"</span>,   <span class="comment">// 交换器名字</span></span><br><span class="line">                     routingKey: severity,      <span class="comment">// 路由键</span></span><br><span class="line">                     basicProperties: <span class="literal">null</span>,</span><br><span class="line">                     body: body);</span><br></pre></td></tr></table></figure>
+<p>为简化起见，我们假设 <code>severity</code> 可以是 <code>info</code>, <code>warning</code>, <code>error</code>之一。  </p>
+<h2 id="订阅-Subscribing"><a href="#订阅-Subscribing" class="headerlink" title="订阅(Subscribing)"></a>订阅(Subscribing)</h2><p>处理接收消息的方式和之前差不多，但是我们为每一个日志级别创建了一个新的绑定。  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> queueName = channel.QueueDeclare().QueueName;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span>(<span class="keyword">var</span> severity <span class="keyword">in</span> args)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 队列(queue) 绑定到指定 交换器(exchange) ！！！</span></span><br><span class="line">    channel.QueueBind(queue: queueName,         <span class="comment">// 队列名</span></span><br><span class="line">                      exchange: <span class="string">"direct_logs"</span>,  <span class="comment">// 交换器名字</span></span><br><span class="line">                      routingKey: severity);    <span class="comment">// 路由键</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// RabbitMQ 消息传递模型：消费者(接收者)使用一个队列，绑定到某个交换器，指定路由键</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="完整演示"><a href="#完整演示" class="headerlink" title="完整演示"></a>完整演示</h2><p>为了更好地演示，下面的代码和官方教程的不同。<br><a href="https://www.rabbitmq.com/tutorials/tutorial-four-dotnet.html" target="_blank" rel="noopener">官方例子传送门</a>  </p>
+<p><img src="https://www.rabbitmq.com/img/tutorials/python-four.png" alt="路由例子">  </p>
+<p><code>发送日志</code> 的代码：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client; <span class="comment">// 请自行用 NuGet 添加依赖</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MqEmitLogDirect</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 这是 生产者(发布者，发送者) 的示例代码</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> mqHelper = <span class="keyword">new</span> MqHelper())</span><br><span class="line">            &#123;</span><br><span class="line">                Console.WriteLine(<span class="string">" 请输入日志消息，格式是[日志等级] [日志内容]"</span>);</span><br><span class="line">                Console.WriteLine(<span class="string">" 如：info 记得跟踪信息"</span>);</span><br><span class="line">                Console.WriteLine(<span class="string">" 如：error 系统出现错误和异常啦"</span>);</span><br><span class="line">                Console.WriteLine(<span class="string">" 如：warning 出现了不合理请看但不影响系统运行和使用"</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> log = Console.ReadLine().Split(<span class="string">" "</span>);</span><br><span class="line">                    <span class="keyword">var</span> logLevel = log[<span class="number">0</span>];</span><br><span class="line">                    <span class="keyword">var</span> logMsg = log[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrWhiteSpace(logLevel))</span><br><span class="line">                        logLevel = <span class="string">"info"</span>;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrWhiteSpace(logMsg))</span><br><span class="line">                        logMsg = <span class="string">"Hello World"</span>;</span><br><span class="line"></span><br><span class="line">                    mqHelper.Publish(logLevel, logMsg);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title">MqHelper</span> : <span class="title">IDisposable</span></span><br><span class="line">    &#123;</span><br><span class="line">        IConnection connection = <span class="literal">null</span>;</span><br><span class="line">        IModel channel = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> IModel <span class="title">CreateModel</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (channel == <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> factory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">                factory.HostName = <span class="string">"192.168.86.128"</span>;<span class="comment">// 这是我的 RabbitMQ 服务器地址</span></span><br><span class="line">                factory.Port = <span class="number">5672</span>;</span><br><span class="line">                factory.UserName = <span class="string">"admin"</span>;<span class="comment">//用户名</span></span><br><span class="line">                factory.Password = <span class="string">"admin"</span>;<span class="comment">//密码</span></span><br><span class="line"></span><br><span class="line">                connection = factory.CreateConnection();</span><br><span class="line"></span><br><span class="line">                channel = connection.CreateModel();</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 声明一个交换器</span></span><br><span class="line">                channel.ExchangeDeclare(exchange: <span class="string">"direct_logs"</span>,<span class="comment">// 交换器名称</span></span><br><span class="line">                                        type: <span class="string">"direct"</span>);        <span class="comment">// 交换器类型</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// 和上一章教程中的例子不同的是，交换器类型不同了</span></span><br><span class="line">                <span class="comment">// 熟悉 RabbitMQ 交换器类型，才能更好地使用 RabbitMQ</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> channel;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Publish</span>(<span class="params"><span class="keyword">string</span> logLevel, <span class="keyword">string</span> logMsg</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> channel = CreateModel();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> body = Encoding.UTF8.GetBytes(logMsg);</span><br><span class="line"></span><br><span class="line">            channel.BasicPublish(exchange: <span class="string">"direct_logs"</span>,<span class="comment">// 交换器名称</span></span><br><span class="line">                                 routingKey: logLevel,   <span class="comment">// 路由键</span></span><br><span class="line">                                 basicProperties: <span class="literal">null</span>,</span><br><span class="line">                                 body: body);</span><br><span class="line"></span><br><span class="line">            Console.WriteLine(<span class="string">$" [Producer(生产者)] 广播日志消息-&gt; 级别：<span class="subst">&#123;logLevel&#125;</span>  内容：<span class="subst">&#123;logMsg&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (connection != <span class="literal">null</span>)</span><br><span class="line">                connection.Dispose();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (channel != <span class="literal">null</span>)</span><br><span class="line">                channel.Dispose();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>订阅日志</code> 的代码：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client;</span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client.Events;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MqReceiveLogsDirect</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 这是 消费者(接收者) 的示例代码</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">string</span> logLevel = <span class="keyword">string</span>.Empty;</span><br><span class="line">            <span class="keyword">if</span> (args.Length &gt; <span class="number">0</span>)</span><br><span class="line">                logLevel = args[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> factory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">            factory.HostName = <span class="string">"192.168.86.128"</span>;<span class="comment">// 这是我的 RabbitMQ 服务器地址</span></span><br><span class="line">            factory.Port = <span class="number">5672</span>;</span><br><span class="line">            factory.UserName = <span class="string">"admin"</span>;<span class="comment">//用户名</span></span><br><span class="line">            factory.Password = <span class="string">"admin"</span>;<span class="comment">//密码</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> connection = factory.CreateConnection())</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> channel = connection.CreateModel())</span><br><span class="line">            &#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 声明一个交换器</span></span><br><span class="line">                channel.ExchangeDeclare(exchange: <span class="string">"direct_logs"</span>, <span class="comment">// 交换器名字</span></span><br><span class="line">                                        type: <span class="string">"direct"</span>);         <span class="comment">// 交换器类型</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> queueName = channel.QueueDeclare().QueueName;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">string</span> careLogLevel = logLevel;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 如果有指定只关心某个日志级别，那么...</span></span><br><span class="line">                <span class="keyword">if</span> (!<span class="keyword">string</span>.IsNullOrWhiteSpace(logLevel))</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 队列(queue) 绑定到指定 交换器(exchange)</span></span><br><span class="line">                    <span class="comment">// 并告诉该 交换器 本 队列 关心什么类型的消息</span></span><br><span class="line">                    channel.QueueBind(queue: queueName,        <span class="comment">// 队列名</span></span><br><span class="line">                                      exchange: <span class="string">"direct_logs"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                      routingKey: logLevel);   <span class="comment">// 路由键</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 队列(queue) 绑定到指定 交换器(exchange)</span></span><br><span class="line">                    <span class="comment">// 并告诉该 交换器 本 队列 关心什么类型的消息</span></span><br><span class="line">                    channel.QueueBind(queue: queueName,        <span class="comment">// 队列名</span></span><br><span class="line">                                      exchange: <span class="string">"direct_logs"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                      routingKey: <span class="string">"info"</span>);     <span class="comment">// 路由键</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 队列(queue) 绑定到指定 交换器(exchange)</span></span><br><span class="line">                    <span class="comment">// 并告诉该 交换器 本 队列 关心什么类型的消息</span></span><br><span class="line">                    channel.QueueBind(queue: queueName,        <span class="comment">// 队列名</span></span><br><span class="line">                                      exchange: <span class="string">"direct_logs"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                      routingKey: <span class="string">"error"</span>);    <span class="comment">// 路由键</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 队列(queue) 绑定到指定 交换器(exchange)</span></span><br><span class="line">                    <span class="comment">// 并告诉该 交换器 本 队列 关心什么类型的消息</span></span><br><span class="line">                    channel.QueueBind(queue: queueName,        <span class="comment">// 队列名</span></span><br><span class="line">                                      exchange: <span class="string">"direct_logs"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                      routingKey: <span class="string">"warning"</span>);  <span class="comment">// 路由键</span></span><br><span class="line"></span><br><span class="line">                    careLogLevel = <span class="string">"info,warning,error"</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                Console.WriteLine(<span class="string">$" [Consumer(消费者)，我关心日志级别是 <span class="subst">&#123;careLogLevel&#125;</span>]：我的心在等待,永远在等待..."</span>);</span><br><span class="line">                Console.WriteLine();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> consumer = <span class="keyword">new</span> EventingBasicConsumer(channel);</span><br><span class="line">                consumer.Received += (model, ea) =&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> logLv = ea.RoutingKey;</span><br><span class="line">                    <span class="keyword">var</span> logMeg = Encoding.UTF8.GetString(ea.Body);</span><br><span class="line"></span><br><span class="line">                    Console.WriteLine(<span class="string">$" [Consumer(消费者)，我关心日志级别是 <span class="subst">&#123;careLogLevel&#125;</span>]：收到日志消息-&gt;<span class="subst">&#123;logLv&#125;</span> <span class="subst">&#123;logMeg&#125;</span>"</span>);</span><br><span class="line">                &#125;;</span><br><span class="line">                channel.BasicConsume(queue: queueName,</span><br><span class="line">                                     autoAck: <span class="literal">true</span>,</span><br><span class="line">                                     consumer: consumer);</span><br><span class="line"></span><br><span class="line">                Console.ReadLine();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>启动两个 <code>订阅日志</code> 控制台实例：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\MqReceiveLogsDirect\bin\Debug\netcoreapp2.<span class="number">1</span>&gt; dotnet MqReceiveLogsDirect.dll error</span><br><span class="line"> [Consumer(消费者)，我关心日志级别是 error]：我的心在等待,永远在等待...</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\MqReceiveLogsDirect\bin\Debug\netcoreapp2.<span class="number">1</span>&gt; dotnet MqReceiveLogsDirect.dll</span><br><span class="line"> [Consumer(消费者)，我关心日志级别是 info,warning,error]：我的心在等待,永远在等待...</span><br></pre></td></tr></table></figure>
+<p>启动一个 <code>发布日志</code> 控制台实例：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\MqEmitLogDirect\bin\Debug\netcoreapp2.<span class="number">1</span>&gt; dotnet MqEmitLogDirect.dll</span><br><span class="line"> 请输入日志消息，格式是[日志等级] [日志内容]</span><br><span class="line"> 如：info 记得跟踪信息</span><br><span class="line"> 如：error 系统出现错误和异常啦</span><br><span class="line"> 如：warning 出现了不合理请看但不影响系统运行和使用</span><br></pre></td></tr></table></figure>
+<p>在 <code>发布日志</code> 控制台实例中输入内容：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">error 出现错误啦~</span><br><span class="line"> [Producer(生产者)] 广播日志消息-&gt; 级别：error  内容：出现错误啦~</span><br><span class="line"></span><br><span class="line">warning 警告，警告~</span><br><span class="line"> [Producer(生产者)] 广播日志消息-&gt; 级别：warning  内容：警告，警告~</span><br><span class="line"> </span><br><span class="line">info 跟踪信息是~</span><br><span class="line">[Producer(生产者)] 广播日志消息-&gt; 级别：info  内容：跟踪信息是~</span><br></pre></td></tr></table></figure>
+<p><code>订阅日志</code> 控制台实例得到消息：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Consumer(消费者)，我关心日志级别是 error]：收到日志消息-&gt;error 出现错误啦~</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[Consumer(消费者)，我关心日志级别是 info,warning,error]：收到日志消息-&gt;error 出现错误啦~</span><br><span class="line">[Consumer(消费者)，我关心日志级别是 info,warning,error]：收到日志消息-&gt;warning 警告，警告~</span><br><span class="line">[Consumer(消费者)，我关心日志级别是 info,warning,error]：收到日志消息-&gt;info 跟踪信息是~</span><br></pre></td></tr></table></figure>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>以下是官方的免责声明：</p>
+<blockquote>
+<p>生产[非]适用性免责声明<br>请记住，这个和其他教程都是教程。<br>他们一次展示一个新概念，可能会故意过度简化某些事情而忽略其他事物。<br>例如，为了简洁起见，在很大程度上省略了诸如连接管理，错误处理，连接恢复，并发和度量收集之类的主题。<br>这种简化的代码不应用于生产环境。</p>
+</blockquote>
+<p>要使用好 RabbitMQ，还有很多内容需要学习，所以继续下一章的 Topics(主题)</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，请我喝瓶肥宅快乐水可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="韦旭彬 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="韦旭彬 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>韦旭彬</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/rabbitmq-routing/" title="RabbitMQ 路由选择">https://iweixubin.github.io/posts/rabbitmq-routing/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/消息队列/" rel="tag"># 消息队列</a>
+          
+            <a href="/tags/RabbitMQ/" rel="tag"># RabbitMQ</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+              
+            
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+              
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/rabbitmq-publish-subscribe/" rel="next" title="RabbitMQ 发布-订阅">
+                  <i class="fa fa-chevron-left"></i> RabbitMQ 发布-订阅
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/rabbitmq-topics/" rel="prev" title="RabbitMQ 主题">
+                  RabbitMQ 主题 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="韦旭彬">
+            
+              <p class="site-author-name" itemprop="name">韦旭彬</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#路由选择-Routing"><span class="nav-number">1.</span> <span class="nav-text">路由选择(Routing)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#绑定-Bindings"><span class="nav-number">2.</span> <span class="nav-text">绑定(Bindings)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指定类型交换器"><span class="nav-number">3.</span> <span class="nav-text">指定类型交换器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多个绑定"><span class="nav-number">4.</span> <span class="nav-text">多个绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送日志"><span class="nav-number">5.</span> <span class="nav-text">发送日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#订阅-Subscribing"><span class="nav-number">6.</span> <span class="nav-text">订阅(Subscribing)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整演示"><span class="nav-number">7.</span> <span class="nav-text">完整演示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">8.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">韦旭彬</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
