@@ -109,7 +109,7 @@
 <meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/python-one.png">
 <meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/sending.png">
 <meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/receiving.png">
-<meta property="og:updated_time" content="2019-10-06T17:27:50.825Z">
+<meta property="og:updated_time" content="2020-05-16T12:59:12.839Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RabbitMQ 简介">
 <meta name="twitter:description" content="本文对应 RabbitMQ 官方教程的第一个例子——Hello World，用简单例子来初步了解 RabbitMQ 是什么。">
@@ -390,7 +390,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-07 01:27:50" itemprop="dateModified" datetime="2019-10-07T01:27:50+08:00">2019-10-07</time>
+                <time title="修改时间：2020-05-16 20:59:12" itemprop="dateModified" datetime="2020-05-16T20:59:12+08:00">2020-05-16</time>
               
             
           </span>
@@ -463,6 +463,9 @@
 <h3 id="接收"><a href="#接收" class="headerlink" title="接收"></a>接收</h3><p>至于消费者，它会监听来自 RabbitMQ 的消息。<br>因此，与发布单个消息的发布者不同，我们将使消费者持续运行以侦听消息并将其打印出来。</p>
 <p><img src="https://www.rabbitmq.com/img/tutorials/receiving.png" alt="从队列中接收到消息"></p>
 <figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client;</span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client.Events;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MqConsumer</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 这是 消费者(接收者) 的示例代码</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> factory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">            factory.HostName = <span class="string">"192.168.86.130"</span>;<span class="comment">// 这是我的 RabbitMQ 服务器地址</span></span><br><span class="line">            factory.Port = <span class="number">5672</span>;</span><br><span class="line">            factory.UserName = <span class="string">"admin"</span>;<span class="comment">//用户名</span></span><br><span class="line">            factory.Password = <span class="string">"admin"</span>;<span class="comment">//密码</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> connection = factory.CreateConnection())</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> channel = connection.CreateModel())</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 声明一个队列，声明队列是幂等的 - 只有在它不存在的情况下才会创建它。</span></span><br><span class="line">                channel.QueueDeclare(queue: <span class="string">"hello"</span>,</span><br><span class="line">                                     durable: <span class="literal">false</span>,</span><br><span class="line">                                     exclusive: <span class="literal">false</span>,</span><br><span class="line">                                     autoDelete: <span class="literal">false</span>,</span><br><span class="line">                                     arguments: <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> consumer = <span class="keyword">new</span> EventingBasicConsumer(channel);</span><br><span class="line">                consumer.Received += (model, ea) =&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> body = ea.Body;</span><br><span class="line">                    <span class="keyword">var</span> message = Encoding.UTF8.GetString(body);</span><br><span class="line">                    Console.WriteLine(<span class="string">" [消费者] 接收到消息： &#123;0&#125;"</span>, message);</span><br><span class="line">                &#125;;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 指明监听哪个队列</span></span><br><span class="line">                channel.BasicConsume(queue: <span class="string">"hello"</span>,</span><br><span class="line">                                     autoAck: <span class="literal">true</span>,</span><br><span class="line">                                     consumer: consumer);</span><br><span class="line"></span><br><span class="line">                Console.WriteLine(<span class="string">"我的心在等待,永远在等待..."</span>);</span><br><span class="line">                Console.WriteLine(<span class="string">" Press [enter] to exit."</span>);</span><br><span class="line">                Console.ReadLine();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Tips：<br>队列 <code>hello</code>，由谁创建，与谁的关系密切，由谁回收？</p>
+</blockquote>
 <h3 id="运行看看"><a href="#运行看看" class="headerlink" title="运行看看"></a>运行看看</h3><p>先运行 消费者 端  </p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MqConsumer&gt; dotnet run</span><br></pre></td></tr></table></figure>
 <p>或者<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\MqConsumer\bin\Debug\netcoreapp2.<span class="number">1</span>&gt; dotnet MqConsumer.dll</span><br></pre></td></tr></table></figure></p>
@@ -728,7 +731,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">34</span>
+                    <span class="site-state-item-count">38</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -791,7 +794,23 @@
                     
                       
                     
-                    <span class="site-state-item-count">8</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -950,7 +969,27 @@
                     
                       
                     
-                    <span class="site-state-item-count">31</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">32</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -1045,7 +1084,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
