@@ -96,18 +96,18 @@
 
 
 
-  <meta name="description" content="从 GitHub 上 Clone 下来 aspnetcore 源码后，要进行各种编译，出错~为自己不了解错误背后的原因而感到难受，所以下定决心好好学习一下 MSBuild~ MSBuild 初体验安装完 Visual Studio 2019 后，在下面两个目录下有 MSBuild.exe：C:\Program Files (x86)\Microsoft Visual Studio\2019\Ent">
+  <meta name="description" content="从 GitHub 上 Clone 下来 aspnetcore 源码后，要进行各种编译，出错~为自己不了解错误背后的原因而感到难受，所以下定决心好好学习一下 MSBuild~">
 <meta name="keywords" content="MSBuild,编译">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MSBuild 入门">
 <meta property="og:url" content="https://iweixubin.github.io/posts/msbuild/getting-started/index.html">
 <meta property="og:site_name" content="思与行">
-<meta property="og:description" content="从 GitHub 上 Clone 下来 aspnetcore 源码后，要进行各种编译，出错~为自己不了解错误背后的原因而感到难受，所以下定决心好好学习一下 MSBuild~ MSBuild 初体验安装完 Visual Studio 2019 后，在下面两个目录下有 MSBuild.exe：C:\Program Files (x86)\Microsoft Visual Studio\2019\Ent">
+<meta property="og:description" content="从 GitHub 上 Clone 下来 aspnetcore 源码后，要进行各种编译，出错~为自己不了解错误背后的原因而感到难受，所以下定决心好好学习一下 MSBuild~">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-11-05T15:03:31.220Z">
+<meta property="og:updated_time" content="2020-11-08T12:43:13.111Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MSBuild 入门">
-<meta name="twitter:description" content="从 GitHub 上 Clone 下来 aspnetcore 源码后，要进行各种编译，出错~为自己不了解错误背后的原因而感到难受，所以下定决心好好学习一下 MSBuild~ MSBuild 初体验安装完 Visual Studio 2019 后，在下面两个目录下有 MSBuild.exe：C:\Program Files (x86)\Microsoft Visual Studio\2019\Ent">
+<meta name="twitter:description" content="从 GitHub 上 Clone 下来 aspnetcore 源码后，要进行各种编译，出错~为自己不了解错误背后的原因而感到难受，所以下定决心好好学习一下 MSBuild~">
 
 
 
@@ -384,7 +384,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-11-05 23:03:31" itemprop="dateModified" datetime="2020-11-05T23:03:31+08:00">2020-11-05</time>
+                <time title="修改时间：2020-11-08 20:43:13" itemprop="dateModified" datetime="2020-11-08T20:43:13+08:00">2020-11-08</time>
               
             
           </span>
@@ -437,6 +437,7 @@
 
       
         <p>从 GitHub 上 Clone 下来 aspnetcore 源码后，要进行各种编译，出错~<br>为自己不了解错误背后的原因而感到难受，所以下定决心好好学习一下 MSBuild~</p>
+<a id="more"></a>
 <h2 id="MSBuild-初体验"><a href="#MSBuild-初体验" class="headerlink" title="MSBuild 初体验"></a>MSBuild 初体验</h2><p>安装完 Visual Studio 2019 后，在下面两个目录下有 <code>MSBuild.exe</code>：<br>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin<br>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\amd64<br>由于<a href="https://docs.microsoft.com/zh-cn/visualstudio/msbuild/msbuild?view=vs-2019" target="_blank" rel="noopener">官方文档</a>说一般情况下不使用 64版本，<br>所以我们将 C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin 添加到 环境变量 <code>PATH</code> 中</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;msbuild</span><br><span class="line">用于 .NET Framework 的 Microsoft (R) 生成引擎版本 16.7.0+b89cb5fde</span><br><span class="line">版权所有(C) Microsoft Corporation。保留所有权利。</span><br><span class="line"></span><br><span class="line">MSBUILD : error MSB1003: 请指定项目或解决方案文件。当前工作目录中未包含项目或解决方案文件。</span><br></pre></td></tr></table></figure>
 <p>创建一个 HelloWorld.xml 的内容为：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line"><span class="comment">&lt;!-- 根元素，表示一个项目 --&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- DefaultTargets 用于定默认执行的目标 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Project</span> <span class="attr">DefaultTargets</span>=<span class="string">"build"</span> <span class="attr">xmlns</span>=<span class="string">"http://schemas.microsoft.com/developer/msbuild/2003"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- 属性都要包含在 PropertyGroup 元素内部 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 声明一个自定义"greeting"属性，其值为"hello world" --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">greeting</span>&gt;</span>hello world<span class="tag">&lt;/<span class="name">greeting</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- 目标 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Target</span> <span class="attr">Name</span>=<span class="string">"build"</span>&gt;</span> <span class="comment">&lt;!--DefaultTargets 指定的就是我--&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- MSBuild 提供的一个内置任务，用于生成记录信息用 $(属性名) 来引用属性的值 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Message</span> <span class="attr">Text</span>=<span class="string">"$(greeting)"</span>&gt;</span><span class="tag">&lt;/<span class="name">Message</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 使用 MSBuild 提供的保留属性，输出全路径 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Message</span> <span class="attr">Text</span>=<span class="string">"$(MSBuildThisFileDirectory)$(MSBuildProjectFile)"</span>&gt;</span><span class="tag">&lt;/<span class="name">Message</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
@@ -740,7 +741,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-count">59</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
