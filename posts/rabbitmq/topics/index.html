@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文对应 RabbitMQ 官方教程的第五个例子——Topics(主题)，讲述怎么基于模式(主题)来接收消息。">
+<meta name="keywords" content="消息队列,RabbitMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ 主题">
+<meta property="og:url" content="https://iweixubin.github.io/posts/rabbitmq/topics/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文对应 RabbitMQ 官方教程的第五个例子——Topics(主题)，讲述怎么基于模式(主题)来接收消息。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/python-five.png">
+<meta property="og:updated_time" content="2020-11-05T14:54:06.978Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ 主题">
+<meta name="twitter:description" content="本文对应 RabbitMQ 官方教程的第五个例子——Topics(主题)，讲述怎么基于模式(主题)来接收消息。">
+<meta name="twitter:image" content="https://www.rabbitmq.com/img/tutorials/python-five.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/rabbitmq/topics/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>RabbitMQ 主题 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/rabbitmq/topics/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿彬~">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">RabbitMQ 主题
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-20 00:00:01" itemprop="dateCreated datePublished" datetime="2019-06-20T00:00:01+08:00">2019-06-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-11-05 22:54:06" itemprop="dateModified" datetime="2020-11-05T22:54:06+08:00">2020-11-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/RabbitMQ/" itemprop="url" rel="index"><span itemprop="name">RabbitMQ</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文对应 RabbitMQ 官方教程的第五个例子——Topics(主题)，讲述怎么基于模式(主题)来接收消息。</p>
+<a id="more"></a>
+<h2 id="主题-Topics"><a href="#主题-Topics" class="headerlink" title="主题(Topics)"></a>主题(Topics)</h2><p>在上一个教程中，我们改进了日志系统，我们使用了 <code>direct</code> 交换器来代替 <code>fanout</code> 交换器，<br>因为<code>fanout</code> 交换器只能广播消息，而 <code>direct</code> 交换器可以实现选择性地接收消息。  </p>
+<p>虽然使用  <code>direct</code> 交换器 改进了我们的系统，但它仍然有局限性——它不能基于多个条件进行路由。  </p>
+<p>在我们的日志记录系统中，我们可能不仅要根据严重性来订阅日志，还要根据发出日志的源来订阅日志。<br>您可能从syslog unix工具中了解这个概念，<br>该工具根据 severity(info / warn / crit …)和 facility(auth / cron / kern …)来路由日志。 </p>
+<p>这会给我们带来很大的灵活性 - 我们可能想要听取来自 ‘cron’ 的关键错误以及来自 ‘kern’ 的所有日志。  </p>
+<p>要在我们的日志记录系统中实现这一点，我们需要了解更复杂的 <code>topic</code> 交换器。  </p>
+<h2 id="主题交换器-Topic-exchange"><a href="#主题交换器-Topic-exchange" class="headerlink" title="主题交换器(Topic exchange)"></a>主题交换器(Topic exchange)</h2><p>发送到 <code>topic</code> 交换器的消息不能随意指定 <code>routing key(路由键)</code>，它必须是一个由点分割的单词列表，<br>这些单词可以是任意内容，但通常会在其中指定一些与消息相关的特性。<br>请看一些合法的路由键示例：<code>stock.usd.nyse</code>，<code>nyse.vmw</code>，<code>quick.orange.rabbit</code>，<br>路由键可以包含任意数量的单词，但不能超过 255 个字节的上限。</p>
+<p><code>binding key(绑定键)</code> 也必须是相同的形式，<code>topic</code> 交换器的背后逻辑与 <code>direct</code> 交换器类似，<br>使用指定路由键发送的消息会被分发到与其绑定键匹配的所有队列中。<br>不过对于绑定键来说，有两个重要的特殊情况需要注意：  </p>
+<ul>
+<li><code>*</code>(星号)可以代替一个单词。</li>
+<li><code>#</code>(哈希)可以代替零个或多个单词。</li>
+</ul>
+<p>下图示例是对上述内容最简单的解释：  </p>
+<p><img src="https://www.rabbitmq.com/img/tutorials/python-five.png" alt="主题交换器"></p>
+<p>在这个例子中，我们将发送所有描述动物的消息。<br>消息将与包含三个单词（两个点）的路由键一起发送。<br>路由键中的第一个单词将描述速度，第二个是颜色，第三个是物种，<br>即：<code>speed</code>.<code>colour</code>.<code>species</code>  </p>
+<p>我们创建了三个绑定规则绑定到两个队列：<br>Q1 绑定了键 <code>.orange.</code><br>Q2 绑定了键 <code>*.*.rabbit</code> 和 <code>lazy.#</code>  </p>
+<p>这些绑定可以被概括为：  </p>
+<ul>
+<li>Q1 对所有橙色的动物感兴趣。</li>
+<li>Q2 对兔子以及所有行动缓慢的动物感兴趣。</li>
+</ul>
+<p>路由键为 <code>quick.orange.rabbit</code> 的消息会被发送到这两个队列。<br>路由键为 <code>lazy.orange.elephant</code> 也会被发送到这两个队列。<br>路由键为 <code>quick.orange.fox</code> 只会进入 Q1 队列。<br>路由键为 <code>lazy.brown.fox</code> 只会进入 Q2 队列。<br>路由键为 <code>lazy.pink.rabbit</code> 只会被发送到 Q2 队列一次，尽管它匹配了两个绑定（避免了消息重复）。<br>路由键为 <code>quick.brown.fox</code> 没有匹配的绑定，因此它将会被丢弃。  </p>
+<p>如果我们打破约定，发送使用一个或四个单词（例如：<code>orange</code> 和 <code>quick.orange.male.rabbit</code>）作路由键的消息会发生什么？<br>答案是，这些消息因为没有匹配到任何绑定，将被丢弃。  </p>
+<p>但是，另外，例如路由键为 <code>lazy.orange.male.rabbit</code> 的消息，<br>尽管它有四个单词，也会匹配最后一个绑定，并将被发送到第二个队列。  </p>
+<blockquote>
+<p><strong>Topics 交换器</strong><br>topic交换器的功能是很强大的，它可以表现出一些其他交换器的行为。<br>当一个队列与键 <code>＃</code> 绑定时， 它会忽略路由键，接收所有消息，这就像 <code>fanout</code> 交换器一样。<br>当特殊字符 <code>*</code> 和 <code>＃</code> 未在绑定中使用时，<code>topic</code> 交换器的行为就像 <code>direct</code> 交换器一样。</p>
+</blockquote>
+<h2 id="完整演示"><a href="#完整演示" class="headerlink" title="完整演示"></a>完整演示</h2><p>为了更好地演示，下面的代码和官方教程的不同。<br><a href="https://www.rabbitmq.com/tutorials/tutorial-five-dotnet.html" target="_blank" rel="noopener">官方例子传送门</a>  </p>
+<p><code>派糖者</code>代码：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client; <span class="comment">// 请自行用 NuGet 添加依赖</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CandyKeeper</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 这是 生产者(发布者，发送者) 的示例代码</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> mqHelper = <span class="keyword">new</span> MqHelper())</span><br><span class="line">            &#123;</span><br><span class="line">                Console.WriteLine(<span class="string">" 请输入糖的特征与祝福语：软硬.颜色.味道 祝福语"</span>);</span><br><span class="line">                Console.WriteLine(<span class="string">" 如：软.红.草莓味 快乐成长"</span>);</span><br><span class="line">                Console.WriteLine(<span class="string">" 如：硬.灰.巧克力 身体健康"</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> gift = Console.ReadLine().Split(<span class="string">" "</span>);</span><br><span class="line">                    <span class="keyword">var</span> candyFeature = gift[<span class="number">0</span>];</span><br><span class="line">                    <span class="keyword">var</span> blessings = gift[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrWhiteSpace(candyFeature))</span><br><span class="line">                        candyFeature = <span class="string">"软.粉红.草莓味"</span>;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrWhiteSpace(blessings))</span><br><span class="line">                        blessings = <span class="string">"好好学习，天天向上"</span>;</span><br><span class="line"></span><br><span class="line">                    mqHelper.Publish(candyFeature, blessings);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title">MqHelper</span> : <span class="title">IDisposable</span></span><br><span class="line">    &#123;</span><br><span class="line">        IConnection connection = <span class="literal">null</span>;</span><br><span class="line">        IModel channel = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> IModel <span class="title">CreateModel</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (channel == <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> factory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">                factory.HostName = <span class="string">"192.168.86.128"</span>;<span class="comment">// 这是我的 RabbitMQ 服务器地址</span></span><br><span class="line">                factory.Port = <span class="number">5672</span>;</span><br><span class="line">                factory.UserName = <span class="string">"admin"</span>;<span class="comment">//用户名</span></span><br><span class="line">                factory.Password = <span class="string">"admin"</span>;<span class="comment">//密码</span></span><br><span class="line"></span><br><span class="line">                connection = factory.CreateConnection();</span><br><span class="line"></span><br><span class="line">                channel = connection.CreateModel();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="comment">// 声明一个交换器</span></span><br><span class="line">                channel.ExchangeDeclare(exchange: <span class="string">"candy_keeper"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                            type: <span class="string">"topic"</span>);       <span class="comment">// 交换器类型</span></span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> channel;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Publish</span>(<span class="params"><span class="keyword">string</span> candyFeature, <span class="keyword">string</span> blessings</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> channel = CreateModel();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> body = Encoding.UTF8.GetBytes(blessings);</span><br><span class="line"></span><br><span class="line">            channel.BasicPublish(exchange: <span class="string">"candy_keeper"</span>,<span class="comment">// 交换器名称</span></span><br><span class="line">                                 routingKey: candyFeature,<span class="comment">// 路由键</span></span><br><span class="line">                                 basicProperties: <span class="literal">null</span>,</span><br><span class="line">                                 body: body);</span><br><span class="line"></span><br><span class="line">            Console.WriteLine(<span class="string">$" [Producer(生产者,派糖者)] 派出一些礼物： 糖果：<span class="subst">&#123;candyFeature&#125;</span> 祝福语：<span class="subst">&#123;blessings&#125;</span>"</span>);</span><br><span class="line">            Console.WriteLine();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (connection != <span class="literal">null</span>)</span><br><span class="line">                connection.Dispose();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (channel != <span class="literal">null</span>)</span><br><span class="line">                channel.Dispose();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>熊孩子</code>代码：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client;</span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client.Events;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MqReceiveLogsDirect</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 这是 消费者(接收者) 的示例代码</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">string</span> favorite = <span class="keyword">string</span>.Empty;</span><br><span class="line">            <span class="keyword">if</span> (args.Length &gt; <span class="number">0</span>)</span><br><span class="line">                favorite = args[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> factory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">            factory.HostName = <span class="string">"192.168.86.128"</span>;<span class="comment">// 这是我的 RabbitMQ 服务器地址</span></span><br><span class="line">            factory.Port = <span class="number">5672</span>;</span><br><span class="line">            factory.UserName = <span class="string">"admin"</span>;<span class="comment">//用户名</span></span><br><span class="line">            factory.Password = <span class="string">"admin"</span>;<span class="comment">//密码</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> connection = factory.CreateConnection())</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> channel = connection.CreateModel())</span><br><span class="line">            &#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 声明一个交换器</span></span><br><span class="line">                channel.ExchangeDeclare(exchange: <span class="string">"candy_keeper"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                            type: <span class="string">"topic"</span>);       <span class="comment">// 交换器类型</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> queueName = channel.QueueDeclare().QueueName;</span><br><span class="line"></span><br><span class="line">                channel.QueueBind(queue: queueName,        <span class="comment">// 队列名</span></span><br><span class="line">                                  exchange: <span class="string">"candy_keeper"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                  routingKey: favorite == <span class="string">""</span> ? <span class="string">"#"</span> : favorite);<span class="comment">// 路由键</span></span><br><span class="line">                <span class="comment">//如果没有指定路由键，那么就什么口味都合适</span></span><br><span class="line"></span><br><span class="line">                Console.WriteLine(<span class="string">$" [Consumer(消费者)，我喜欢吃的糖果是 <span class="subst">&#123;favorite&#125;</span>]：我的心在等待,永远在等待..."</span>);</span><br><span class="line">                Console.WriteLine();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> consumer = <span class="keyword">new</span> EventingBasicConsumer(channel);</span><br><span class="line">                consumer.Received += (model, ea) =&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> candy = ea.RoutingKey;</span><br><span class="line">                    <span class="keyword">var</span> blessings = Encoding.UTF8.GetString(ea.Body);</span><br><span class="line"></span><br><span class="line">                    Console.WriteLine(<span class="string">$" [Consumer(消费者)，我喜欢吃的糖果是 <span class="subst">&#123;favorite&#125;</span>]：收到礼物-&gt;<span class="subst">&#123;candy&#125;</span> <span class="subst">&#123;blessings&#125;</span>"</span>);</span><br><span class="line">                &#125;;</span><br><span class="line">                channel.BasicConsume(queue: queueName,</span><br><span class="line">                                     autoAck: <span class="literal">true</span>,</span><br><span class="line">                                     consumer: consumer);</span><br><span class="line"></span><br><span class="line">                Console.ReadLine();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>启动一个喜欢吃<code>软</code>糖的<code>熊孩子</code>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\Child\bin\Debug\netcoreapp2.2&gt; dotnet Child.dll 软.#</span><br><span class="line"> [Consumer(消费者)，我喜欢吃的糖果是 软.#]：我的心在等待,永远在等待...</span><br></pre></td></tr></table></figure></p>
+<p>启动一个喜欢吃<code>硬巧克力</code>糖的<code>熊孩子</code>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\Child\bin\Debug\netcoreapp2.2&gt; dotnet Child.dll 硬.*.巧克力</span><br><span class="line"> [Consumer(消费者)，我喜欢吃的糖果是 硬.*.巧克力]：我的心在等待,永远在等待...</span><br></pre></td></tr></table></figure></p>
+<p>启动一个什么糖都喜欢吃的<code>熊孩子</code>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\Child\bin\Debug\netcoreapp2.2&gt; dotnet Child.dll</span><br><span class="line"> [Consumer(消费者)，我喜欢吃的糖果是 ]：我的心在等待,永远在等待...</span><br></pre></td></tr></table></figure></p>
+<p>启动<code>派糖者</code>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\CandyKeeper\bin\Debug\netcoreapp2.2&gt; dotnet CandyKeeper.dll</span><br><span class="line"> 请输入糖的特征与祝福语：软硬.颜色.味道 祝福语</span><br><span class="line"> 如：软.红.草莓味 快乐成长</span><br><span class="line"> 如：硬.灰.巧克力 身体健康</span><br></pre></td></tr></table></figure></p>
+<p><code>派糖者</code>开始派糖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">软.粉红.巧克力 健康快乐</span><br><span class="line"> [Producer(生产者,派糖者)] 派出一些礼物： 糖果：软.粉红.巧克力 祝福语：健康快乐</span><br></pre></td></tr></table></figure></p>
+<p>哪些<code>熊孩子</code>会收到这些礼物呢？</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>下一章是将 MQ 中的 RPG，会有惊喜哦。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，请我喝瓶肥宅快乐水可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="阿彬~ 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="阿彬~ 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿彬~</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/rabbitmq/topics/" title="RabbitMQ 主题">https://iweixubin.github.io/posts/rabbitmq/topics/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/消息队列/" rel="tag"># 消息队列</a>
+          
+            <a href="/tags/RabbitMQ/" rel="tag"># RabbitMQ</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/rabbitmq/routing/" rel="next" title="RabbitMQ 路由选择">
+                  <i class="fa fa-chevron-left"></i> RabbitMQ 路由选择
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/rabbitmq/rpc/" rel="prev" title="RabbitMQ RPC 远程调用">
+                  RabbitMQ RPC 远程调用 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="阿彬~">
+            
+              <p class="site-author-name" itemprop="name">阿彬~</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">51</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#主题-Topics"><span class="nav-number">1.</span> <span class="nav-text">主题(Topics)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主题交换器-Topic-exchange"><span class="nav-number">2.</span> <span class="nav-text">主题交换器(Topic exchange)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整演示"><span class="nav-number">3.</span> <span class="nav-text">完整演示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">4.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿彬~</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

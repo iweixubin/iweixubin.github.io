@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文对应 RabbitMQ 官方教程的第三个例子——Publish/Subscribe(发布/订阅)，讲述怎么一次向多个消费者发送消息。">
+<meta name="keywords" content="消息队列,RabbitMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ 发布-订阅">
+<meta property="og:url" content="https://iweixubin.github.io/posts/rabbitmq/publish-subscribe/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文对应 RabbitMQ 官方教程的第三个例子——Publish/Subscribe(发布/订阅)，讲述怎么一次向多个消费者发送消息。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/exchanges.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/fan-in.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iweixubin/assets/master/x01/fan-out.png">
+<meta property="og:image" content="https://www.rabbitmq.com/img/tutorials/bindings.png">
+<meta property="og:updated_time" content="2020-11-05T14:54:06.968Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ 发布-订阅">
+<meta name="twitter:description" content="本文对应 RabbitMQ 官方教程的第三个例子——Publish/Subscribe(发布/订阅)，讲述怎么一次向多个消费者发送消息。">
+<meta name="twitter:image" content="https://www.rabbitmq.com/img/tutorials/exchanges.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/rabbitmq/publish-subscribe/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>RabbitMQ 发布-订阅 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/rabbitmq/publish-subscribe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿彬~">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">RabbitMQ 发布-订阅
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-12 00:00:01" itemprop="dateCreated datePublished" datetime="2019-06-12T00:00:01+08:00">2019-06-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-11-05 22:54:06" itemprop="dateModified" datetime="2020-11-05T22:54:06+08:00">2020-11-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/RabbitMQ/" itemprop="url" rel="index"><span itemprop="name">RabbitMQ</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文对应 RabbitMQ 官方教程的第三个例子——Publish/Subscribe(发布/订阅)，讲述怎么一次向多个消费者发送消息。</p>
+<a id="more"></a>
+<h2 id="发布-订阅"><a href="#发布-订阅" class="headerlink" title="发布/订阅"></a>发布/订阅</h2><p>在上一个教程中，我们创建了一个工作队列。 工作队列背后的假设是每个任务都交付给其中一个工作者(worker)。<br>在这一部分，我们将做一些完全不同的事情 - 我们将一个消息分发给多个消费者(consumers)。 此模式称为“发布/订阅”。  </p>
+<p>为了演示这种模式，我们将构建一个简单的日志记录系统。<br>它将包含两个程序 - 第一个将发出日志消息，第二个将接收和打印它们。  </p>
+<p>在我们的日志记录系统中，接收程序的每个运行实例都将获取消息。<br>这样我们就可以运行一个接收器并将日志定向到磁盘; 同时我们将能够运行另一个接收器并在屏幕上看到日志。  </p>
+<p>基本上，发布的日志消息将会被广播给所有接收者(receiver)。  </p>
+<h2 id="交换器-Exchanges"><a href="#交换器-Exchanges" class="headerlink" title="交换器(Exchanges)"></a>交换器(Exchanges)</h2><p>在本教程的前几部分中，我们向队列发送消息和从队列接收消息。<br>现在是时候介绍 RabbitMQ 完整的消息传递模型了。  </p>
+<p>让我们快速复习前面教程中介绍的内容：  </p>
+<ul>
+<li>发布者(producer) 是发布消息的应用程序。</li>
+<li>队列(queue) 是用于消息存储的缓冲。</li>
+<li>消费者(consumer) 是接收消息的应用程序。</li>
+</ul>
+<p>RabbitMQ 中消息传递模型的核心思想是发布者(producer)永远不会将任何消息直接发送到队列(queue)。<br>实际上，生产者通常甚至不知道消息是否会被传递到任何队列。  </p>
+<p>事实上，发布者(producer)只能将消息发给交换器(exchange)，<br>交换器非常简单，它一边从发布者方接收消息，一边把消息推入队列。<br>交换器必须知道如何处理它接收到的消息，是应该推送到指定的队列还是是多个队列，或者是直接忽略消息。<br>这些规则是通过 exchange type 来定义的。  </p>
+<p><img src="https://www.rabbitmq.com/img/tutorials/exchanges.png" alt="交换器(exchange)"></p>
+<p>有几种交换器类型可供选择：<code>direct(指定)</code>， <code>topic(主题)</code>， <code>headers(标题)</code> 和 <code>fanout(扇出)</code>。<br>我们将专注于最后一个 - <code>fanout</code>。 让我们创建一个这种类型的交换，并将其称为<code>log</code>：  </p>
+<blockquote>
+<p>译者补充<br>我第一次看到扇入扇出，有点难以理解，后来查了一些资料。<code>fanin(扇入)</code>和<code>fanout(扇出)</code>的确是计算机专业术语。</p>
+<p><code>fanin(扇入)</code>如下图所示，是讲多个数据源的数据流向一个接收者。<br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/fan-in.png" alt="fanin"></p>
+<p><code>fanout(扇出)</code>如下图所示，是讲一个数据源的数据流向多个接收者。<br><img src="https://raw.githubusercontent.com/iweixubin/assets/master/x01/fan-out.png" alt="fanout"></p>
+<p>而这里 MQ 中的 <code>fanout(扇出)</code>的概念和计算机另外一个专业术语<code>广播</code>相似。<br>另外，熟悉理解交换机类型的才能用好 RabbitMQ</p>
+</blockquote>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">channel.ExchangeDeclare(<span class="string">"logs"</span>, <span class="string">"fanout"</span>);</span><br></pre></td></tr></table></figure>
+<p>扇出(fanout)类型交换器(exchange)非常简单。<br>正如您可能从名称中猜到的那样——成扇形散开——它只是将收到的所有消息广播到它知道的所有队列中。<br>而这正是我们多个日志记录器都能接收同一个消息所需要的。  </p>
+<blockquote>
+<p><strong>交换器列表——(Listing exchanges)</strong><br>要列出服务器上的交换器(exchange)，您可以运行 <code>rabbitmqctl</code>：  </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo rabbitmqctl list_exchanges</span><br></pre></td></tr></table></figure>
+<p>在此列表中将有一些 <code>amq.*</code> 交换和默认(未命名)交换。 这些是默认创建的，但目前您不太可能需要使用它们。  </p>
+<blockquote>
+<p><strong>默认交换器——(The default exchange)</strong><br>在本教程的前几部分中，我们对交换器(exchange)一无所知，<br>但仍然可以向队列发送消息，这是因为我们使用默认交换器(exchange)。</p>
+</blockquote>
+<p>回想一下我们之前如何发布消息：  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> message = GetMessage(args);</span><br><span class="line"><span class="keyword">var</span> body = Encoding.UTF8.GetBytes(message);</span><br><span class="line">channel.BasicPublish(exchange: <span class="string">""</span>, <span class="comment">// 空字符串表示使用默认交换器(exchange)</span></span><br><span class="line">                     routingKey: <span class="string">"hello"</span>,</span><br><span class="line">                     basicProperties: <span class="literal">null</span>,</span><br><span class="line">                     body: body);</span><br></pre></td></tr></table></figure>
+<p>第一个参数是交换器(exchange)的名称。<br>空字符串表示默认或未命名交换器(exchange)：消息通过 <code>routingKey</code> 指定的名称路由到队列（如果存在）。</p>
+<p>现在，我们可以发布消息到我们的命名交换器(exchange)：  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> message = GetMessage(args);</span><br><span class="line"><span class="keyword">var</span> body = Encoding.UTF8.GetBytes(message);</span><br><span class="line">channel.BasicPublish(exchange: <span class="string">"logs"</span>,</span><br><span class="line">                     routingKey: <span class="string">""</span>,</span><br><span class="line">                     basicProperties: <span class="literal">null</span>,</span><br><span class="line">                     body: body);</span><br></pre></td></tr></table></figure>
+<p>你还记得之前我们使用的队列名吗(<code>hello</code> 和 <code>task_queue</code>)？<br>给一个队列命名是很重要的——我们需要把工作者(workers)指向正确的队列。<br>如果你打算在发布者(producers)和消费者(consumers)之间共享同队列的话，给队列命名是十分重要的。  </p>
+<p>但是这并不适用于我们的日志系统。<br>我们打算接收所有的日志消息，而不仅仅是一小部分。我们关心的是最新的消息而不是旧的。<br>为了解决这些问题，我们需要做两件事情。  </p>
+<p>首先，当我们连接上RabbitMQ的时候，我们需要一个全新的、空的队列。<br>我们可以手动创建一个随机的队列名，或者让 RabbitMQ 为我们选择一个随机的队列名。</p>
+<p>其次，一旦消费者断开，就应该自动删除它所对应的队列。</p>
+<p>在 .NET 客户端中，当我们不向 <code>QueueDeclare()</code> 提供参数时，我们使用生成的名称创建一个非持久的，独占的自动删除队列：  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> queueName = channel.QueueDeclare().QueueName;</span><br></pre></td></tr></table></figure>
+<p>您可以在队列指南中了解有关独占标志和其他队列属性的更多信息。</p>
+<p>有关 <code>exclusive</code> 标签和队列其它参数的信息，可以阅读 <a href="https://www.rabbitmq.com/queues.html" target="_blank" rel="noopener">guide on queues</a></p>
+<p>此时，<code>queueName</code> 包含随机队列名称。 例如，它可能看起来像 <code>amq.gen-JzTY20BRgKO-HjmUJj0wLg</code>。</p>
+<h2 id="绑定-Bindings"><a href="#绑定-Bindings" class="headerlink" title="绑定(Bindings)"></a>绑定(Bindings)</h2><p><img src="https://www.rabbitmq.com/img/tutorials/bindings.png" alt="绑定"></p>
+<p>我们已经创建了一个扇出交换器(fanout exchange)和一个队列(queue)。<br>现在我们需要告诉交换器(exchange)将消息发送到我们的队列。 交换和队列之间的关系称为绑定(Binding)。  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 队列(queue) 绑定到指定 交换器(exchange) ！！！</span></span><br><span class="line">channel.QueueBind(queue: queueName,</span><br><span class="line">                  exchange: <span class="string">"logs"</span>,</span><br><span class="line">                  routingKey: <span class="string">""</span>);</span><br></pre></td></tr></table></figure>
+<p>现在，日志交换器(exchange)会将消息附加到我们的队列(queue)中去。  </p>
+<blockquote>
+<p><strong>绑定列表——Listing bindings</strong><br>你可以使用 <code>rabbitmqctl list_bindings</code> 列出所有存在的绑定。</p>
+</blockquote>
+<h2 id="完整演示"><a href="#完整演示" class="headerlink" title="完整演示"></a>完整演示</h2><p>为了更好地演示，下面的代码和官方教程的不同。<br><a href="https://www.rabbitmq.com/tutorials/tutorial-three-dotnet.html" target="_blank" rel="noopener">官方例子传送门</a>  </p>
+<p>Publish(发布) 代码  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client; <span class="comment">// 请自行用 NuGet 添加依赖</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MqPublish</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 这是 生产者(发布者，发送者) 的示例代码</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> mqHelper = <span class="keyword">new</span> MqHelper())</span><br><span class="line">            &#123;</span><br><span class="line">                Console.WriteLine(<span class="string">" 请输入消息，将会广播给所有订阅者(消费者，接收者)..."</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> msg = Console.ReadLine();</span><br><span class="line"></span><br><span class="line">                    mqHelper.Publish(msg);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">class</span> <span class="title">MqHelper</span> : <span class="title">IDisposable</span></span><br><span class="line">    &#123;</span><br><span class="line">        IConnection connection = <span class="literal">null</span>;</span><br><span class="line">        IModel channel = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> IModel <span class="title">CreateModel</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (channel == <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> factory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">                factory.HostName = <span class="string">"192.168.86.128"</span>;<span class="comment">// 这是我的 RabbitMQ 服务器地址</span></span><br><span class="line">                factory.Port = <span class="number">5672</span>;</span><br><span class="line">                factory.UserName = <span class="string">"admin"</span>;<span class="comment">//用户名</span></span><br><span class="line">                factory.Password = <span class="string">"admin"</span>;<span class="comment">//密码</span></span><br><span class="line"></span><br><span class="line">                connection = factory.CreateConnection();</span><br><span class="line"></span><br><span class="line">                channel = connection.CreateModel();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="comment">// 声明一个交换器</span></span><br><span class="line">                channel.ExchangeDeclare(exchange: <span class="string">"logs"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                        type: <span class="string">"fanout"</span>);  <span class="comment">// 交换器类型</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// 和前两章教程中的例子不同的是，这里不再声明队列了！</span></span><br><span class="line">                <span class="comment">// 请在脑海中刷新 RabbitMQ 的模型！！！</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> channel;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Publish</span>(<span class="params"><span class="keyword">string</span> message</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> channel = CreateModel();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> body = Encoding.UTF8.GetBytes(message);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// ！机制：将 消息 发布到指定 交换器 ！！！</span></span><br><span class="line">            channel.BasicPublish(exchange: <span class="string">"logs"</span>,<span class="comment">// 交换器名称</span></span><br><span class="line">                                 routingKey: <span class="string">""</span>,  <span class="comment">// 怎么路由会在下一个教程中讲解</span></span><br><span class="line">                                 basicProperties: <span class="literal">null</span>,</span><br><span class="line">                                 body: body);</span><br><span class="line"></span><br><span class="line">            Console.WriteLine(<span class="string">" [Producer(生产者)] 广播消息： &#123;0&#125;"</span>, message);</span><br><span class="line">            Console.WriteLine();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (connection != <span class="literal">null</span>)</span><br><span class="line">                connection.Dispose();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (channel != <span class="literal">null</span>)</span><br><span class="line">                channel.Dispose();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Subscribe(订阅)</code> 代码  </p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client;</span><br><span class="line"><span class="keyword">using</span> RabbitMQ.Client.Events;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MqSubscribe</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 这是 消费者(接收者，订阅者) 的示例代码</span></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">string</span> subscriberNO = <span class="keyword">string</span>.Empty;</span><br><span class="line">            <span class="keyword">if</span> (args.Length &gt; <span class="number">0</span>)</span><br><span class="line">                subscriberNO = args[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> factory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">            factory.HostName = <span class="string">"192.168.86.128"</span>;<span class="comment">// 这是我的 RabbitMQ 服务器地址</span></span><br><span class="line">            factory.Port = <span class="number">5672</span>;</span><br><span class="line">            factory.UserName = <span class="string">"admin"</span>;<span class="comment">//用户名</span></span><br><span class="line">            factory.Password = <span class="string">"admin"</span>;<span class="comment">//密码</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> connection = factory.CreateConnection())</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> channel = connection.CreateModel())</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 声明一个交换器</span></span><br><span class="line">                channel.ExchangeDeclare(exchange: <span class="string">"logs"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                        type: <span class="string">"fanout"</span>);  <span class="comment">// 交换器类型</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// 让 RabbitMQ 分配一个队列名称</span></span><br><span class="line">                <span class="keyword">var</span> queueName = channel.QueueDeclare().QueueName;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// ！机制：将 队列(queue) 绑定到指定 交换器(exchange) ！！！</span></span><br><span class="line">                channel.QueueBind(queue: queueName, <span class="comment">// 队列名</span></span><br><span class="line">                                  exchange: <span class="string">"logs"</span>, <span class="comment">// 交换器名称</span></span><br><span class="line">                                  routingKey: <span class="string">""</span>);  <span class="comment">// 怎么路由会在下一个教程中讲解</span></span><br><span class="line"></span><br><span class="line">                Console.WriteLine(<span class="string">$" [Consumer-Subscriber(消费者-订阅者，编号：<span class="subst">&#123;subscriberNO&#125;</span>)]：我的心在等待,永远在等待..."</span>);</span><br><span class="line">                Console.WriteLine();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> consumer = <span class="keyword">new</span> EventingBasicConsumer(channel);</span><br><span class="line">                consumer.Received += (model, ea) =&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> body = ea.Body;</span><br><span class="line">                    <span class="keyword">var</span> message = Encoding.UTF8.GetString(body);</span><br><span class="line">                    Console.WriteLine(<span class="string">$" [Consumer-Subscriber(消费者-订阅者，编号：<span class="subst">&#123;subscriberNO&#125;</span>)]：收到广播消息-&gt; <span class="subst">&#123;message&#125;</span>"</span>);</span><br><span class="line">                &#125;;</span><br><span class="line">                channel.BasicConsume(queue: queueName,</span><br><span class="line">                                     autoAck: <span class="literal">true</span>,</span><br><span class="line">                                     consumer: consumer);</span><br><span class="line"></span><br><span class="line">                Console.ReadLine();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行 <code>订阅者</code> 三个控制台实例： </p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\MqSubscribe\bin\Debug\netcoreapp2.<span class="number">1</span>&gt; dotnet MqSubscribe.dll <span class="number">555</span></span><br><span class="line"> [Consumer-Subscriber(消费者-订阅者，编号：<span class="number">555</span>)]：我的心在等待,永远在等待...</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\MqSubscribe\bin\Debug\netcoreapp2.<span class="number">1</span>&gt; dotnet MqSubscribe.dll <span class="number">666</span></span><br><span class="line"> [Consumer-Subscriber(消费者-订阅者，编号：<span class="number">666</span>)]：我的心在等待,永远在等待...</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\MqSubscribe\bin\Debug\netcoreapp2.<span class="number">1</span>&gt; dotnet MqSubscribe.dll <span class="number">777</span></span><br><span class="line"> [Consumer-Subscriber(消费者-订阅者，编号：<span class="number">777</span>)]：我的心在等待,永远在等待...</span><br></pre></td></tr></table></figure>
+<p>运行 <code>发布者</code> 一个控制台实例：  </p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\MqPublish\bin\Debug\netcoreapp2.<span class="number">1</span>&gt; dotnet MqPublish.dll</span><br><span class="line">请输入消息，将会广播给所有订阅者(消费者，接收者)...</span><br></pre></td></tr></table></figure>
+<p><code>发布者</code> 发布消息：  </p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">大家好~</span><br><span class="line"> [Producer(生产者)] 广播消息： 大家好~</span><br><span class="line"></span><br><span class="line">下面请听我说两句~</span><br><span class="line"> [Producer(生产者)] 广播消息： 下面请听我说两句~</span><br></pre></td></tr></table></figure>
+<p><code>订阅者</code> 都收到了消息：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Consumer-Subscriber(消费者-订阅者，编号：<span class="number">555</span>)]：收到广播消息-&gt; 大家好~</span><br><span class="line">[Consumer-Subscriber(消费者-订阅者，编号：<span class="number">555</span>)]：收到广播消息-&gt; 下面请听我说两句~</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Consumer-Subscriber(消费者-订阅者，编号：<span class="number">666</span>)]：收到广播消息-&gt; 大家好~</span><br><span class="line">[Consumer-Subscriber(消费者-订阅者，编号：<span class="number">666</span>)]：收到广播消息-&gt; 下面请听我说两句~</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Consumer-Subscriber(消费者-订阅者，编号：<span class="number">777</span>)]：收到广播消息-&gt; 大家好~</span><br><span class="line">[Consumer-Subscriber(消费者-订阅者，编号：<span class="number">777</span>)]：收到广播消息-&gt; 下面请听我说两句~</span><br></pre></td></tr></table></figure>
+<p>显示结果很直观：logs 交换器(exchange)把数据发送给两个系统命名的队列，这就是我们所期望的。  </p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>理解 MQ 多种工作模式是学好和用好 MQ 的关键，所以下一章介绍新的工作模式：Routing(路由选择)</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，请我喝瓶肥宅快乐水可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="阿彬~ 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="阿彬~ 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿彬~</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/rabbitmq/publish-subscribe/" title="RabbitMQ 发布-订阅">https://iweixubin.github.io/posts/rabbitmq/publish-subscribe/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/消息队列/" rel="tag"># 消息队列</a>
+          
+            <a href="/tags/RabbitMQ/" rel="tag"># RabbitMQ</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+              
+            
+              
+            
+            
+              
+              
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+              
+              
+            
+              
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/rabbitmq/work-queues/" rel="next" title="RabbitMQ 工作队列">
+                  <i class="fa fa-chevron-left"></i> RabbitMQ 工作队列
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/rabbitmq/routing/" rel="prev" title="RabbitMQ 路由选择">
+                  RabbitMQ 路由选择 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="阿彬~">
+            
+              <p class="site-author-name" itemprop="name">阿彬~</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">51</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#发布-订阅"><span class="nav-number">1.</span> <span class="nav-text">发布/订阅</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交换器-Exchanges"><span class="nav-number">2.</span> <span class="nav-text">交换器(Exchanges)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#绑定-Bindings"><span class="nav-number">3.</span> <span class="nav-text">绑定(Bindings)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整演示"><span class="nav-number">4.</span> <span class="nav-text">完整演示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">5.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿彬~</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

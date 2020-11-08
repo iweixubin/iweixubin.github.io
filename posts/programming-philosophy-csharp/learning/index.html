@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="《代码大全》的第二章：介绍隐喻(类比)的思维方式，《经济学原理》的第二章：介绍怎么像经济学家一样思考，《计算机的心智操作系统之哲学原理》的第一章：介绍学习操作系统的思维，所以我也尽早地介绍我写本系列中会经常运用的学习思维。">
+<meta name="keywords" content="编程哲学,编程思想,编程入门,.Net,C#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编程哲学之 C# 篇：002——学习思维">
+<meta property="og:url" content="https://iweixubin.github.io/posts/programming-philosophy-csharp/learning/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="《代码大全》的第二章：介绍隐喻(类比)的思维方式，《经济学原理》的第二章：介绍怎么像经济学家一样思考，《计算机的心智操作系统之哲学原理》的第一章：介绍学习操作系统的思维，所以我也尽早地介绍我写本系列中会经常运用的学习思维。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-11-05T14:56:16.673Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编程哲学之 C# 篇：002——学习思维">
+<meta name="twitter:description" content="《代码大全》的第二章：介绍隐喻(类比)的思维方式，《经济学原理》的第二章：介绍怎么像经济学家一样思考，《计算机的心智操作系统之哲学原理》的第一章：介绍学习操作系统的思维，所以我也尽早地介绍我写本系列中会经常运用的学习思维。">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/programming-philosophy-csharp/learning/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>编程哲学之 C# 篇：002——学习思维 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/programming-philosophy-csharp/learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿彬~">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">编程哲学之 C# 篇：002——学习思维
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-07-07 00:00:01" itemprop="dateCreated datePublished" datetime="2018-07-07T00:00:01+08:00">2018-07-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-11-05 22:56:16" itemprop="dateModified" datetime="2020-11-05T22:56:16+08:00">2020-11-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程哲学之-C-篇/" itemprop="url" rel="index"><span itemprop="name">编程哲学之 C# 篇</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>《代码大全》的第二章：介绍隐喻(类比)的思维方式，<br>《经济学原理》的第二章：介绍怎么像经济学家一样思考，<br>《计算机的心智操作系统之哲学原理》的第一章：介绍学习操作系统的思维，<br>所以我也尽早地介绍我写本系列中会经常运用的学习思维。  </p>
+<a id="more"></a>
+<h2 id="类比"><a href="#类比" class="headerlink" title="类比"></a>类比</h2><p>你知道什么是驱动程序吗，你会怎么向一个小学三年级的学生解释什么是驱动程序呢？</p>
+<p>我会跟这个小学生说，现在假设你要准备一个宣传活动，为了这个宣传活动，</p>
+<ul>
+<li>你请了一位来自奥地利的音乐家，他能演奏各式各样的音乐，他的名字叫声卡，他是说德语的。</li>
+<li>你请了一位来自法国的艺术家，他能画各式各样的画，他的名字叫显卡，他是说法语的。</li>
+<li>你请了一位来自意大利的行政，他能收集和准备乐谱和色彩，他的名字叫网卡，他是说意大利语的。</li>
+<li>你请了一位来自美国的主管，他能安排任务中的各种细节，他的名字叫操作系统，他是说英语的。</li>
+</ul>
+<p>现在为了让声卡，显卡，网卡了解和明白操作系统的安排，你觉得还缺少一个什么角色呢？</p>
+<p>看到这里，是不是有一个答案从你脑海中冒出来，让你隐约感觉到什么是驱动程序，请记住这种感觉。</p>
+<p>通过上面的一个例子，你是否已经get到类比的威力</p>
+<blockquote>
+<p>类比（英语：Analogy，源自古希腊语），或类推，是一种认知过程，将某个特定事物所附带的讯息转移到其他特定事物之上。类比通过比较两件事情，清楚揭示二者之间的相似点，并将已知事物的特点，推衍到未知事物中，但两者不一定有实质上的同源性，其类比也不见得“合理”。在记忆、沟通与问题解决等过程中扮演重要角色。</p>
+</blockquote>
+<blockquote>
+<p>类比是人类思考方式中的一种重要途径，可以用于辨识问题，解释概念，及发现新的事物或功能。</p>
+</blockquote>
+<p>简单来说：通过类比思维，能让自己快速地了解另外一件事物。</p>
+<p>如何更好地应用类比思维</p>
+<ol>
+<li>存取已知的类比来源物概念</li>
+<li>将已知的类比来源物进行和标的物的比对</li>
+<li>评估类比物以及标的物之间配对的吻合度</li>
+<li>存取类比物与标的物之间的推论</li>
+<li>并提取类比物与标的物之间的共通性</li>
+</ol>
+<!-- 补 -->
+<h2 id="思维穿越"><a href="#思维穿越" class="headerlink" title="思维穿越"></a>思维穿越</h2><p>很多穿越剧讲述穿越到历史某个时间，然后利用自己的现代的知识，闯出一片天地。那么如果现在有机会让你穿越到1983年之前，和比尔盖茨一起打造Windows操作系统，你愿意么？</p>
+<p>穿越时空，目前还不可能，但思维可以。思维可以让你设想在1983年之前，你和比尔盖茨一起讨论未来的操作系统应该是怎么样的，具备有那些特性等。</p>
+<h3 id="为什么要这样设想呢？"><a href="#为什么要这样设想呢？" class="headerlink" title="为什么要这样设想呢？"></a>为什么要这样设想呢？</h3><ul>
+<li>如果你和比尔盖茨一起打造Windows操作系统，你会不了解Windows操作系统么？</li>
+<li>如果你阿基米德一起泡澡，你会不熟悉浮力原理么？</li>
+<li>如果你和牛顿…</li>
+</ul>
+<p>使用思维穿越，能让你参与到每个知识点诞生的过程，这样还有谁比你更加了解它呢？</p>
+<h3 id="那么应该怎么做呢？"><a href="#那么应该怎么做呢？" class="headerlink" title="那么应该怎么做呢？"></a>那么应该怎么做呢？</h3><p>当你用电脑在愉快地听着歌写着文档，突然由于文档软件的bug导致电脑死机了，你会提出什么样的解决方案？<br>当你用电脑在愉快地听着歌写着文档，每当听歌软件切换歌曲的时候，文档软件有几秒卡住不动了，你会提出什么样的解决方案？</p>
+<p>这些都是以前操作系统创造者面对过的问题，他们会记得他们遇到什么样的问题——这些记录就可以让你的思维假设你穿越到和操作系统创造者一起打造操作系统，思维可以让你假设和之前操作系统创造者一起讨论，对比你们之间各种提出的解决方案。通过这样的思维假设来让你参与到操作系统设计中，这样还有谁比你更加了解操作系统？</p>
+<h2 id="神造与人造"><a href="#神造与人造" class="headerlink" title="神造与人造"></a>神造与人造</h2><p>如果我们仔细看看身边的事物，就会发现所有的东西可以划分为两类，一类是本来就存在于自然中，人类所做的只不过是发现；另一类是本来并不存在，人类所做的是发明，第一类事物我们称之为神造事物或者自然存在的事物，第二类事物我们称之为人造事物。</p>
+<p>自1946年诞生计算机(电脑)后，计算机发展十分迅速，其原因是因为计算机对现实世界的依赖极少，如果你要打造一辆汽车，你必须考虑能量转换啦，地面摩擦啦，空气阻力啦等等等，你必须一一遵守现实世界的种种规则才能让汽车运行起来，但在计算机世界呢，为了让两台计算机通信，我们提出了七层网络模型，但实现起来貌似太过繁琐，所以现在的通信用五层网络模型就好了，其他学科能干这么任性的事情么？（文学，语言这种100%由人创造的也可以，所以编程语言也可以任性，哇咔咔~）</p>
+<p>对于现实世界(神造)我们能做的世界基本就是遵守，而对于计算机世界(人造)，由于我们是这个世界的神，所以更多的概念和机制是由我们人类提出的。</p>
+<table>
+<thead>
+<tr>
+<th>人造学科的特点</th>
+<th>神造学科的特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>不精确，具有相对性</td>
+<td>精确、绝对</td>
+</tr>
+<tr>
+<td>从对人类活动的观察得出</td>
+<td>从对自然存在的观察得出</td>
+</tr>
+<tr>
+<td>依赖于人的主观判断力</td>
+<td>不依赖于人的主观判断力</td>
+</tr>
+<tr>
+<td>通常符合人的直觉</td>
+<td>通常违反人的直觉</td>
+</tr>
+</tbody>
+</table>
+<p>由于计算机知识和编程语言很多概念，术语，机制都是由人提出的，我们按照人造事物的特点来进行学习，从而易如反掌地掌握该知识点。</p>
+<blockquote>
+<p>当人们面临困境时通常的做法就是：发明新的概念，新的术语或新的机制来解脱困境。——《计算机的心智操作系统之哲学原理》</p>
+</blockquote>
+<p>人们面临困境时的通常做法在电脑世界中(含编程语言)更加发挥的淋漓尽致！为什么羽毛和铁球在同样高度没有空气阻力的情况下同时到达地面，你可能很难get到神的用意(万有引力→引力波→？？)；但同为人，为什么要这么设定，你只要站在和提出人的视角看看，想想，应该很容易get到。</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>本章介绍了使用类比作为切入点让你快速地对某个知识点有个大概的了解，然后再使用感同身受让你参与知识点诞生的过程，从而了解知识的全貌。</p>
+<p>下一章将介绍我为什么选择的是C#语言。</p>
+<p>最后留下一道思考问题：你自己有什么方式方法来认识这个世界？或者遇到一件你从来没有遇到过的问题，没有人可以给你答案，你会怎么起手去分析它？</p>
+<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><p>我发布了《编程哲学之C#篇：01——创世纪》后有人留言</p>
+<blockquote>
+<p>把两个完全没有关系的东西，往一块生搬，真不知道易经和二进制有什么关系？易经不是天下最厉害的内功心法吗？出自少林。</p>
+</blockquote>
+<p>我对易经被用于算命，太极八卦图被用于辟邪，如同火药被用于制造烟花爆竹的心情是一样一样的。我以前读书的时候，也不明白为什么古代诗人看不惯世俗然后归园田居，吟诗两首。我们就要：啊，中华文化博大精深。</p>
+<p>大部分编程书都会这么写，面向对象的三个基本特征是:封装、继承、多态。而作为被应试教育过来人的我们也会惯性地在封装、继承、多态下面画上横线，然后在考试试卷上妥妥地填上答案，得到分数，完成任务。然而我有幸自学编程，有幸看了《苏菲的世界》，猜想到面向对象思想起源于古希腊三圣的柏拉图、亚理士多德提出，然后我开启了大量的阅读，最后再次得出：啊，中华文化博大精深。</p>
+<p>既然古希腊有类比，那么中华文化对类比的描述是：</p>
+<blockquote>
+<p>触类旁通——《周易·系辞上》：“引而伸之；触类而长之；天下之能事毕矣。”</p>
+</blockquote>
+<p>《周易》也叫《易经》为群经之首。我觉得是中华文化的起源和核心。</p>
+<p>《易经》讲阴阳协调平衡。</p>
+<ul>
+<li>中医：如果你上火了，那么吃一些凉性的食物来平衡。</li>
+<li>风水：如果你脾气暴躁(火)，那么摆一个鱼缸(水)来平衡。</li>
+</ul>
+<p>中华文化很难摆脱平衡的思维。</p>
+<p>二进制与《易经》的关系：</p>
+<blockquote>
+<p>莱布尼茨二进制算术体系，在1701以前已经形成，他于1701年初向巴黎皇家学会提交了一篇正式论文，即论述二进制的《数字科学新论》(Essay d’unne nouvelle Science des Nombres)，但被婉言谢绝。科学院院长封单内(De Fontenelle)提出的主要理由是看不出二进制有何用处。1703年，在补充了伏羲六十四卦次序图和伏羲六十四卦方位图后，他将全部研究成果发表在法国《皇家科学院院刊》上，[14]标题为“二进制算术阐释——仅仅使用数字0和1兼论其效能及伏羲数字的意义”，莱布尼茨根据二进制来理解先天圆图（先天六十四卦方圆图），说先天原图已经包含了他所发明的东西。</p>
+</blockquote>
+<p>2017年，我买了很多有关中华文化的书，但到现在都没有看，但还是尽可能地补上中华文化对应的知识，希望有一天，你也能再次：啊，中华文化博大精深。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，请我喝瓶肥宅快乐水可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="阿彬~ 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="阿彬~ 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿彬~</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/programming-philosophy-csharp/learning/" title="编程哲学之 C# 篇：002——学习思维">https://iweixubin.github.io/posts/programming-philosophy-csharp/learning/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编程哲学/" rel="tag"># 编程哲学</a>
+          
+            <a href="/tags/编程思想/" rel="tag"># 编程思想</a>
+          
+            <a href="/tags/编程入门/" rel="tag"># 编程入门</a>
+          
+            <a href="/tags/Net/" rel="tag"># .Net</a>
+          
+            <a href="/tags/C/" rel="tag"># C#</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+              
+            
+              
+            
+              
+            
+              
+            
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+              
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/programming-philosophy-csharp/genesis/" rel="next" title="编程哲学之 C# 篇：001——创世纪">
+                  <i class="fa fa-chevron-left"></i> 编程哲学之 C# 篇：001——创世纪
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/programming-philosophy-csharp/why-csharp/" rel="prev" title="编程哲学之 C# 篇：003——为什么选择 C#">
+                  编程哲学之 C# 篇：003——为什么选择 C# <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="阿彬~">
+            
+              <p class="site-author-name" itemprop="name">阿彬~</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">51</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#类比"><span class="nav-number">1.</span> <span class="nav-text">类比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思维穿越"><span class="nav-number">2.</span> <span class="nav-text">思维穿越</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要这样设想呢？"><span class="nav-number">2.1.</span> <span class="nav-text">为什么要这样设想呢？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#那么应该怎么做呢？"><span class="nav-number">2.2.</span> <span class="nav-text">那么应该怎么做呢？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#神造与人造"><span class="nav-number">3.</span> <span class="nav-text">神造与人造</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">4.</span> <span class="nav-text">结束语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读"><span class="nav-number">5.</span> <span class="nav-text">扩展阅读</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿彬~</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

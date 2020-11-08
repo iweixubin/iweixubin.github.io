@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文解释 MySQL 8 所支持的数据类型~">
+<meta name="keywords" content="Database">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 8 - Data Types(数据类型)">
+<meta property="og:url" content="https://iweixubin.github.io/posts/mysql/data-types/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文解释 MySQL 8 所支持的数据类型~">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-11-05T14:37:11.478Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 8 - Data Types(数据类型)">
+<meta name="twitter:description" content="本文解释 MySQL 8 所支持的数据类型~">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/mysql/data-types/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>MySQL 8 - Data Types(数据类型) | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/mysql/data-types/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿彬~">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MySQL 8 - Data Types(数据类型)
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-09-26 00:00:01" itemprop="dateCreated datePublished" datetime="2020-09-26T00:00:01+08:00">2020-09-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-11-05 22:37:11" itemprop="dateModified" datetime="2020-11-05T22:37:11+08:00">2020-11-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文解释 MySQL 8 所支持的数据类型~</p>
+<a id="more"></a>
+<p>MySQL 支持的数据类型可以分为以下几大类：</p>
+<ul>
+<li>Numeric Data Types —— 数字类型</li>
+<li>Date and Time Data Types —— 日期和时间类型</li>
+<li>String (character and byte) types —— 字符串（字符和字节）类型</li>
+<li>Spatial Data Types —— 空间类型</li>
+<li>JSON Data Type —— JSON 数据类型</li>
+</ul>
+<p>接下来对数据类型描述会使用以下约定：</p>
+<ul>
+<li><p>对于 integer(整数) 类型，<strong>M</strong> 指示最大显示宽度。<br>对于 floating-point(浮点型) 和 fixed-point(定点数)，<strong>M</strong> 是可以总存储的进度。<br>对于 string(字符串) 类型，<strong>M</strong> 是最大长度。<br><strong>M</strong> 的最大允许值取决于数据类型。</p>
+</li>
+<li><p>D 适用于floating-point(浮点型) 和 fixed-point(定点数)类型，并指示小数点（比例）之后的数字数。<br>最大值为 30，但不应大于 <strong>M</strong>-2。</p>
+</li>
+<li><p><strong>fsp</strong> 适用于时间、日期时间和时间戳类型，表示小数秒精度。也就是说，秒分数部分小数点之后的数字数。<br><strong>fsp</strong> 值（如果给定）必须在 0 到 6 之间。值为 0 表示没有小数部分。如果省略，则默认精度为 0。</p>
+</li>
+<li><p>方括号 (<code>[</code> <code>]</code>) 表示类型定义的可选部分。</p>
+</li>
+</ul>
+<h2 id="Numeric-Data-Types-——-数字类型"><a href="#Numeric-Data-Types-——-数字类型" class="headerlink" title="Numeric Data Types —— 数字类型"></a>Numeric Data Types —— 数字类型</h2><p>对于 integer(整数) 类型，<strong>M</strong> 指示最大显示宽度。最大显示宽度是 255，显示宽度与类型可以存储的值范围无关。<br>对于 floating-point(浮点型)，M 是可存储的总数。</p>
+<p><em>在 MySQL 8 不推荐给 integer(整数) 设置长度，而且未来的 MySQL 可能移除</em><br><em>在 MySQL 8 不推荐给 数值类型 设置 ZEROFILL，而且未来的 MySQL 可能移除</em><br><em>在 MySQL 8 不推荐给 FLOAT, DOUBLE, DECIMAL 设置 UNSIGNED，而且未来的 MySQL 可能移除</em>  </p>
+<h3 id="integer-整数-类型"><a href="#integer-整数-类型" class="headerlink" title="integer(整数) 类型"></a>integer(整数) 类型</h3><ul>
+<li><p>BIT[(<strong>M</strong>)]<br>位值类型。M 表示每个值的位数，从 1 到 64。如果省略 M，默认值为 1。</p>
+</li>
+<li><p>TINYINT[(<strong>M</strong>)] [UNSIGNED]<br>一个很小的整数。签名范围为 -128 到 127。未签名的范围为 0 到 255。</p>
+</li>
+<li><p>BOOL, BOOLEAN<br>这些类型是 TINYINT(1) 的同义词。零值被视为 false。非零值被视为 true：<br><em>为什么不是 BIT(1)</em></p>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT IF(0, 'true', 'false');</span><br><span class="line">+<span class="comment">------------------------+</span></span><br><span class="line">| IF(0, 'true', 'false') |</span><br><span class="line">+<span class="comment">------------------------+</span></span><br><span class="line">| false                  |</span><br><span class="line">+<span class="comment">------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT IF(1, 'true', 'false');</span><br><span class="line">+<span class="comment">------------------------+</span></span><br><span class="line">| IF(1, 'true', 'false') |</span><br><span class="line">+<span class="comment">------------------------+</span></span><br><span class="line">| true                   |</span><br><span class="line">+<span class="comment">------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT IF(2, 'true', 'false');</span><br><span class="line">+<span class="comment">------------------------+</span></span><br><span class="line">| IF(2, 'true', 'false') |</span><br><span class="line">+<span class="comment">------------------------+</span></span><br><span class="line">| true                   |</span><br><span class="line">+<span class="comment">------------------------+</span></span><br></pre></td></tr></table></figure>
+<p>但是，值 TRUE 和 FALSE 分别只是 1 和 0 的别名，如下所示：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT IF(0 = FALSE, 'true', 'false');</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br><span class="line">| IF(0 = FALSE, 'true', 'false') |</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br><span class="line">| true                           |</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT IF(1 = TRUE, 'true', 'false');</span><br><span class="line">+<span class="comment">-------------------------------+</span></span><br><span class="line">| IF(1 = TRUE, 'true', 'false') |</span><br><span class="line">+<span class="comment">-------------------------------+</span></span><br><span class="line">| true                          |</span><br><span class="line">+<span class="comment">-------------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT IF(2 = TRUE, 'true', 'false');</span><br><span class="line">+<span class="comment">-------------------------------+</span></span><br><span class="line">| IF(2 = TRUE, 'true', 'false') |</span><br><span class="line">+<span class="comment">-------------------------------+</span></span><br><span class="line">| false                         |</span><br><span class="line">+<span class="comment">-------------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT IF(2 = FALSE, 'true', 'false');</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br><span class="line">| IF(2 = FALSE, 'true', 'false') |</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br><span class="line">| false                          |</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br></pre></td></tr></table></figure></p>
+<p>最后两个语句显示显示的结果，因为 2 既不等于 1 也不等于 0。</p>
+<ul>
+<li><p>SMALLINT[(<strong>M</strong>)] [UNSIGNED]<br>一个小整数。有符号值的范围为 -32768 到 32767。无符号值的范围为 0 到 65535。</p>
+</li>
+<li><p>MEDIUMINT[(<strong>M</strong>)] [UNSIGNED]<br>中等大小的整数。有符号值的范围为 -8388608 至 8388607。无符号值的范围为 0 到 16777215。</p>
+</li>
+<li><p>INT[(<strong>M</strong>)] [UNSIGNED]<br>一个正常大小的整数。有符号值的范围为 -2147483648 至 2147483647。无符号值的范围为 0 到 4294967295。</p>
+</li>
+<li><p>INTEGER<br>此类型是 INT 的同义词。</p>
+</li>
+<li><p>BIGINT[(<strong>M</strong>)] [UNSIGNED]<br>大整数。有符号值的范围为 -9223372036854775808 至 9223372036854775807。无符号值的范围为 0 到 18446744073709551615。</p>
+</li>
+<li><p>SERIAL<br>是 BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE 的别名</p>
+</li>
+</ul>
+<p>关于 BIGINT 列，您应该注意的一些情况：</p>
+<ul>
+<li><p>所有算术都应该使用有符号的  BIGINT 或 DOUBLE 的值，因此除了位函数外，不应使用大于 9223372036854775807 (63 bits) 的无符号 BIGINT！如果这样做，结果中某些最后数字可能是错误的，因为将 BIGINT 值转换为 DOUBLE 时出现舍入错误。</p>
+<p>MySQL 可以在以下情况下处理 BIGINT：</p>
+<ul>
+<li>使用整数在 BIGINT 列中存储较大的未符号值时。</li>
+<li>在 MIN(col_name) 或 MAX(col_name)中 col_name 引用 BIGINT 列。</li>
+<li>当使用运算符(+，-，* 等)时，其中两个操作数都是整数。</li>
+</ul>
+</li>
+<li><p>你可以存在字符串 ‘123456789’ 到一个 BIGINT 列中，MySQL 会执行字符串到数字的转换。</p>
+</li>
+<li><p>当使用运算符(+，-，* 等)计算两个大数值时，小心数值超标！</p>
+</li>
+</ul>
+<p>不推荐使用无符号的 BIGINT，很多语言库，获取文件长度返回的都是有符号的 long(int64) 类型，而不是无符号 ulong(uint64) 类型，文件长度怎么可能是负数呢？但还是使用有符号类型~</p>
+<p><strong>MySQL 与 C# 类型 的映射：</strong></p>
+<table>
+<thead>
+<tr>
+<th>MySQL 类型</th>
+<th>C# 类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TinyInt</td>
+<td>sbyte</td>
+</tr>
+<tr>
+<td>SmallInt</td>
+<td>short</td>
+</tr>
+<tr>
+<td><del>MediumInt</del></td>
+<td></td>
+</tr>
+<tr>
+<td>Int</td>
+<td>int</td>
+</tr>
+<tr>
+<td>BigInt</td>
+<td>long</td>
+</tr>
+</tbody>
+</table>
+<h3 id="floating-point-浮点型-类型"><a href="#floating-point-浮点型-类型" class="headerlink" title="floating-point(浮点型) 类型"></a>floating-point(浮点型) 类型</h3><ul>
+<li>DECIMAL[(M[,D])] </li>
+</ul>
+<p>打包的“精确”定点数，<strong>M</strong> 是数字总数(精度)，<strong>D</strong> 是小数点(刻度)之后的数字数。<br>小数点 <code>.</code> 和 负数 <code>-</code> 符号不计入 <strong>M</strong> 中。如果 <strong>D</strong> 为 0，则值没有小数点或小数部分。<br>DECIMAL 的 <strong>M</strong> 最大数位数为 65。支持的小数 <strong>D</strong> 的最大数位数为 30。<br>如果省略 <strong>D</strong>，则默认值为 0。如果省略 <strong>M</strong>，则默认值为 10。</p>
+<p>_对于浮点型 UNSIGNED 不推荐使用，将来版本会移除~<br>对于浮点型 ZEROFILL 不推荐使用，将来版本会移除~<br>DEC[(M[,D])], NUMERIC[(M[,D])], FIXED[(M[,D])]，这些类型是 DECIMAL 的同义词~<br>FLOAT(M，D)是一个非标准 MySQL 扩展，将来版本会移除~<br>DOUBLE(M，D)是一个非标准 MySQL 扩展，将来版本会移除~<br>DOUBLE PRECISION[(M,D)], REAL[(M,D)]，这些类型是 DOUBLE 的同义词~  _</p>
+<ul>
+<li>FLOAT(p)<br>浮点数类型，p 表示位精度，但 MySQL 仅使用此值来确定对生成的数据类型是使用 FLOAT 还是 DOUBLE。<br>如果 p 从 0 到 24，则数据类型将变为没有 M 或 D 值的 FLOAT。<br>如果 p 从 25 到 53，则数据类型变为没有 M 或 D 值的 DOUBLE。</li>
+</ul>
+<p>貌似 MySQL 能用的浮点数类型只有 DECIMAL 了  </p>
+<p><strong>MySQL 与 C# 类型 的映射：</strong></p>
+<table>
+<thead>
+<tr>
+<th>MySQL 类型</th>
+<th>C# 类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Decimal</td>
+<td>decimal</td>
+</tr>
+</tbody>
+</table>
+<h2 id="Date-and-Time-Data-Types-——-日期与时间类型"><a href="#Date-and-Time-Data-Types-——-日期与时间类型" class="headerlink" title="Date and Time Data Types —— 日期与时间类型"></a>Date and Time Data Types —— 日期与时间类型</h2><p>表示日期和时间的时间类型有：DATE(日期)、TIME(时间)、 DATETIME(日期时间)、TIMESTAMP(时间戳)<br>每个时间类型都有一系列有效值，当您指定无效值时 MySQL 可以会使用的 “零” 值<br>TIMESTAMP(时间戳)和DATETIME(日期时间)类型具有特殊的自动更新行为  </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t1 (</span><br><span class="line">  ts <span class="keyword">TIMESTAMP</span> <span class="keyword">DEFAULT</span> <span class="number">0</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  dt DATETIME <span class="keyword">DEFAULT</span> <span class="number">0</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>更多内容请查看：<a href="https://dev.mysql.com/doc/refman/8.0/en/timestamp-initialization.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/8.0/en/timestamp-initialization.html</a></p>
+<p>日期与时间相关的函数：<a href="https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html</a></p>
+<p>使用日期和时间类型时，请记住以下一般注意事项：</p>
+<ul>
+<li><p>MySQL 以标准输出格式检索给定日期或时间类型的值，但它尝试解释您提供的各种输入值的格式：</p>
+<ul>
+<li>‘2012-12-31 11:30:45’, ‘2012^12^31 11+30+45’</li>
+<li>‘2012/12/31 11<em>30</em>45’, ‘2012@12@31 11^30^45’ </li>
+</ul>
+</li>
+<li><p>尽管 MySQL 尝试以多种格式解释值，但日期部分必须始终以 year-month-day 给出~</p>
+</li>
+<li>不要使用 2个 数字表示年份！</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[官方文档 - Chapter 11 Data Types] <a href="https://dev.mysql.com/doc/refman/8.0/en/data-types.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/8.0/en/data-types.html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，请我喝瓶肥宅快乐水可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="阿彬~ 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="阿彬~ 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿彬~</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/mysql/data-types/" title="MySQL 8 - Data Types(数据类型)">https://iweixubin.github.io/posts/mysql/data-types/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Database/" rel="tag"># Database</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/mysql/installing/" rel="next" title="Ubuntu 上安装 MySQL">
+                  <i class="fa fa-chevron-left"></i> Ubuntu 上安装 MySQL
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="阿彬~">
+            
+              <p class="site-author-name" itemprop="name">阿彬~</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">51</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Numeric-Data-Types-——-数字类型"><span class="nav-number">1.</span> <span class="nav-text">Numeric Data Types —— 数字类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#integer-整数-类型"><span class="nav-number">1.1.</span> <span class="nav-text">integer(整数) 类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#floating-point-浮点型-类型"><span class="nav-number">1.2.</span> <span class="nav-text">floating-point(浮点型) 类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Date-and-Time-Data-Types-——-日期与时间类型"><span class="nav-number">2.</span> <span class="nav-text">Date and Time Data Types —— 日期与时间类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿彬~</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文讲述如何在 Ubuntu 18.04 上安装软件的几种姿势~">
+<meta name="keywords" content="Ubuntu,apt-get">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 Ubuntu 18.04 上安装软件">
+<meta property="og:url" content="https://iweixubin.github.io/posts/ubuntu-install-software/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文讲述如何在 Ubuntu 18.04 上安装软件的几种姿势~">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-11-05T15:03:31.189Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在 Ubuntu 18.04 上安装软件">
+<meta name="twitter:description" content="本文讲述如何在 Ubuntu 18.04 上安装软件的几种姿势~">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/ubuntu-install-software/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>在 Ubuntu 18.04 上安装软件 | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/ubuntu-install-software/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿彬~">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">在 Ubuntu 18.04 上安装软件
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-04 00:00:01" itemprop="dateCreated datePublished" datetime="2019-12-04T00:00:01+08:00">2019-12-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-11-05 23:03:31" itemprop="dateModified" datetime="2020-11-05T23:03:31+08:00">2020-11-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Ubuntu/" itemprop="url" rel="index"><span itemprop="name">Ubuntu</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文讲述如何在 Ubuntu 18.04 上安装软件的几种姿势~</p>
+<a id="more"></a>
+<h2 id="类比"><a href="#类比" class="headerlink" title="类比"></a>类比</h2><p>Linux 系统<strong>优先</strong>安装软件的方式不像 Windows 那样到某个网站下载软件安装包，然后双击安装…</p>
+<p>Linux 系统<strong>优先</strong>安装软件的方式像 Android 手机和 IOS 手机那样从应用商店安装软件…<br>因为在应用商店上软件一般都是官方发布的，而且经过应用商店检测过的。</p>
+<h2 id="dpkg"><a href="#dpkg" class="headerlink" title="dpkg"></a>dpkg</h2><p>在 Linux 发展之初，安装软件的时候是需要下载以 tar.gz 结尾的软件源码包，然后对源码包进行编译安装。这极其麻烦~</p>
+<p>后来 Debian(Ubuntu 是基于 Debian 系统的) 开发了 dpkg(Debian Package) 管理工具来管理软件，<br>软件都是以 deb 结尾的编译好的二进制包，通过 dpkg 命令可以安装软件和卸载软件~</p>
+<h2 id="apt"><a href="#apt" class="headerlink" title="apt"></a>apt</h2><p>apt(Advanced Packaging Tool)  </p>
+<p>然而 dpkg 不够人性化的一点就是不能自动解决依赖问题，比如 A软件包 依赖于 B软件包，那么你先得安装 B 才能安装 A，<br>而且使用 dpkg 需要将软件下载到本地才能安装。  </p>
+<p>使用 apt 安装软件时会自动从软件源下载软件进行安装，<br>并且 apt 能自动解决依赖问题，当有依赖的时候它也会自动从软件源下载依赖的包进行安装。<br>当然 apt 底层还是调用 dpkg 来进行软件安装的。</p>
+<h2 id="软件源"><a href="#软件源" class="headerlink" title="软件源"></a>软件源</h2><p>软件源(软件仓库)中存放这大量的软件包，apt 会从软件源中下载软件。<br>在 <code>/ect/apt/sources.list</code> 中可以为 apt 配置软件源。<br>可以在 <code>/ect/apt/sources.list</code> 中配置多个软件源，就如同安卓手机可以安装多个应用商店。</p>
+<p>在 <code>/ect/apt/sources.list</code> 中 deb 关键字定义已编译的软件包来源。</p>
+<p>每个数据源后面都有一些标签</p>
+<ul>
+<li><code>main</code>：软件包是自由软件，Ubuntu 提供及时性，安全性支持。</li>
+<li><code>restricted</code>：不是完全的自由软件，但是由于被广泛使用，所以 Ubuntu 也提供及时性，安全性支持。</li>
+<li><code>universe</code>：一般由社区维护的软件，但 Ubuntu 不提供安全性的支持。</li>
+<li><code>multiverse</code>：非自由软件，不被 Ubuntu 认可，不建议使用。</li>
+</ul>
+<p><a href="https://help.ubuntu.com/community/Repositories/Ubuntu" target="_blank" rel="noopener">官方文档</a></p>
+<h2 id="apt-get-命令"><a href="#apt-get-命令" class="headerlink" title="apt-get 命令"></a>apt-get 命令</h2><blockquote>
+<p>Linux tree 命令用于以树状图列出目录的内容。</p>
+<p>执行 tree 指令，它会列出指定目录下的所有文件，包括子目录里的文件。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wxb@ubuntu18s:~$ tree</span><br><span class="line"></span><br><span class="line">Command &apos;tree&apos; not found, but can be installed with:</span><br><span class="line"></span><br><span class="line">sudo snap install tree  # version 1.8.0+pkg-3fd6, or</span><br><span class="line">sudo apt  install tree</span><br><span class="line"></span><br><span class="line">See &apos;snap info tree&apos; for additional versions.</span><br></pre></td></tr></table></figure>
+<p>提示我们 <code>tree</code> 命令没有找到，但可以使用<br><code>sudo snap install tree</code> 安装 1.8.0 的版本，或者<br><code>sudo apt install tree</code></p>
+<p>snap 是一种全新的软件包管理方式，它类似一个容器拥有一个应用程序所有的文件和库，各个应用程序之间完全独立。<br>所以使用 snap 包的好处就是它解决了应用程序之间的依赖问题，使应用程序之间更容易管理，但是由此带来的问题就是它占用更多的磁盘空间。</p>
+<p>那么使用 apt 安装，安装的 <code>tree</code> 会是什么版本呢？<br>我们可以使用 <code>apt show tree</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">wxb@ubuntu18s:~$ apt show tree</span><br><span class="line">Package: tree</span><br><span class="line">Version: 1.7.0-5</span><br><span class="line">Priority: optional</span><br><span class="line">Section: universe/utils</span><br><span class="line">Origin: Ubuntu</span><br><span class="line">Maintainer: Ubuntu Developers &lt;ubuntu-devel-discuss@lists.ubuntu.com&gt;</span><br><span class="line">Original-Maintainer: Florian Ernst &lt;florian@debian.org&gt;</span><br><span class="line">Bugs: https://bugs.launchpad.net/ubuntu/+filebug</span><br><span class="line">Installed-Size: 105 kB</span><br><span class="line">Depends: libc6 (&gt;= 2.14)</span><br><span class="line">Homepage: http://mama.indstate.edu/users/ice/tree/</span><br><span class="line">Task: lubuntu-qt-desktop</span><br><span class="line">Supported: 9m</span><br><span class="line">Download-Size: 40.7 kB</span><br><span class="line">APT-Sources: http://mirrors.aliyun.com/ubuntu bionic/universe amd64 Packages</span><br><span class="line">Description: displays an indented directory tree, in color</span><br><span class="line"> Tree is a recursive directory listing command that produces a depth indented</span><br><span class="line"> listing of files, which is colorized ala dircolors if the LS_COLORS environment</span><br><span class="line"> variable is set and output is to tty.</span><br></pre></td></tr></table></figure></p>
+<p>当然查询到的是 Ubuntu 存储库中软件包列表的私有副本，因为是私有副本，所以有可能是安装到旧的版本，或者没有该软件的信息。</p>
+<p>因此在安装软件强烈推荐使用 <code>sudo apt-get update</code> 更新包列表。</p>
+<p>运行 <code>sudo apt-get update</code> 更新软件列表，<br>再运行 <code>sudo apt install tree</code> 安装 <code>tree</code> 那么就可以愉快地使用 <code>tree</code> 命令了。</p>
+<p>那么如何删除(卸载)软件呢？<br><code>sudo apt-get remove packagename</code> 命令，卸载一个已安装的软件包(保留配置文件)<br><code>apt-get –purge remove packagename</code> 命令，卸载一个已安装的软件包(删除配置文件)</p>
+<p>接下来我们来看看 <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu" target="_blank" rel="noopener">Docker 官方 Ubuntu 安装文档</a> 中是怎么安装 docker 的。</p>
+<ol>
+<li>更新 apt 软件包信息库</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>安装软件包允许使用 HTTPS ：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br></pre></td></tr></table></figure>
+<p>上面的命令安装了好几个工具：</p>
+<p><code>apt-transport-https</code>：如果是软件源是 https 来传输的，那么系统这边也要支持 https<br><code>ca-certificates</code>：管理 CA 证书<br><code>curl</code>: 该命令是一个利用URL规则在命令行下工作的文件传输工具<br><code>gnupg-agent</code>：？？<br><code>software-properties-common</code>：？？</p>
+<ol start="3">
+<li>添加 Docker 的官方 GPG key</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+<p>每个发布的 deb 包，都是通过密钥认证的，为了确保我们安装的包是官方没有被篡改的包，所以我们需要将 docker 这个包的 GPG key 添加到我们的系统中。</p>
+<p><code>sudo apt-key add</code> 命令是把 key 添加到本地 trusted 数据库中。</p>
+<p>运算符 <code>|</code> 是一个管道，它将之前命令的输出作为命令的 STDIN 传递给它。</p>
+<p>将 Docker 的官方 GPG key 添加到本地 trusted 数据库后，还要查看我们添加的 GPG key 是否正确。<br>Docker 的官方 GPG key 是 <code>9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88</code><br>运行命令 <code>sudo apt-key fingerprint 0EBFCD88</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wxb@ubuntu18s:~$ sudo apt-key fingerprint 0EBFCD88</span><br><span class="line">pub   rsa4096 2017-02-22 [SCEA]</span><br><span class="line">      9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</span><br><span class="line">uid           [ unknown] Docker Release (CE deb) &lt;docker@docker.com&gt;</span><br><span class="line">sub   rsa4096 2017-02-22 [S]</span><br></pre></td></tr></table></figure></p>
+<ol start="4">
+<li>将 docker 的官方下载地址添加到软件源中</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository \</span><br><span class="line">   &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span><br><span class="line">   $(lsb_release -cs) \</span><br><span class="line">   stable&quot;</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>再次更新 apt 软件包信息库</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+<p>第一次更新是为了安装支持 https，这次是为了安装 docker</p>
+<ol start="6">
+<li>安装 docker</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<h2 id="删除软件"><a href="#删除软件" class="headerlink" title="删除软件"></a>删除软件</h2><p>找出已经安装的软件</p>
+<p>dpkg –get-selections </p>
+<p>dpkg –get-selections | grep xxx</p>
+<p>sudo apt-get remove –purge 软件名称<br>sudo apt-get autoremove –purge 软件名称 12</p>
+<h2 id="列出所有服务"><a href="#列出所有服务" class="headerlink" title="列出所有服务"></a>列出所有服务</h2><p><a href="http://manpages.ubuntu.com/manpages/bionic/en/man8/service.8.html" target="_blank" rel="noopener">http://manpages.ubuntu.com/manpages/bionic/en/man8/service.8.html</a></p>
+<p>service –status-all</p>
+<p> The  status  is<br> [ + ]　for running services,<br> [ - ]　 for stopped services and<br> [ ? ]　 for services without a status command.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，请我喝瓶肥宅快乐水可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="阿彬~ 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="阿彬~ 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿彬~</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/ubuntu-install-software/" title="在 Ubuntu 18.04 上安装软件">https://iweixubin.github.io/posts/ubuntu-install-software/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+          
+            <a href="/tags/apt-get/" rel="tag"># apt-get</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+            
+              
+            
+              
+            
+              
+                
+                
+                
+              
+            
+              
+            
+            
+              
+              
+            
+              
+              
+            
+              
+                
+              
+              
+            
+              
+              
+            
+              
+              
+                
+              
+            
+          
+        
+
+        
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/posts/ubuntu-network/" rel="next" title="Ubuntu 修改 IP地址 与 主机名">
+                  <i class="fa fa-chevron-left"></i> Ubuntu 修改 IP地址 与 主机名
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/posts/ubuntu/install-java/" rel="prev" title="Ubuntu 安装 Java">
+                  Ubuntu 安装 Java <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="阿彬~">
+            
+              <p class="site-author-name" itemprop="name">阿彬~</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">51</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#类比"><span class="nav-number">1.</span> <span class="nav-text">类比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dpkg"><span class="nav-number">2.</span> <span class="nav-text">dpkg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apt"><span class="nav-number">3.</span> <span class="nav-text">apt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#软件源"><span class="nav-number">4.</span> <span class="nav-text">软件源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apt-get-命令"><span class="nav-number">5.</span> <span class="nav-text">apt-get 命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除软件"><span class="nav-number">6.</span> <span class="nav-text">删除软件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列出所有服务"><span class="nav-number">7.</span> <span class="nav-text">列出所有服务</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿彬~</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

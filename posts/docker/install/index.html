@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文介绍怎么在 Windows 中只安装 Docker Client 客户端，在 Ubuntu 中安装 Docker Server 服务端，至于 Docker 的原理和机制，在以后的章节会配合 Docker 命令再细说~">
+<meta name="keywords" content="docker,docker-client,docker-daemon">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安装 Docker">
+<meta property="og:url" content="https://iweixubin.github.io/posts/docker/install/index.html">
+<meta property="og:site_name" content="思与行">
+<meta property="og:description" content="本文介绍怎么在 Windows 中只安装 Docker Client 客户端，在 Ubuntu 中安装 Docker Server 服务端，至于 Docker 的原理和机制，在以后的章节会配合 Docker 命令再细说~">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://docs.docker.com/engine/images/architecture.svg">
+<meta property="og:updated_time" content="2020-11-05T16:51:12.462Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="安装 Docker">
+<meta name="twitter:description" content="本文介绍怎么在 Windows 中只安装 Docker Client 客户端，在 Ubuntu 中安装 Docker Server 服务端，至于 Docker 的原理和机制，在以后的章节会配合 Docker 命令再细说~">
+<meta name="twitter:image" content="https://docs.docker.com/engine/images/architecture.svg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://iweixubin.github.io/posts/docker/install/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>安装 Docker | 思与行</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思与行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iweixubin.github.io/posts/docker/install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿彬~">
+      <meta itemprop="description" content="苏格拉底粉">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思与行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">安装 Docker
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-18 00:00:01" itemprop="dateCreated datePublished" datetime="2018-12-18T00:00:01+08:00">2018-12-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-11-06 00:51:12" itemprop="dateModified" datetime="2020-11-06T00:51:12+08:00">2020-11-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文介绍怎么在 Windows 中只安装 Docker Client 客户端，在 Ubuntu 中安装 Docker Server 服务端，<br>至于 Docker 的原理和机制，在以后的章节会配合 Docker 命令再细说~</p>
+<a id="more"></a>
+<p>为什么选择 Windows 作为 Docker 的客户端，<br>因为本人是 .Net 程序员，而 .Net 的开发工具 Visual Studio 要支持 Docker 需要提供 Docker 命令行。  </p>
+<p>另外，很多教程都是在同一台电脑上直接安装 Docker 的客户端和服务端，然后就开始讲解 Docker 的各种操作，<br>这样不能很好地体验 Docker 是使用传统的 C/S 架构模式(Cilent-Server)，用户是通过 Docker Client 与 Docker Daemon 建立通信。 </p>
+<p>还有一般开发流程都是在 Windows 上写代码，然后发送到 Docker Server 服务端制作成 Docker Image 镜像，<br>当然更好的方法是，签入代码到 svn 或 git 的时候，有自动制作 Image 镜像脚本~</p>
+<p>为什么选择 Ubuntu，因为 Ubuntu ，因为 Docker 社区版本对 Ubuntu 的支持最完善  </p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>x86_64 / amd64</th>
+<th>ARM</th>
+<th>ARM64 / AARCH64</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CentOS</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Debian</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Fedora</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Raspbian</td>
+<td></td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Ubuntu</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+</tbody>
+</table>
+<p>以上表格来自 <a href="https://docs.docker.com/engine/install" target="_blank" rel="noopener">官方文档</a>  </p>
+<p>.Net 拥有了跨平台的能力，那么作为 .Net 程序员学习 Linux 是不错的技术投资，在众多 Linux 版本中我推荐 Ubuntu 或者 CentOS，<br>理由是 Ubuntu 敢于加入新技术，而 CentOS 是 RHEL(Red Hat Enterprise Linux) 的再编译版本。<br>RHEL 是很多企业采用的 Linux 发行版本，需要向 Red Hat 付费才可以使用，并能得到付过费用的服务和技术支持和版本升级。<br>CentOS 可以像 RHEL 一样的构筑 Linux 系统环境，但不需要向 Red Hat 付任何的产品和服务费用。因为是企业级版本，所以保守，但很稳定。</p>
+<h2 id="在-Windows-中安装-Docker-Client"><a href="#在-Windows-中安装-Docker-Client" class="headerlink" title="在 Windows 中安装 Docker Client"></a>在 Windows 中安装 Docker Client</h2><p>本文不使用 Docker Desktop for Windows 的安装方式，因为这种安装方式会在 Windows 上安装 VirtualBox 等很多工具，我们仅仅要的只是 Docker Client 客户端，这样也贴切我们开发流程</p>
+<p>目标是将 <code>docker.exe</code> 添加到 Windows 系统的环境变量 <code>PATH</code> 中，从而达到能使用 docker 命令行~</p>
+<p>得到 <code>docker.exe</code> 的方式有：</p>
+<ul>
+<li>到官网 <a href="https://download.docker.com/win/static/stable/x86_64" target="_blank" rel="noopener">https://download.docker.com/win/static/stable/x86_64</a> 下载，版本比较老</li>
+<li>自己下载源码 <a href="https://github.com/docker/cli" target="_blank" rel="noopener">https://github.com/docker/cli</a> 后编译</li>
+<li>下载编译好的新版本 <a href="https://github.com/StefanScherer/docker-cli-builder/releases" target="_blank" rel="noopener">https://github.com/StefanScherer/docker-cli-builder/releases</a></li>
+<li>安装 Docker Desktop for Windows 后，找到安装目录，将 <code>docker.exe</code> 复制到其它位置</li>
+</ul>
+<p>这么麻烦的原因是因为官方不单独提供 <code>docker.exe</code> 的最新版本了，<a href="https://github.com/docker/cli/issues/2281" target="_blank" rel="noopener">https://github.com/docker/cli/issues/2281</a></p>
+<p>为了方便，本文是先使用别人编译好的版本，文章最后再介绍怎么从源码中编译~</p>
+<p>添加系统的 <code>环境变量</code>  </p>
+<ol>
+<li>右击 <code>我的电脑</code> (win10是 <code>此电脑</code>)</li>
+<li><code>属性</code></li>
+<li><code>高级系统设置</code></li>
+<li><code>环境变量</code></li>
+<li>找到并双击 <code>Path</code> </li>
+<li>点击 <code>浏览</code>，然后选择 <code>docker.exe</code> 所在的文件夹</li>
+</ol>
+<p>将 <code>docker.exe</code> 添加到 Windows 系统的环境变量 <code>PATH</code> 中后，<br>打开 <code>cmd</code>，输入 <code>docker version</code> 如有以下类似内容输出，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt;docker version</span><br><span class="line"></span><br><span class="line">Client:</span><br><span class="line"> Version:           19.03.12</span><br><span class="line"> API version:       1.40</span><br><span class="line"> Go version:        go1.13.12</span><br><span class="line"> Git commit:        0ed913b8-</span><br><span class="line"> Built:             07/28/2020 16:36:03</span><br><span class="line"> OS/Arch:           windows/amd64</span><br><span class="line"> Experimental:      false</span><br><span class="line">error during connect: Get http://%2F%2F.%2Fpipe%2Fdocker_engine/v1.40/version: </span><br><span class="line">open //./pipe/docker_engine: The system cannot find the file specified. </span><br><span class="line">In the default daemon configuration on Windows, </span><br><span class="line">the docker client must be run elevated to connect. </span><br><span class="line">This error may also indicate that the docker daemon is not running.</span><br></pre></td></tr></table></figure>
+<p>则说明 Windows 下 Docker 客户端安装成功，<br>有个错误信息是因为我们现在还没有设置 Docker 的服务端地址，Docker 客户端连接不到 Docker 的服务端。</p>
+<h2 id="在-Ubuntu-中安装-Docker"><a href="#在-Ubuntu-中安装-Docker" class="headerlink" title="在 Ubuntu 中安装 Docker"></a>在 Ubuntu 中安装 Docker</h2><p>本文接下来参照<a href="https://docs.docker.com/engine/install/ubuntu" target="_blank" rel="noopener">官方文档-Install Docker Engine on Ubuntu</a>介绍怎么在 Ubuntu20 上安装 Docker，<br>对于其他版本，请自行阅读 <a href="https://docs.docker.com/engine/install" target="_blank" rel="noopener">官方文档-Install Docker Engine</a>  </p>
+<h3 id="卸载旧版本"><a href="#卸载旧版本" class="headerlink" title="卸载旧版本"></a>卸载旧版本</h3><p>旧版本的 Docker 称为 <code>docker</code>、<code>docker.io</code> 或 docker-engine。如果安装过，请先卸载它们：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
+<p>目录 <code>/var/lib/docker/</code> 还保留着  images(镜像), containers(容器), volumes(卷), and networks(网络)。<br>Docker Engine 包现在称之为 <code>docker-ce</code></p>
+<p><code>/var/lib/docker/</code> 看是否需要删除，还有自己创建的相关配置文件。</p>
+<h3 id="使用软件源安装"><a href="#使用软件源安装" class="headerlink" title="使用软件源安装"></a>使用软件源安装</h3><p>为了确保安装所需不被被篡改，因此安装一下的包以使用 https</p>
+<p>由于 <code>apt</code> 源使用 HTTPS 以确保软件下载过程中不被篡改。因此，我们首先需要添加使用 HTTPS 传输的软件包以及 CA 证书。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line"></span><br><span class="line">$ sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br></pre></td></tr></table></figure>
+<p>为了确认所下载软件包的合法性，需要添加 Docker 官方提供的软件源 GPG 密钥。  </p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+<p>验证密钥是否正确，<br>对比密钥指纹是否是：<code>9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-key fingerprint 0EBFCD88</span><br><span class="line"></span><br><span class="line">pub   rsa4096 2017-02-22 [SCEA]</span><br><span class="line">      9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</span><br><span class="line">uid           [ unknown] Docker Release (CE deb) &lt;docker@docker.com&gt;</span><br><span class="line">sub   rsa4096 2017-02-22 [S]</span><br></pre></td></tr></table></figure>
+<p>然后，我们需要向 source.list 中添加 Docker 软件源：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo add-apt-repository \</span><br><span class="line">   <span class="string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="string">   <span class="variable">$(lsb_release -cs)</span> \</span></span><br><span class="line"><span class="string">   stable"</span></span><br></pre></td></tr></table></figure>
+<p>更新 <code>apt</code> 软件包索引，并安装 Docker Engine</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line"></span><br><span class="line">$ sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<p>检验 Docker Engine 是否正确安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br><span class="line"></span><br><span class="line">Unable to find image <span class="string">'hello-world:latest'</span> locally</span><br><span class="line">latest: Pulling from library/hello-world</span><br><span class="line">xxxxxxxxxxxx: Pull complete </span><br><span class="line">Digest: sha256:xxx...</span><br><span class="line">Status: Downloaded newer image <span class="keyword">for</span> hello-world:latest</span><br><span class="line"></span><br><span class="line">Hello from Docker!</span><br><span class="line">This message shows that your installation appears to be working correctly.</span><br><span class="line"></span><br><span class="line">To generate this message, Docker took the following steps:</span><br><span class="line"> 1. The Docker client contacted the Docker daemon.</span><br><span class="line"> 2. The Docker daemon pulled the <span class="string">"hello-world"</span> image from the Docker Hub.</span><br><span class="line">    (amd64)</span><br><span class="line"> 3. The Docker daemon created a new container from that image <span class="built_in">which</span> runs the</span><br><span class="line">    executable that produces the output you are currently reading.</span><br><span class="line"> 4. The Docker daemon streamed that output to the Docker client, <span class="built_in">which</span> sent it</span><br><span class="line">    to your terminal.</span><br><span class="line"></span><br><span class="line">To try something more ambitious, you can run an Ubuntu container with:</span><br><span class="line"> $ docker run -it ubuntu bash</span><br><span class="line"></span><br><span class="line">Share images, automate workflows, and more with a free Docker ID:</span><br><span class="line"> https://hub.docker.com/</span><br><span class="line"></span><br><span class="line">For more examples and ideas, visit:</span><br><span class="line"> https://docs.docker.com/get-started/</span><br></pre></td></tr></table></figure>
+<p>查看 Docker 客户端与服务端的版本：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker version</span><br><span class="line"></span><br><span class="line">Client: Docker Engine - Community</span><br><span class="line"> Version:           19.03.12</span><br><span class="line"> API version:       1.40</span><br><span class="line"> Go version:        go1.13.10</span><br><span class="line"> Git commit:        48a66213fe</span><br><span class="line"> Built:             Mon Jun 22 15:45:44 2020</span><br><span class="line"> OS/Arch:           linux/amd64</span><br><span class="line"> Experimental:      <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">Server: Docker Engine - Community</span><br><span class="line"> Engine:</span><br><span class="line">  Version:          19.03.12</span><br><span class="line">  API version:      1.40 (minimum version 1.12)</span><br><span class="line">  Go version:       go1.13.10</span><br><span class="line">  Git commit:       48a66213fe</span><br><span class="line">  Built:            Mon Jun 22 15:44:15 2020</span><br><span class="line">  OS/Arch:          linux/amd64</span><br><span class="line">  Experimental:     <span class="literal">false</span></span><br><span class="line"> containerd:</span><br><span class="line">  Version:          1.2.13</span><br><span class="line">  GitCommit:        7ad184331fa3e55e52b890ea95e65ba581ae3429</span><br><span class="line"> runc:</span><br><span class="line">  Version:          1.0.0-rc10</span><br><span class="line">  GitCommit:        dc9208a3303feef5b3839f4323d9beb36df0a9dd</span><br><span class="line"> docker-init:</span><br><span class="line">  Version:          0.18.0</span><br><span class="line">  GitCommit:        fec3683</span><br></pre></td></tr></table></figure>
+<p>至此，Docker 的安装完毕，<br>接下来折腾一下怎么让 Windows 系统上的 Docker 客户端连接 Ubuntu 上 Docker 的守护进程吧~<br>要这样折腾的原因是：好好体验 <a href="https://docs.docker.com/get-started/overview/#docker-architecture" target="_blank" rel="noopener">Docker 的 C/S 架构</a></p>
+<p><img src="https://docs.docker.com/engine/images/architecture.svg" alt="Docker 的架构"></p>
+<h2 id="让-Docker-客户端与服务端的通信"><a href="#让-Docker-客户端与服务端的通信" class="headerlink" title="让 Docker 客户端与服务端的通信"></a>让 Docker 客户端与服务端的通信</h2><p>在 Windows 系统上新开一个 cmd 窗口：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; docker -H tcp://<span class="number">192.168</span>.<span class="number">86.101</span>:<span class="number">2375</span> version</span><br><span class="line">Client:</span><br><span class="line"> Version:           <span class="number">19.03</span>.<span class="number">12</span></span><br><span class="line"> API version:       <span class="number">1.40</span></span><br><span class="line"> Go version:        go1.<span class="number">13.12</span></span><br><span class="line"> Git commit:        <span class="number">0</span>ed913b8-</span><br><span class="line"> Built:             <span class="number">07</span>/<span class="number">28</span>/<span class="number">2020</span> <span class="number">16</span>:<span class="number">36</span>:<span class="number">03</span></span><br><span class="line"> OS/Arch:           windows/amd64</span><br><span class="line"> Experimental:      false</span><br><span class="line">error during connect: Get http://<span class="number">192.168</span>.<span class="number">86.101</span>:<span class="number">2375</span>/v1.<span class="number">40</span>/version: </span><br><span class="line">dial tcp <span class="number">192.168</span>.<span class="number">86.101</span>:<span class="number">2375</span>: </span><br><span class="line">connectex: No connection could be made because the target machine actively refused it.</span><br></pre></td></tr></table></figure>
+<p>其中，<code>192.168.86.101</code> 是我的 Ubuntu 系统 IP 地址，需要替换成你的~</p>
+<p>拒绝的原因是因为 Docker 服务端的守护进程默认不允许远程 tcp 连接，<br>如果我们要支持远程连接就必须要加上 tcp 连接方式~</p>
+<p>使用 <code>sudo vim /etc/docker/daemon.json</code> 命令，<br>将 <code>/etc/docker/daemon.json</code> 的内容修改成如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"hosts"</span>: [</span><br><span class="line">        <span class="string">"tcp://0.0.0.0:2375"</span>,</span><br><span class="line">        <span class="string">"unix:///var/run/docker.sock"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"registry-mirrors"</span>: [</span><br><span class="line">        <span class="string">"https://hub-mirror.c.163.com"</span>,</span><br><span class="line">        <span class="string">"https://reg-mirror.qiniu.com"</span>,</span><br><span class="line">        <span class="string">"https://registry.docker-cn.com"</span></span><br><span class="line"></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Docker 的客户端 与 Docker 服务端守护进程通信，有三种 socket 连接方式：</p>
+<ul>
+<li>unix:///var/run/docker.sock</li>
+<li>tcp://host:port</li>
+<li>fd://socketfd</li>
+</ul>
+<p>通过配置 <code>/etc/docker/daemon.json</code> 的 <code>hosts</code>，开启了两种。</p>
+<p>另外，<code>registry-mirrors</code> 是配置仓库地址，鉴于国内网络问题，国内从 Docker Hub 拉取镜像有时会十分缓慢，此时可以配置镜像加速器。</p>
+<p>重启 Docker 服务<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl restart docker</span><br><span class="line"></span><br><span class="line">Job <span class="keyword">for</span> docker.service failed because the control process exited with error code.</span><br><span class="line">See <span class="string">"systemctl status docker.service"</span> and <span class="string">"journalctl -xe"</span> <span class="keyword">for</span> details.</span><br></pre></td></tr></table></figure>
+<p>使用 <code>sudo systemctl restart docker</code> 时会提示错误，<br>可以按提示使用 <code>systemctl status docker.service</code> 命令查看详细信息。</p>
+<p>原因是因为服务启动 dockerd 给了参数，<code>-H</code><br>我们现在要修改成启动时去读取我们配置的 <code>/etc/docker/daemon.json</code> 文件</p>
+<p>通过 <code>sudo vim /lib/systemd/system/docker.service</code> 命令，<br>将 <code>/lib/systemd/system/docker.service</code> 的内容修改成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock</span><br><span class="line">ExecStart=/usr/bin/dockerd</span><br></pre></td></tr></table></figure>
+<p>将 <code>ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock</code> 添加 <code>#</code> 注释掉，<br>添加多一行 <code>ExecStart=/usr/bin/dockerd</code></p>
+<p>重启 Docker 服务：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br><span class="line"></span><br><span class="line">$ sudo systemctl restart docker</span><br></pre></td></tr></table></figure></p>
+<p>在 Ubuntu 的命令行中使用 <code>docker -H tcp://127.0.0.1:2375 version</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">$ docker -H tcp://127.0.0.1:2375 version</span><br><span class="line"></span><br><span class="line">Client: Docker Engine - Community</span><br><span class="line"> Version:           19.03.12</span><br><span class="line"> API version:       1.40</span><br><span class="line"> Go version:        go1.13.10</span><br><span class="line"> Git commit:        48a66213fe</span><br><span class="line"> Built:             Mon Jun 22 15:45:44 2020</span><br><span class="line"> OS/Arch:           linux/amd64</span><br><span class="line"> Experimental:      false</span><br><span class="line"></span><br><span class="line">Server: Docker Engine - Community</span><br><span class="line"> Engine:</span><br><span class="line">  Version:          19.03.12</span><br><span class="line">  API version:      1.40 (minimum version 1.12)</span><br><span class="line">  Go version:       go1.13.10</span><br><span class="line">  Git commit:       48a66213fe</span><br><span class="line">  Built:            Mon Jun 22 15:44:15 2020</span><br><span class="line">  OS/Arch:          linux/amd64</span><br><span class="line">  Experimental:     false</span><br><span class="line"> containerd:</span><br><span class="line">  Version:          1.2.13</span><br><span class="line">  GitCommit:        7ad184331fa3e55e52b890ea95e65ba581ae3429</span><br><span class="line"> runc:</span><br><span class="line">  Version:          1.0.0-rc10</span><br><span class="line">  GitCommit:        dc9208a3303feef5b3839f4323d9beb36df0a9dd</span><br><span class="line"> docker-init:</span><br><span class="line">  Version:          0.18.0</span><br><span class="line">  GitCommit:        fec3683</span><br></pre></td></tr></table></figure>
+<p>这里特别的是，我们没有用 <code>sudo docker</code>，只是用了 <code>docker</code>，<br>目前，没有用 <code>sudo</code>，一般都会提示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: </span><br><span class="line">Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/version: dial unix /var/run/docker.sock: connect: permission denied</span><br></pre></td></tr></table></figure>
+<p>原因和解决方法查看<a href="#参考资料">参考资料</a></p>
+<p>接下来用 Windows 系统上的 Docker 客户端与 Ubuntu 上 Docker 的守护进程通信。</p>
+<p>在 Windows 系统上新开一个 cmd 窗口：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&gt;docker -H tcp://<span class="number">192.168</span>.<span class="number">86.101</span>:<span class="number">2375</span> version</span><br><span class="line"></span><br><span class="line">Client:</span><br><span class="line"> Version:           <span class="number">19.03</span>.<span class="number">12</span></span><br><span class="line"> API version:       <span class="number">1.40</span></span><br><span class="line"> Go version:        go1.<span class="number">13.12</span></span><br><span class="line"> Git commit:        <span class="number">0</span>ed913b8-</span><br><span class="line"> Built:             <span class="number">07</span>/<span class="number">28</span>/<span class="number">2020</span> <span class="number">16</span>:<span class="number">36</span>:<span class="number">03</span></span><br><span class="line"> OS/Arch:           windows/amd64</span><br><span class="line"> Experimental:      false</span><br><span class="line"></span><br><span class="line">Server: Docker Engine - Community</span><br><span class="line"> Engine:</span><br><span class="line">  Version:          <span class="number">19.03</span>.<span class="number">12</span></span><br><span class="line">  API version:      <span class="number">1.40</span> (minimum version <span class="number">1.12</span>)</span><br><span class="line">  Go version:       go1.<span class="number">13.10</span></span><br><span class="line">  Git commit:       <span class="number">48</span>a66213fe</span><br><span class="line">  Built:            Mon Jun <span class="number">22</span> <span class="number">15</span>:<span class="number">44</span>:<span class="number">15</span> <span class="number">2020</span></span><br><span class="line">  OS/Arch:          linux/amd64</span><br><span class="line">  Experimental:     false</span><br><span class="line"> containerd:</span><br><span class="line">  Version:          <span class="number">1.2</span>.<span class="number">13</span></span><br><span class="line">  GitCommit:        <span class="number">7</span>ad184331fa3e55e52b890ea95e65ba581ae3429</span><br><span class="line"> runc:</span><br><span class="line">  Version:          <span class="number">1.0</span>.<span class="number">0</span>-rc10</span><br><span class="line">  GitCommit:        dc9208a3303feef5b3839f4323d9beb36df0a9dd</span><br><span class="line"> docker-init:</span><br><span class="line">  Version:          <span class="number">0.18</span>.<span class="number">0</span></span><br><span class="line">  GitCommit:        fec3683</span><br></pre></td></tr></table></figure>
+<p>为了不想每次都输入 <code>-H</code> 参数，那么可以在客户端机器加上环境变量，<br>接下来，在 Windows 系统上需要添加 <code>环境变量 DOCKER_HOST</code>：</p>
+<ol>
+<li>右击 <code>我的电脑</code> (win10 是 <code>此电脑</code>)</li>
+<li><code>属性</code></li>
+<li><code>高级系统设置</code></li>
+<li><code>环境变量</code></li>
+<li>点击 <code>新建</code></li>
+<li><code>变量名(N)</code> 填入：DOCKER_HOST</li>
+<li><code>变量值(V)</code> 填入：tcp://192.168.86.101:2375</li>
+</ol>
+<p><code>192.168.86.101</code> 是我虚拟机上 Ubuntu 的 IP 地址，请自行修改。</p>
+<p>至此，Windows 上 Docker 客户端与 Ubuntu 上的 Docker 安装完毕。</p>
+<h2 id="Net-程序员的倔强"><a href="#Net-程序员的倔强" class="headerlink" title=".Net 程序员的倔强"></a>.Net 程序员的倔强</h2><p>为什么一定要在 Windows 上安装 Docker 客户端？<br>你可以在 Visual Studio 上创建一个.Net Core 项目，<br>然后右击该项目 <code>添加</code> → <code>Docker 支持</code> → <code>目标系统 Linux</code><br>这个时候项目下就会多一个 <code>Dockerfile</code> 文件，<br>可以看看文件内容，是不是每个单词都懂，但连起来就不知道什么意思了，这是我们以后要学习的内容。<br>现在右击 <code>Dockerfile</code> 文件，选择 <code>生成 Docker 映像</code>，<br>Visual Studio 就会调用 Docker 的客户端命令在 Ubuntu 系统上生成镜像了。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://yq.aliyun.com/articles/581105" target="_blank" rel="noopener">使用本地的docker客户端连接远程docker的守护进程</a></p>
+<p><a href="https://www.jianshu.com/p/40fae887c6d1" target="_blank" rel="noopener">Docker客户端与守护进程——CS模式简介</a></p>
+<p><a href="https://juejin.im/post/6844904001910079496" target="_blank" rel="noopener">Docker Tips: 关于/var/run/docker.sock</a></p>
+<p><a href="https://blog.fundebug.com/2017/04/17/about-docker-sock" target="_blank" rel="noopener">关于 /var/run/docker.sock</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1454335" target="_blank" rel="noopener">docker 的 /var/run/docker.sock 参数</a></p>
+<p><a href="https://www.cnblogs.com/wyt007/p/11154156.html" target="_blank" rel="noopener">Dokcer使用总结（Dockerfile、Compose、Swarm）</a></p>
+<p><a href="https://www.cnblogs.com/informatics/p/8276172.html" target="_blank" rel="noopener">Docker启动Get Permission Denied</a></p>
+<h2 id="疑惑"><a href="#疑惑" class="headerlink" title="疑惑"></a>疑惑</h2><p>在没有安装 Docker 前 Ubuntu 系统开机后，显示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">System load:  0.44               Processes:              250</span><br><span class="line">Usage of /:   23.4% of 18.57GB   Users logged in:        0</span><br><span class="line">Memory usage: 14%                IPv4 address for ens32: 192.168.86.101</span><br><span class="line">Swap usage:   0%</span><br></pre></td></tr></table></figure></p>
+<p>在安装完 Docker 重启 Ubuntu 系统，  </p>
+<p>多出的 <code>IPv4 address for docker0: 172.17.0.1</code> 是啥？？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">System load:  1.4                Processes:                253</span><br><span class="line">Usage of /:   26.1% of 18.57GB   Users logged in:          0</span><br><span class="line">Memory usage: 18%                IPv4 address for docker0: 172.17.0.1</span><br><span class="line">Swap usage:   0%                 IPv4 address for ens32:   192.168.86.101</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>觉得文章对您有帮助，请我喝瓶肥宅快乐水可好 (๑•̀ㅂ•́)و✧</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="阿彬~ 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="阿彬~ 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>阿彬~</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://iweixubin.github.io/posts/docker/install/" title="安装 Docker">https://iweixubin.github.io/posts/docker/install/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+  <li class="post-copyright-license">
+  <strong>免责声明：</strong>本媒体部分图片，版权归原作者所有。因条件限制，无法找到来源和作者未进行标注。<br>
+  <strong>　　　　　</strong>如果侵犯到您的权益，请与我联系删除
+  </li>
+</ul>
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/docker-client/" rel="tag"># docker-client</a>
+          
+            <a href="/tags/docker-daemon/" rel="tag"># docker-daemon</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        
+        
+
+        
+          
+          
+              
+                  
+              
+          
+          
+            
+              
+            
+            
+            
+            
+            
+              
+                
+                
+                
+              
+            
+            
+              
+              
+            
+          
+        
+
+        
+          
+          
+            <div class="post-nav">
+              <div class="post-nav-next post-nav-item">
+                
+                  <a href="/posts/programming-philosophy-csharp/how-to-create-everything/" rel="next" title="编程哲学之 C# 篇：007——如何创造万物">
+                    <i class="fa fa-chevron-left"></i> 编程哲学之 C# 篇：007——如何创造万物
+                  </a>
+                
+              </div>
+
+              <span class="post-nav-divider"></span>
+
+              <div class="post-nav-prev post-nav-item">
+                
+                  <a href="/posts/consul-quick-start/" rel="prev" title="服务发现 Consul 快速入门">
+                    服务发现 Consul 快速入门 <i class="fa fa-chevron-right"></i>
+                  </a>
+                
+              </div>
+            </div>
+           
+         
+       
+
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="阿彬~">
+            
+              <p class="site-author-name" itemprop="name">阿彬~</p>
+              <div class="site-description motion-element" itemprop="description">苏格拉底粉</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">51</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/iweixubin" title="GitHub &rarr; https://github.com/iweixubin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:35925259@qq.com" title="E-Mail &rarr; mailto:35925259@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#在-Windows-中安装-Docker-Client"><span class="nav-number">1.</span> <span class="nav-text">在 Windows 中安装 Docker Client</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在-Ubuntu-中安装-Docker"><span class="nav-number">2.</span> <span class="nav-text">在 Ubuntu 中安装 Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#卸载旧版本"><span class="nav-number">2.1.</span> <span class="nav-text">卸载旧版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用软件源安装"><span class="nav-number">2.2.</span> <span class="nav-text">使用软件源安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#让-Docker-客户端与服务端的通信"><span class="nav-number">3.</span> <span class="nav-text">让 Docker 客户端与服务端的通信</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Net-程序员的倔强"><span class="nav-number">4.</span> <span class="nav-text">.Net 程序员的倔强</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#疑惑"><span class="nav-number">6.</span> <span class="nav-text">疑惑</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿彬~</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
